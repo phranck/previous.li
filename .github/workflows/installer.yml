@@ -1,0 +1,57 @@
+# Fetches install.sh from the tool it installs, and serves it from here.
+#
+# The line people run is `curl -fsSL https://previous.li/install.sh | bash`, so
+# the script has to be a file in this repository for Pages to serve it. Its
+# source is install.sh in phranck/previously, beside the service, the packaging
+# and the systemd units it knows the paths of. Written by hand in both places
+# it would drift, and the copy that drifted is the one people run.
+#
+# So nothing here is edited: this takes what that repository has and commits it
+# only when it differs. A run that finds them equal writes nothing.
+#
+# It reads a public repository over HTTPS, so it needs no credentials of its
+# own, and it writes into this one with the token the run already carries.
+
+name: Installer
+
+on:
+  # Whoever changed install.sh over there wants it live now.
+  workflow_dispatch:
+  # And a floor under that, so a forgotten dispatch costs a day rather than
+  # going unnoticed until somebody installs from a stale script.
+  schedule:
+    - cron: "17 4 * * *"
+
+permissions:
+  contents: write
+
+# A scheduled run and a dispatched one landing together would both commit, and
+# the second would push onto a ref the first had just moved.
+concurrency:
+  group: installer
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Take the script from the tool
+        run: |
+          curl -fsSL -o install.sh \
+            https://raw.githubusercontent.com/phranck/previously/main/install.sh
+          # Empty or truncated is worse than stale, because Pages would serve
+          # it and a pipe into bash would run whatever arrived.
+          test -s install.sh
+          head -1 install.sh | grep -q '^#!/usr/bin/env bash'
+
+      - name: Commit it, where it differs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --force install.sh
+          git diff --cached --quiet && echo "already current" && exit 0
+          git commit -m "Chore: Take install.sh from phranck/previously"
+          git push
