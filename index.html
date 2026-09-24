@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Previously: a Raspberry Pi that boots into NeXTSTEP</title>
+<meta name="description"
+      content="One line turns a Raspberry Pi 5 into a machine that starts straight into NeXTSTEP under the Previous emulator, with a web admin built in the machine's own idiom.">
+<link rel="canonical" href="https://previous.li/">
+
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#121218">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Previously">
+<meta property="og:url" content="https://previous.li/">
+<meta property="og:title" content="A Raspberry Pi that boots into NeXTSTEP">
+<meta property="og:description"
+      content="One line, and the machine starts straight into a NeXT under the Previous emulator. What configures it afterwards is a web admin built to look like the machine it configures.">
+<meta property="og:image" content="https://previous.li/site/shots/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Raspberry Pi logo, an arrow trailing streaks behind it, and the NeXT cube, over the name Previously and the line about a Raspberry Pi that boots directly into NeXTSTEP.">
+<meta property="og:locale" content="en_GB">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="A Raspberry Pi that boots into NeXTSTEP">
+<meta name="twitter:description"
+      content="One line, and the machine starts straight into a NeXT under the Previous emulator.">
+<meta name="twitter:image" content="https://previous.li/site/shots/og.png">
+
+<link rel="icon" href="site/favicon.ico" sizes="16x16 32x32 48x48 64x64">
+<link rel="apple-touch-icon" href="site/apple-touch-icon.png" sizes="180x180">
+
+<link rel="preload" href="site/fonts/inter-variable-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="site/site.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Previously",
+  "url": "https://previous.li/",
+  "description": "Turns a Raspberry Pi 5 into a machine that boots straight into NeXTSTEP under the Previous emulator, with a web admin built in NeXTSTEP's own idiom.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Raspberry Pi OS Lite, 64 bit, Debian 13",
+  "image": "https://previous.li/site/shots/og.png",
+  "author": {
+    "@type": "Person",
+    "name": "phranck",
+    "url": "https://github.com/phranck"
+  },
+  "codeRepository": "https://github.com/phranck/previously"
+}
+</script>
+</head>
+<body>
+
+<header class="bar">
+  <div class="measure bar__row">
+    <a class="wordmark" href="#top">
+      <svg class="icon" aria-hidden="true"><use href="site/icons.svg#cube"></use></svg>
+      Previously
+    </a>
+    <nav class="bar__links" aria-label="Sections of this page">
+      <a href="#what">What it is</a>
+      <a href="#admin">The admin</a>
+      <a href="#install">Install</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="measure hero__grid">
+      <div class="hero__copy">
+        <h1>A Raspberry Pi that boots into NeXTSTEP</h1>
+        <p class="hero__lead">Previously starts straight into a NeXT machine under the
+          Previous emulator. There is no desktop behind it, no login to get past, and
+          nothing on the screen but the grey NeXT panel.</p>
+        <ul class="hero__facts">
+          <li class="hero__fact">Raspberry Pi 5</li>
+          <li class="hero__fact">Raspberry Pi OS Lite, 64 bit</li>
+          <li class="hero__fact">NeXTSTEP 3.3</li>
+        </ul>
+      </div>
+
+      <div class="window">
+        <div class="window__title">
+          <svg class="icon" aria-hidden="true"><use href="site/icons.svg#terminal-window"></use></svg>
+          Terminal
+        </div>
+        <div class="window__body">
+          <div class="command">
+            <span class="command__prompt" aria-hidden="true">$</span>
+            <span id="command">curl -fsSL https://previous.li/install.sh | bash</span>
+          </div>
+          <button class="button" id="copy" type="button">
+            <svg class="icon" id="copy-icon" aria-hidden="true"><use href="site/icons.svg#copy"></use></svg>
+            <span id="copy-label">Copy</span>
+          </button>
+        </div>
+        <p class="window__note">Run it as the user the machine will belong to, not under
+          <code>sudo</code>. It asks for your password once and says when it is done where
+          the admin answers.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--sunk" id="what">
+    <div class="measure">
+      <div class="section__head">
+        <p class="section__kicker">What it is</p>
+        <h2>The shortest way to get NeXTSTEP up and running on your Raspberry Pi</h2>
+        <p class="section__lead">The Pi merges into a NeXT. Everything you would normally
+          do directly in the Previous Settings on the Pi can now be done conveniently in a
+          browser on another computer.</p>
+      </div>
+
+      <div class="cards">
+        <article class="card">
+          <div class="card__icon">
+            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#monitor"></use></svg>
+          </div>
+          <h3>Nothing but NeXTSTEP</h3>
+          <p class="card__text">The emulator takes the first console at boot and keeps it.
+            There is no desktop underneath and no console login to step past, so the
+            machine is the thing it is pretending to be.</p>
+        </article>
+
+        <article class="card">
+          <div class="card__icon">
+            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#sliders-horizontal"></use></svg>
+          </div>
+          <h3>An admin that looks like it</h3>
+          <p class="card__text">You select NeXT machines, drives, and displays instead of
+            entering values manually. You can switch between complete configurations using
+            D&amp;D. Change the values in the system configurations and save them as your
+            own.</p>
+        </article>
+
+        <article class="card">
+          <div class="card__icon">
+            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#arrow-counter-clockwise"></use></svg>
+          </div>
+          <h3>An installation that undoes itself</h3>
+          <p class="card__text">Every step of the install script writes down how to undo
+            what it just did. Press Ctrl+C, or let a step fail, and it walks that record
+            backwards. Whatever was on the machine before is left where it was.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--workspace" id="admin">
+    <div class="measure">
+      <div class="section__head">
+        <p class="section__kicker">The admin</p>
+        <h2>It looks like the machine it configures</h2>
+        <p class="section__lead">Nothing here is approximated. The icons are the original
+          files out of a NeXTSTEP 3.3 disk image, the window buttons are cut pixel for
+          pixel out of the running system, and every colour, edge and raster is measured
+          off it.</p>
+      </div>
+
+    </div>
+
+    <figure class="shot">
+      <div class="browser">
+        <div class="browser__bar">
+          <div class="browser__lights" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="browser__address">cube.local:8810</div>
+        </div>
+        <img src="site/shots/workspace.png" width="2144" height="1600" loading="lazy"
+             alt="The admin tool in a browser: a main menu, an Info panel for the emulated NeXTcube, a Raspberry Pi panel with the host's readings, Preferences offering six languages, and a File Viewer showing folders as icons.">
+      </div>
+      <figcaption class="shot__caption">This is a recent screenshot of Previously. Not
+        only does it look like NeXTSTEP, it feels like it, too. You'll love this admin
+        right away.</figcaption>
+    </figure>
+  </section>
+
+  <section class="section" id="install">
+    <div class="measure">
+      <div class="section__head">
+        <p class="section__kicker">Install</p>
+        <h2>Three steps, and the second one is the line</h2>
+        <p class="section__lead">You need a Raspberry Pi 5 and a card imaged with Raspberry
+          Pi OS Lite, 64 bit, based on Debian 13. The script refuses anywhere else, because
+          Previous needs SDL3 and no earlier release carries it.</p>
+      </div>
+
+      <ol class="steps">
+        <li class="step">
+          <div class="step__body">
+            <h3>Reach the Pi</h3>
+            <p class="step__text">Over SSH is the comfortable way, and it stays the way in
+              afterwards: the emulator owns the screen once this is done.</p>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step__body">
+            <h3>Paste the line and let it finish</h3>
+            <p class="step__text">It installs the emulator from its own signed archive,
+              fetches a preinstalled NeXTSTEP 3.3 disk image, writes the configuration,
+              installs the admin tool and hands the first console over.</p>
+            <code class="snippet">curl -fsSL https://previous.li/install.sh | bash</code>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step__body">
+            <h3>Open the admin</h3>
+            <p class="step__text">It answers at <code>http://&lt;your-pi&gt;.local:8810</code>
+              and asks once for a token, which the script tells you how to read.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--sunk">
+    <div class="measure">
+      <div class="section__head">
+        <p class="section__kicker">Before you run it</p>
+        <h2>What a line off the network is allowed to do</h2>
+      </div>
+
+      <div class="cards">
+        <article class="card">
+          <div class="card__icon">
+            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#shield-check"></use></svg>
+          </div>
+          <h3>Read it first</h3>
+          <p class="card__text">The script reads no file beside itself, so the one file on
+            GitHub is all of it. Nothing runs until the last line calls <code>main</code>,
+            which means a download cut short runs nothing at all.</p>
+        </article>
+
+        <article class="card">
+          <div class="card__icon">
+            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
+          </div>
+          <h3>Safe to run again</h3>
+          <p class="card__text">An existing disk image, an existing configuration and a
+            startup entry that is already there are all left alone. Your own NeXTSTEP image
+            in <code>~/nextstep</code> is found and used instead of a download.</p>
+        </article>
+
+        <article class="card">
+          <div class="card__icon">
+            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#arrow-counter-clockwise"></use></svg>
+          </div>
+          <h3>Ctrl+C leaves it as it was</h3>
+          <p class="card__text">An interrupt and a failing step both walk the record of
+            changes backwards. Only this run's own changes are reversed, and a step that
+            skipped itself has nothing to take back.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="measure foot__row">
+    <nav class="foot__links">
+      <a href="https://github.com/phranck/previously" target="_blank" rel="noopener">
+        <svg class="icon" aria-hidden="true"><use href="site/icons.svg#github"></use></svg>
+        Source
+      </a>
+      <a href="https://github.com/phranck/previously/blob/main/install.sh" target="_blank" rel="noopener">
+        <svg class="icon" aria-hidden="true"><use href="site/icons.svg#terminal-window"></use></svg>
+        Read install.sh
+      </a>
+      <a href="https://previous.nextcommunity.net/" target="_blank" rel="noopener">
+        Previous
+        <svg class="icon" aria-hidden="true"><use href="site/icons.svg#arrow-square-out"></use></svg>
+      </a>
+    </nav>
+
+    <p class="foot__copyright">Copyright © 2026 by
+      <a href="https://layered.work/" target="_blank" rel="noopener">LAYERED</a></p>
+
+    <p class="foot__trademarks">NeXT, NEXTSTEP, OPENSTEP, and the NeXT cube logo are
+      registered trademarks of Apple Computer, Inc.</p>
+  </div>
+</footer>
+
+<script src="site/site.js"></script>
+
+<script defer src="https://umami.layered.work/script.js" data-website-id="490691ab-30ee-4131-87d3-ca58d8da2d5a"></script>
+</body>
+</html>

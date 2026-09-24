@@ -1,0 +1,5 @@
+.DS_Store
+
+# Written here by the release workflow of phranck/previously, never by hand.
+# Its source is install.sh in that repository, beside the thing it installs.
+install.sh

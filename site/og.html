@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Previously, as a link preview</title>
+<style>
+  /* The picture and nothing else, at exactly the size a social network crops
+     to, so a screenshot of this viewport is site/shots/og.png.
+
+     What it shows is og-image.svg beside it, which is the source. Edit that.
+     This page only holds it at the right size and puts it on screen. */
+  html, body {
+    margin: 0;
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+  }
+
+  object {
+    display: block;
+    width: 1200px;
+    height: 630px;
+  }
+</style>
+</head>
+<body>
+  <object type="image/svg+xml" data="og-image.svg" aria-label="The link preview for previous.li"></object>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# One page, and everything under site/ belongs to it. Nothing here is private,
+# so nothing is disallowed.
+User-agent: *
+Allow: /
+
+Sitemap: https://previous.li/sitemap.xml
