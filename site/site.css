@@ -860,14 +860,15 @@ kbd {
   font-size: var(--text-xs);
 }
 
-/* The picture is 2144 wide and is shown at 1072. That is what a display with
-   two device pixels per CSS pixel needs: at its own size it would be doubled
-   on screen, and an interface drawn one pixel per pixel is the worst thing to
-   double, because its single-pixel edges come out as two soft ones. A display
-   with one device pixel halves it cleanly instead. */
+/* The picture is 2240 wide and is shown at 1120, which is what a NeXT
+   MegaPixel Display held. Halving it is what a display with two device pixels
+   per CSS pixel needs: at its own size it would be doubled on screen, and an
+   interface drawn one pixel per pixel is the worst thing to double, because
+   its single-pixel edges come out as two soft ones. A display with one device
+   pixel halves it cleanly instead. */
 .shot img {
   display: block;
-  width: 1072px;
+  width: 1120px;
   max-width: 100%;
   height: auto;
 }
