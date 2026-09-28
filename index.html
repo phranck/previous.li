@@ -6,7 +6,7 @@
 
 <title>Previously: a Raspberry Pi that boots into NeXTSTEP</title>
 <meta name="description"
-      content="One line turns a Raspberry Pi 5 into a machine that starts straight into NeXTSTEP under the Previous emulator, with a web admin built in the machine's own idiom.">
+      content="One line turns a Raspberry Pi into a machine that starts straight into NeXTSTEP under the Previous emulator, with a web admin built in the machine's own idiom.">
 <link rel="canonical" href="https://previous.li/">
 
 <meta name="color-scheme" content="dark">
@@ -42,7 +42,7 @@
   "@type": "SoftwareApplication",
   "name": "Previously",
   "url": "https://previous.li/",
-  "description": "Turns a Raspberry Pi 5 into a machine that boots straight into NeXTSTEP under the Previous emulator, with a web admin built in NeXTSTEP's own idiom.",
+  "description": "Turns a Raspberry Pi into a machine that boots straight into NeXTSTEP under the Previous emulator, with a web admin built in NeXTSTEP's own idiom.",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Raspberry Pi OS Lite, 64 bit, Debian 13",
   "image": "https://previous.li/site/shots/og.png",
@@ -81,9 +81,9 @@
           Previous emulator. There is no desktop behind it, no login to get past, and
           nothing on the screen but the grey NeXT panel.</p>
         <ul class="hero__facts">
-          <li class="hero__fact">Raspberry Pi 5</li>
+          <li class="hero__fact">Raspberry Pi 4 or 5</li>
           <li class="hero__fact">Raspberry Pi OS Lite, 64 bit</li>
-          <li class="hero__fact">NeXTSTEP 3.3</li>
+          <li class="hero__fact">NeXTSTEP 2.2 to OPENSTEP 4.2</li>
         </ul>
       </div>
 
@@ -187,9 +187,10 @@
       <div class="section__head">
         <p class="section__kicker">Install</p>
         <h2>Three steps, and the second one is the line</h2>
-        <p class="section__lead">You need a Raspberry Pi 5 and a card imaged with Raspberry
-          Pi OS Lite, 64 bit, based on Debian 13. The script refuses anywhere else, because
-          Previous needs SDL3 and no earlier release carries it.</p>
+        <p class="section__lead">You need a Raspberry Pi 4 or 5 and a card imaged with
+          Raspberry Pi OS Lite, 64 bit, based on Debian 13. The script reads the
+          architecture and the release and refuses an older one, because Previous needs
+          SDL3 and no earlier release carries it.</p>
       </div>
 
       <ol class="steps">
@@ -205,8 +206,9 @@
           <div class="step__body">
             <h3>Paste the line and let it finish</h3>
             <p class="step__text">It installs the emulator from its own signed archive,
-              fetches a preinstalled NeXTSTEP 3.3 disk image, writes the configuration,
-              installs the admin tool and hands the first console over.</p>
+              fetches a preinstalled disk image, writes the configuration, installs the
+              admin tool and hands the first console over. The image is NeXTSTEP 3.3, and
+              the admin swaps it for any of the six afterwards.</p>
             <code class="snippet">curl -fsSL https://previous.li/install.sh | bash</code>
           </div>
         </li>
