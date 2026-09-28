@@ -293,22 +293,31 @@ kbd {
 }
 
 .wordmark {
+  /* Stated rather than derived: the bar is 64 high and this is what the mark
+     comes to in it, with room left over above and below. */
+  --mark-height: 42px;
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
   font-weight: 650;
   letter-spacing: -0.02em;
   text-decoration: none;
 }
 
 /* No correction: on this face the midline between the baseline and the cap
-   line and the middle of the line box are 0.14px apart at 21px, and the cube's
-   own ink is centred in its viewBox. Centring the boxes lands on the
-   typographic line the mark belongs on. */
-.wordmark .icon {
-  color: var(--accent);
-  font-size: 1.15em;
+   line and the middle of the line box are 0.14px apart at 21px, and the mark
+   is cropped to its own ink. Centring the boxes lands on the typographic line
+   the mark belongs on.
+
+   Its height is stated and its width follows, because the mark is taller than
+   it is wide and the bar is measured in lines rather than in squares. It does
+   not follow the type: below about forty pixels the wordmark on its face stops
+   being letters and becomes three coloured marks, and that floor has nothing
+   to do with how large the name beside it is set. */
+.wordmark__mark {
+  height: var(--mark-height);
+  width: auto;
 }
 
 /* Pushed to the far end, with the switch after it, so the wordmark keeps the
@@ -330,6 +339,7 @@ kbd {
 .bar__links a {
   display: flex;
   align-items: center;
+  gap: var(--space-1);
   height: calc(var(--step) * 4.5);
   padding-inline: var(--space-2);
   padding-bottom: calc(var(--label-lift) * 2);
@@ -384,12 +394,24 @@ kbd {
   padding-inline-start: var(--card-text-inset);
 }
 
+/* The same glyph the bar carries for this section, so the entry a reader
+   followed and the section they arrive in name themselves the same way. */
 .section__kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
   font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent);
+}
+
+/* An all-caps label takes no lift, so the glyph sits on the midline between
+   the baseline and the cap line without a correction. It is larger than the
+   letters for the same reason every other glyph on this page is. */
+.section__kicker .icon {
+  font-size: calc(1em * var(--icon-scale));
 }
 
 .section--workspace .section__kicker {
@@ -414,8 +436,10 @@ kbd {
    It also opens a shade lighter than the page and sinks into it, so the first
    screen has a horizon rather than an edge. The lower end is the page's own
    colour, which is what makes the join invisible. */
+/* Less above the mark than below the block it opens, so the picture sits high
+   on the first screen and the horizon has room to sink into the page. */
 .hero {
-  padding-block: var(--space-16) var(--space-12);
+  padding-block: var(--space-12) var(--space-16);
   background: linear-gradient(180deg, #15151b, var(--paper));
   text-align: center;
 }
@@ -434,11 +458,38 @@ kbd {
   gap: var(--space-3);
 }
 
+/* One machine turning into another, which is what a link to this page already
+   unfolds into elsewhere. The width is what sizes it: at 450 the Pi comes out
+   at 120 pixels and the mark stands level with the two lines of headline under
+   it, so the page opens on the picture rather than on the sentence. */
+.hero__mark {
+  display: block;
+  width: 450px;
+  max-width: 100%;
+  height: auto;
+}
+
 /* Both are held narrower than the page rather than the block around them, so
    each breaks where its own type wants to. A headline set across 1120 pixels
-   is read in two movements of the head. */
+   is read in two movements of the head.
+
+   The measure holds the headline to two lines with the break after the struck
+   word, which is where the sentence corrects itself. A third line puts that
+   break mid-correction and the line stops working.
+
+   Its own space stands under it, on top of the column's gap, so the mark and
+   the headline read as one opening and the prose beneath them as the answer to
+   it. */
 .hero h1 {
-  max-width: 18ch;
+  max-width: 21ch;
+  margin-bottom: var(--space-8);
+}
+
+/* The word the sentence nearly said, struck out and stepping back a shade, so
+   the correction reads as a correction rather than as two claims. */
+.hero__struck {
+  font-style: italic;
+  color: var(--ink-soft);
 }
 
 .hero__lead {
@@ -614,8 +665,13 @@ kbd {
 }
 
 .button .icon,
-.window__title .icon {
+.window__title .icon,
+.bar__links a .icon {
   transform: translateY(calc(var(--label-lift) / var(--icon-scale)));
+}
+
+.bar__links a .icon {
+  font-size: calc(1em * var(--icon-scale));
 }
 
 /* --- cards --------------------------------------------------------------- */
@@ -900,7 +956,7 @@ kbd {
   }
 
   .hero {
-    padding-block: var(--space-8) var(--space-6);
+    padding-block: var(--space-6) var(--space-8);
   }
 }
 

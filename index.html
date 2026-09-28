@@ -32,6 +32,7 @@
 
 <link rel="icon" href="site/favicon.ico" sizes="16x16 32x32 48x48 64x64">
 <link rel="apple-touch-icon" href="site/apple-touch-icon.png" sizes="180x180">
+<link rel="manifest" href="site/site.webmanifest">
 
 <link rel="preload" href="site/fonts/inter-variable-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="site/site.css">
@@ -60,13 +61,22 @@
 <header class="bar">
   <div class="measure bar__row">
     <a class="wordmark" href="#top">
-      <svg class="icon" aria-hidden="true"><use href="site/icons.svg#cube"></use></svg>
+      <img class="wordmark__mark" src="site/logo-mark.png" width="78" height="96" alt="">
       Previously
     </a>
     <nav class="bar__links" aria-label="Sections of this page">
-      <a href="#what">What it is</a>
-      <a href="#admin">The admin</a>
-      <a href="#install">Install</a>
+      <a href="#what">
+        <svg class="icon" aria-hidden="true"><use href="site/icons.svg#info"></use></svg>
+        What it is
+      </a>
+      <a href="#admin">
+        <svg class="icon" aria-hidden="true"><use href="site/icons.svg#sliders-horizontal"></use></svg>
+        The admin
+      </a>
+      <a href="#install">
+        <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
+        Install
+      </a>
     </nav>
   </div>
 </header>
@@ -76,7 +86,52 @@
   <section class="hero">
     <div class="measure hero__grid">
       <div class="hero__copy">
-        <h1>A Raspberry Pi that boots into NeXTSTEP</h1>
+        <!-- One machine turning into another, at the coordinates
+             site/og-image.svg draws it at, so the page opens on the picture a
+             link to it unfolds into. That file embeds the two logos because it
+             has to stand on its own; here they are the files themselves. The
+             arrow is the one shape both files draw, and a change to it belongs
+             in both. -->
+        <svg class="hero__mark" viewBox="353 76 494 148" aria-hidden="true">
+          <defs>
+            <!-- What every trailing streak fades along: solid where it leaves
+                 the shape, gone by the time it reaches the back. -->
+            <linearGradient id="wake" x1="0" x2="1">
+              <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+              <stop offset="0.55" stop-color="#ffffff" stop-opacity="0.12"/>
+              <stop offset="1" stop-color="#ffffff" stop-opacity="0.4"/>
+            </linearGradient>
+
+            <!-- Four thin slits of ground running across the arrow. White is
+                 kept and black is cut away. -->
+            <mask id="slits">
+              <rect width="210" height="140" fill="white"/>
+              <rect x="-10" y="32.4" width="230" height="5" fill="black"/>
+              <rect x="-10" y="55.8" width="230" height="5" fill="black"/>
+              <rect x="-10" y="79.2" width="230" height="5" fill="black"/>
+              <rect x="-10" y="102.6" width="230" height="5" fill="black"/>
+            </mask>
+          </defs>
+
+          <image x="353" y="84" width="132" height="132" href="site/raspberry-pi.png"/>
+
+          <!-- An arrow caught mid flight, drawn rather than blurred, and
+               leaning at the angle this face's italic leans. -->
+          <g transform="translate(517 100) scale(0.714286) skewX(-12)">
+            <g fill="#ffffff" mask="url(#slits)">
+              <rect x="0" y="48" width="66" height="44" fill="url(#wake)"/>
+              <rect x="62" y="14" width="72" height="8" fill="url(#wake)"/>
+              <rect x="62" y="118" width="72" height="8" fill="url(#wake)"/>
+              <path d="M66 48 H134 V14 L206 70 L134 126 V92 H66 Z"/>
+            </g>
+          </g>
+
+          <image x="699" y="76" width="148" height="148" href="site/next-cube.png"/>
+        </svg>
+
+        <h1>A Raspberry Pi that <s class="hero__struck">boosts</s>… boots directly
+          into NeXTSTEP</h1>
+
         <p class="hero__lead">Previously starts straight into a NeXT machine under the
           Previous emulator. There is no desktop behind it, no login to get past, and
           nothing on the screen but the grey NeXT panel.</p>
@@ -112,7 +167,10 @@
   <section class="section section--sunk" id="what">
     <div class="measure">
       <div class="section__head">
-        <p class="section__kicker">What it is</p>
+        <p class="section__kicker">
+          <svg class="icon" aria-hidden="true"><use href="site/icons.svg#info"></use></svg>
+          What it is
+        </p>
         <h2>The shortest way to get NeXTSTEP up and running on your Raspberry Pi</h2>
         <p class="section__lead">The Pi merges into a NeXT. Everything you would normally
           do directly in the Previous Settings on the Pi can now be done conveniently in a
@@ -157,7 +215,10 @@
   <section class="section section--workspace" id="admin">
     <div class="measure">
       <div class="section__head">
-        <p class="section__kicker">The admin</p>
+        <p class="section__kicker">
+          <svg class="icon" aria-hidden="true"><use href="site/icons.svg#sliders-horizontal"></use></svg>
+          The admin
+        </p>
         <h2>It looks like the machine it configures</h2>
         <p class="section__lead">Nothing here is approximated. The icons are the original
           files out of a NeXTSTEP 3.3 disk image, the window buttons are cut pixel for
@@ -185,7 +246,10 @@
   <section class="section" id="install">
     <div class="measure">
       <div class="section__head">
-        <p class="section__kicker">Install</p>
+        <p class="section__kicker">
+          <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
+          Install
+        </p>
         <h2>Three steps, and the second one is the line</h2>
         <p class="section__lead">You need a Raspberry Pi 4 or 5 and a card imaged with
           Raspberry Pi OS Lite, 64 bit, based on Debian 13. The script reads the
@@ -227,7 +291,10 @@
   <section class="section section--sunk">
     <div class="measure">
       <div class="section__head">
-        <p class="section__kicker">Before you run it</p>
+        <p class="section__kicker">
+          <svg class="icon" aria-hidden="true"><use href="site/icons.svg#shield-check"></use></svg>
+          Before you run it
+        </p>
         <h2>What a line off the network is allowed to do</h2>
       </div>
 
