@@ -575,11 +575,11 @@ update_admin() {
 
   fetch_admin_package
 
-  # --reinstall because a package built from a checkout carries the version in
-  # server.py, which is the last release's until the next one is cut. Without
-  # it apt calls an identically numbered package the newest one it has and does
-  # nothing, silently. --allow-downgrades is for the other direction, which is
-  # somebody going back to a release from a checkout that ran ahead of it.
+  # A package carries the release and the commit it was built from, so two
+  # builds are two versions and apt can order them. --reinstall is for putting
+  # the same build in place again, which is what a rebuild of one commit is,
+  # and --allow-downgrades is for going back to a release from a checkout that
+  # ran ahead of it.
   sudo apt-get install -y -qq --reinstall --allow-downgrades "$ADMIN_PACKAGE" \
     || abort "Could not install ${ADMIN_PACKAGE}."
 
@@ -759,8 +759,7 @@ main() {
     # ran it. The name rather than the address, because a Pi answers to
     # <hostname>.local on the network it is on and its address may not last.
     info "The admin tool is at http://$(hostname).local:8810"
-    skip "Its token, which the browser asks for once:"
-    skip "  sudo cat /var/lib/previously/token"
+    skip "Open it and choose a password. Nothing to read here, and nothing to copy."
     skip ""
   fi
   skip "Log in at the Pi's own keyboard to check it before rebooting."
