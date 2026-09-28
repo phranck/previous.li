@@ -26,7 +26,7 @@ SIMPLE_ICONS_VERSION = "13.15.0"
 # Which glyphs the page uses and what each one stands for, so a later reader
 # does not have to open the page to find out whether one is still needed.
 PHOSPHOR = {
-    "cube": "the wordmark, which is a NeXTcube",
+    "info": "the section that says what this is, and its entry in the bar",
     "copy": "copies the install line",
     "check": "says the line has been copied",
     "monitor": "the screen, which shows NeXTSTEP and nothing else",
