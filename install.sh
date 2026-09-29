@@ -95,10 +95,27 @@ readonly PICTURES_DIR="${DOCUMENTS_DIR}/Documents/Pictures"
 # sessions, which are the way back into a machine whose screen is taken.
 readonly PROFILE="${HOME}/.profile"
 
+# The admin tool's own runtime directory, which its unit makes on a tmpfs.
+readonly RUNTIME_DIR="/run/previously"
+
 # The admin tool holds the emulator down by creating this file, and the
 # console's autostart below waits on it. On a tmpfs, so a board that has just
 # started runs its emulator whoever switched it off before the last shutdown.
-readonly HOLD_FILE="/run/previously/hold"
+readonly HOLD_FILE="${RUNTIME_DIR}/hold"
+
+# Where the console writes down an emulator that ended badly, one line each,
+# which the Raspberry Pi window reads. On the same tmpfs, so the file is gone
+# at every boot and what is in it is what happened since this board came up.
+#
+# Core dumps are the other answer to the same question, and this installer
+# writes none and turns none on. Debian sets the soft core limit to 0 for every
+# user in /etc/security/limits.d/10-coredump-debian.conf, so nothing is written
+# unless a program raises its own limit. That is the right default here: a
+# machine that boots into an emulator and is looked after through a browser has
+# nobody to read a 37 MB dump, and nine of them once sat in this home for two
+# days without anybody opening one. What a person wants is to know that it
+# crashed, which is the line below.
+readonly CRASHES_FILE="${RUNTIME_DIR}/crashes"
 
 # What login looks for before printing the message of the day.
 readonly HUSHLOGIN="${HOME}/.hushlogin"
@@ -636,12 +653,23 @@ ${AUTOSTART_MARKER}
 # The directory it runs in is where it writes a screen grab, and the admin tool
 # reads those and removes them. Its own rather than the home directory, so the
 # tool needs write access to that one directory and to nothing else of yours.
+#
+# An emulator that ends badly says so in one line, which the Raspberry Pi window
+# reads. It goes in the runtime directory because that is a tmpfs: the file is
+# gone at every boot, so whatever is in it happened since this board came up and
+# nothing has to work out when. The exit runs the session down exactly as exec
+# did, so the console never falls through to a prompt.
 if [ "\$XDG_VTNR" = 1 ] && [ -z "\$WAYLAND_DISPLAY" ]; then
   clear
   while [ -f ${HOLD_FILE} ]; do sleep 2; done
   mkdir -p ${WORK_DIR}
   cd ${WORK_DIR}
-  exec cage -- /usr/bin/previous
+  cage -- /usr/bin/previous
+  status=\$?
+  if [ "\$status" -ne 0 ] && [ -d ${RUNTIME_DIR} ]; then
+    printf "%s %s\\n" "\$(date +%s)" "\$status" >> ${CRASHES_FILE}
+  fi
+  exit "\$status"
 fi
 ${AUTOSTART_END}
 EOF
