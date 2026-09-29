@@ -1,36 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  The source of site/shots/og.png, which is what a link to previous.li unfolds
-  into on a social network or in a chat window.
-
-  Edit this, then render it at 1200 by 630, which is the size those services
-  crop to:
-
-      cd site && rsvg-convert -w 1200 og-image.svg -o shots/og.png
-
-  og.html beside it holds the same thing at that size in a browser, for looking
-  at rather than for rendering.
-
-  The picture at the top is hero.svg, which site/hero.py draws and index.html
-  shows as the page's own opening. It is placed here rather than copied, so a
-  link to the page unfolds into what the page opens on and the two cannot come
-  apart. The text is set in Helvetica, which macOS carries.
+  Written by site/og-image.py. Change that and run it again.
 -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
      width="1200" height="630" viewBox="0 0 1200 630">
 
   <defs>
-    <!-- The workspace colour NeXTSTEP drew behind its windows, sinking towards
-         the bottom edge. -->
     <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#555577"/>
       <stop offset="1" stop-color="#3f3f5a"/>
     </linearGradient>
 
-    <!-- Both lines of type lift off the ground the same way: a tight shadow
-         that sets the letters off it and a wide one that gives them somewhere
-         to sit. The colour is a deeper version of the ground rather than
-         black. The picture above them carries its own. -->
+    <!-- The name and the claim lift off the ground the same way: a tight
+         shadow that sets the letters off it and a wide one that gives them
+         somewhere to sit. The claim takes the softer of the two, because it
+         is the quieter line. The colour is a deeper version of the ground
+         rather than black, and the picture above them carries its own. -->
     <filter id="lift" x="-20%" y="-20%" width="140%" height="160%">
       <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#10101c" flood-opacity="0.55"/>
       <feDropShadow dx="0" dy="8" stdDeviation="11" flood-color="#10101c" flood-opacity="0.6"/>
@@ -46,28 +31,18 @@
 
   <!-- One machine turning into another, which is the whole of what this
        project does. The Pi is on the left because that is what somebody starts
-       with. The width is what sizes it, and what it has to clear is the name
-       below, whose capitals begin at 304. About a tenth of the picture's own
-       height stands empty under the cursor, so at 940 wide the drawing ends at
-       278 and 26 points are left between the two. -->
-  <image x="130" y="14" width="940" height="291.7" xlink:href="hero.svg"/>
+       with. -->
+  <image x="130" y="75.0259"
+         width="940" height="291.663" xlink:href="hero.svg"/>
 
-  <!-- The name, in the face NeXTSTEP set its whole interface in. -->
-  <text x="600" y="360" filter="url(#lift)"
+  <text x="600" y="413.2" filter="url(#lift)"
         font-family="Helvetica, Arial, sans-serif" font-weight="bold" font-size="78"
         letter-spacing="-2.3" fill="#ffffff" text-anchor="middle">Previously</text>
 
-  <!-- And what the name is, with the word it nearly said struck through.
-
-       Helvetica Neue rather than Helvetica for these two lines, because
-       Helvetica holds only Regular and Bold: asking it for a weight between
-       the two lands on Bold. Neue carries Medium, which is the semibold this
-       wants. -->
-  <text x="600" y="470" filter="url(#lift-soft)"
-        font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="500" font-size="48"
-        fill="#ffffff" text-anchor="middle">A Raspberry Pi that <tspan
-        font-style="italic" fill="#e8e8f2" text-decoration="line-through">boosts</tspan>… </text>
-  <text x="600" y="528" filter="url(#lift-soft)"
-        font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="500" font-size="48"
-        fill="#ffffff" text-anchor="middle">boots directly into NeXTSTEP</text>
+  <text x="600" y="495.46" filter="url(#lift-soft)"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="500" font-size="42"
+        fill="#d3d3e2" text-anchor="middle">A Raspberry Pi that <tspan font-style="italic" fill="#b0b0c6" text-decoration="line-through">boosts</tspan>… </text>
+  <text x="600" y="546.28" filter="url(#lift-soft)"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="500" font-size="42"
+        fill="#d3d3e2" text-anchor="middle">boots directly into NeXTSTEP</text>
 </svg>

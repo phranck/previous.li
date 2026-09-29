@@ -4,11 +4,13 @@
 <meta charset="utf-8">
 <title>Previously, as a link preview</title>
 <style>
-  /* The picture and nothing else, at exactly the size a social network crops
-     to, so a screenshot of this viewport is site/shots/og.png.
+  /* The link preview and nothing else, at exactly the size a social network
+     crops to, for looking at in a browser.
 
-     What it shows is og-image.svg beside it, which is the source. Edit that.
-     This page only holds it at the right size and puts it on screen. */
+     What it shows is og-image.svg beside it, which site/og-image.py draws.
+     Change that and run it again. The picture that actually goes out is
+     shots/og.png, and it is rendered from the SVG rather than taken from
+     here. og-image.py says how. */
   html, body {
     margin: 0;
     width: 1200px;
