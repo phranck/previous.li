@@ -175,17 +175,6 @@
   /* A window casts further than a card does, and the one on this page is large
      enough that the card's shadow disappears under it. */
   --shadow-window: 0 3px 8px rgb(0 0 0 / 45%), 0 28px 80px rgb(0 0 0 / 55%);
-  /* What the three marks in the opening cast: a tight shadow that sets each
-     shape off the ground, and a wide one that gives it somewhere to sit. A
-     filter rather than a box shadow, because what casts it is the ink of a
-     picture and not a box.
-
-     Black, where the link preview draws the same two shadows in #10101c. That
-     colour is a deeper version of the workspace colour the preview lies on,
-     and on this page's own ground it is barely darker than the ground itself:
-     measured at five values of 255 under the berry, which is nothing. */
-  --shadow-mark: drop-shadow(0 2px 5px rgb(0 0 0 / 60%))
-    drop-shadow(0 10px 24px rgb(0 0 0 / 70%));
 
   /* One scheme, and the browser is told so: form controls and scrollbars take
      their dark variants without anything else being asked of them. */
@@ -474,15 +463,19 @@ kbd {
 }
 
 /* One machine turning into another, which is what a link to this page already
-   unfolds into elsewhere. The width is what sizes it: at 450 the Pi comes out
-   at 120 pixels and the mark stands level with the two lines of headline under
-   it, so the page opens on the picture rather than on the sentence. */
+   unfolds into elsewhere. The width is what sizes it, and the button's label
+   is what sets the width: at 760 a drawn pixel of that label comes out at
+   three screen pixels, which is where the word stops being a texture and
+   starts being readable.
+
+   It casts no shadow from here. Everything in the picture that throws one
+   throws its own, and a shadow around the whole picture would sit under two
+   trails that fade into nothing. */
 .hero__mark {
   display: block;
-  width: 450px;
+  width: 760px;
   max-width: 100%;
   height: auto;
-  filter: var(--shadow-mark);
 }
 
 /* Both are held narrower than the page rather than the block around them, so
