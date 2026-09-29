@@ -32,6 +32,13 @@
 # Safe to run more than once: every step checks whether it has already been
 # done and skips itself rather than duplicating its effect. A step that skips
 # records nothing, so a later interrupt never removes what it found in place.
+#
+# These steps exist a second time, in admin/previously/setup.py, which is what
+# the admin tool asks when somebody installs from a browser. Two copies of one
+# thing is one too many, and this is the copy that goes: the browser cannot be
+# the way in on a machine that has no admin tool yet, so this script stays
+# until the other one has set a real machine up, and then becomes the few lines
+# that install the package and ask for the rest.
 
 set -euo pipefail
 
