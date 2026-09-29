@@ -281,7 +281,8 @@
           <div class="step__body">
             <h3>Open the admin</h3>
             <p class="step__text">It answers at <code>http://&lt;your-pi&gt;.local:8810</code>
-              and asks once for a token, which the script tells you how to read.</p>
+              and asks you to choose a password the first time you open it. There is
+              nothing to read off the Pi and nothing to copy.</p>
           </div>
         </li>
       </ol>
@@ -304,9 +305,10 @@
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg#shield-check"></use></svg>
           </div>
           <h3>Read it first</h3>
-          <p class="card__text">The script reads no file beside itself, so the one file on
-            GitHub is all of it. Nothing runs until the last line calls <code>main</code>,
-            which means a download cut short runs nothing at all.</p>
+          <p class="card__text">The line fetches the installer from the repository it
+            belongs to and runs it, so what you read there is what runs. That file reads
+            nothing beside itself, and nothing in it happens until its last line calls
+            <code>main</code>, which means a download cut short runs nothing at all.</p>
         </article>
 
         <article class="card">
