@@ -3,7 +3,8 @@
   Written by site/hero.py. Change that and run it again.
 -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-     width="1234.37" height="383" viewBox="0 0 1234.37 383">
+     width="1234.37" height="383" viewBox="0 0 1234.37 383"
+     data-ink-height="347">
 
   <defs>
     <!-- The shadow the button throws: offset, dark, barely spread, as the

@@ -288,13 +288,21 @@ def main():
     # The picture is exactly as large as what stands in it, counting each trail
     # to where it has faded out and each shadow to where it has. Everything
     # then moves so the topmost and leftmost of them begin at nothing.
+    #
+    # data-ink-height goes on the root with the size, because the cursor's
+    # shadow leaves a band at the bottom that is part of the picture and not
+    # part of the drawing. Anything placing this file has to know where the
+    # drawing ends, and og-image.py reads it from there rather than measuring
+    # a picture it does not draw.
     left = berry["x"] - berry_reach * berry_scale
     top = min(berry["y"], cube["y"])
     width = cube["x"] + cube_trail_w - left
-    height = max(berry["y"] + berry["height"],
-                 cube["y"] + cube["height"],
-                 button["y"] + button["h"] + reach_of(BUTTON_SHADOW),
-                 cursor["y"] + len(CURSOR) * CURSOR_UNIT + reach_of(CURSOR_SHADOW)) - top
+    drawn = [(berry["y"] + berry["height"], 0),
+             (cube["y"] + cube["height"], 0),
+             (button["y"] + button["h"], reach_of(BUTTON_SHADOW)),
+             (cursor["y"] + len(CURSOR) * CURSOR_UNIT, reach_of(CURSOR_SHADOW))]
+    height = max(bottom + shadow for bottom, shadow in drawn) - top
+    ink = max(bottom for bottom, _ in drawn) - top
     for thing in (berry, cube, button, cursor):
         thing["x"] -= left
         thing["y"] -= top
@@ -310,7 +318,8 @@ def main():
   Written by site/hero.py. Change that and run it again.
 -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-     width="{width:g}" height="{height:g}" viewBox="0 0 {width:g} {height:g}">
+     width="{width:g}" height="{height:g}" viewBox="0 0 {width:g} {height:g}"
+     data-ink-height="{ink:g}">
 
   <defs>
     <!-- The shadow the button throws: offset, dark, barely spread, as the
