@@ -21,7 +21,7 @@
 <meta property="og:image" content="https://previous.li/site/shots/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Raspberry Pi logo, an arrow trailing streaks behind it, and the NeXT cube, over the name Previously and the line about a Raspberry Pi that boots directly into NeXTSTEP.">
+<meta property="og:image:alt" content="The Raspberry Pi logo and the NeXT cube rushing at each other, each trailing a smear, with a pressed Merge button and the cursor that pressed it between them, over the name Previously and the line about a Raspberry Pi that boots directly into NeXTSTEP.">
 <meta property="og:locale" content="en_GB">
 
 <meta name="twitter:card" content="summary_large_image">
@@ -86,48 +86,13 @@
   <section class="hero">
     <div class="measure hero__grid">
       <div class="hero__copy">
-        <!-- One machine turning into another, at the coordinates
-             site/og-image.svg draws it at, so the page opens on the picture a
-             link to it unfolds into. That file embeds the two logos because it
-             has to stand on its own; here they are the files themselves. The
-             arrow below and the shadow site.css casts on all three are drawn in
-             that file too, so a change to either belongs in both. -->
-        <svg class="hero__mark" viewBox="353 76 494 148" aria-hidden="true">
-          <defs>
-            <!-- What every trailing streak fades along: solid where it leaves
-                 the shape, gone by the time it reaches the back. -->
-            <linearGradient id="wake" x1="0" x2="1">
-              <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
-              <stop offset="0.55" stop-color="#ffffff" stop-opacity="0.12"/>
-              <stop offset="1" stop-color="#ffffff" stop-opacity="0.4"/>
-            </linearGradient>
-
-            <!-- Four thin slits of ground running across the arrow. White is
-                 kept and black is cut away. -->
-            <mask id="slits">
-              <rect width="210" height="140" fill="white"/>
-              <rect x="-10" y="32.4" width="230" height="5" fill="black"/>
-              <rect x="-10" y="55.8" width="230" height="5" fill="black"/>
-              <rect x="-10" y="79.2" width="230" height="5" fill="black"/>
-              <rect x="-10" y="102.6" width="230" height="5" fill="black"/>
-            </mask>
-          </defs>
-
-          <image x="353" y="84" width="132" height="132" href="site/raspberry-pi.png"/>
-
-          <!-- An arrow caught mid flight, drawn rather than blurred, and
-               leaning at the angle this face's italic leans. -->
-          <g transform="translate(517 100) scale(0.714286) skewX(-12)">
-            <g fill="#ffffff" mask="url(#slits)">
-              <rect x="0" y="48" width="66" height="44" fill="url(#wake)"/>
-              <rect x="62" y="14" width="72" height="8" fill="url(#wake)"/>
-              <rect x="62" y="118" width="72" height="8" fill="url(#wake)"/>
-              <path d="M66 48 H134 V14 L206 70 L134 126 V92 H66 Z"/>
-            </g>
-          </g>
-
-          <image x="699" y="76" width="148" height="148" href="site/next-cube.png"/>
-        </svg>
+        <!-- One machine turning into another, after the page Apple and NeXT
+             put up in December 1996 to announce the purchase. site/hero.py
+             draws it and site/og-image.svg places the same file above the
+             name, so a link to this page unfolds into what the page opens on.
+             It carries everything it draws inside itself, which is what lets
+             an img show it at all. -->
+        <img class="hero__mark" src="site/hero.svg" width="1234" height="383" alt="The Raspberry Pi logo and the NeXT cube rushing at each other, each trailing a smear, with a pressed Merge button and the cursor that pressed it between them.">
 
         <h1>A Raspberry Pi that <s class="hero__struck">boosts</s>… boots directly
           into NeXTSTEP</h1>
