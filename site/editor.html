@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pixel editor</title>
+<!-- A workbench rather than a page. It ships with the site because it is what
+     draws the site's own pixel art, and it stays out of the index because
+     nobody searching for this project is looking for it. -->
+<meta name="robots" content="noindex">
+<style>
+  /* A tool rather than a page, so it says what it is and gets out of the way.
+     The one thing it owes the work is an honest ground: the picture being drawn
+     will sit on the site's own colour, and a swatch judged on white is judged
+     against something it will never be seen on. */
+  :root {
+    --page: #1b1b23;
+    --ink: #f2f2f6;
+    --ink-soft: #a6a6b4;
+    --rule: #2c2c38;
+    --accent: #8f8fc4;
+    --step: 8px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: calc(var(--step) * 3);
+    background: var(--page);
+    color: var(--ink);
+    font: 15px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--step) * 2);
+    min-height: 100vh;
+  }
+
+  h1 { margin: 0; font-size: 21px; font-weight: 650; }
+  p { margin: 0; color: var(--ink-soft); max-width: 70ch; }
+
+  .row { display: flex; align-items: center; gap: var(--step); flex-wrap: wrap; }
+  .row > label { display: flex; align-items: center; gap: 6px; color: var(--ink-soft); }
+
+  input[type="number"], input[type="text"] {
+    width: 5.5em;
+    padding: 4px 6px;
+    background: #12121a;
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    font: inherit;
+  }
+  input[type="color"] {
+    width: 34px; height: 30px; padding: 0;
+    background: none; border: 1px solid var(--rule); border-radius: 6px;
+  }
+
+  button {
+    padding: 5px 12px;
+    background: var(--accent);
+    color: #12121a;
+    border: 0;
+    border-radius: 8px;
+    font: 600 14px/1 inherit;
+    cursor: pointer;
+  }
+  button.quiet { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
+  button:active { transform: translateY(1px); }
+
+  /* The palette. The chosen swatch is named by a ring rather than by a shade,
+     because several of the colours are themselves shades. */
+  .palette { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .swatch {
+    width: 30px; height: 30px; padding: 0;
+    border: 1px solid var(--rule); border-radius: 6px;
+    cursor: pointer; position: relative;
+    background-size: 10px 10px;
+  }
+  .swatch[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .swatch.clear {
+    background-image:
+      linear-gradient(45deg, #444 25%, transparent 25%, transparent 75%, #444 75%),
+      linear-gradient(45deg, #444 25%, transparent 25%, transparent 75%, #444 75%);
+    background-position: 0 0, 5px 5px;
+    background-color: #222;
+  }
+
+  .stage { display: flex; gap: calc(var(--step) * 3); align-items: flex-start; flex-wrap: wrap; }
+
+  /* The canvas itself. The checkerboard shows through wherever a cell is
+     empty, so transparent never looks like a colour. */
+  #grid {
+    display: grid;
+    background-image:
+      linear-gradient(45deg, #3a3a46 25%, transparent 25%, transparent 75%, #3a3a46 75%),
+      linear-gradient(45deg, #3a3a46 25%, transparent 25%, transparent 75%, #3a3a46 75%);
+    background-color: #2b2b35;
+    border: 1px solid var(--rule);
+    touch-action: none;
+    user-select: none;
+  }
+  #grid div { width: 100%; height: 100%; }
+  #grid.lines div { box-shadow: inset 0 0 0 1px rgb(255 255 255 / 7%); }
+
+  /* What the lasso has caught. The tint says which cells are held and the
+     lines say where the edge of the catch runs, which a tint alone cannot: a
+     hole inside a selection looks the same as the ground around it. */
+  #grid div.caught { box-shadow: inset 0 0 0 999px rgb(143 143 196 / 32%); }
+  #grid.lines div.caught { box-shadow: inset 0 0 0 999px rgb(143 143 196 / 32%); }
+  #grid div.edge-t { border-top: 2px solid var(--accent); }
+  #grid div.edge-b { border-bottom: 2px solid var(--accent); }
+  #grid div.edge-l { border-left: 2px solid var(--accent); }
+  #grid div.edge-r { border-right: 2px solid var(--accent); }
+
+  .preview { display: flex; flex-direction: column; gap: var(--step); }
+  .preview canvas { image-rendering: pixelated; border: 1px solid var(--rule); }
+
+  textarea {
+    width: 100%; min-height: 220px;
+    padding: var(--step);
+    background: #12121a; color: var(--ink);
+    border: 1px solid var(--rule); border-radius: 8px;
+    font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+    white-space: pre;
+  }
+</style>
+</head>
+<body>
+
+<h1>Pixel editor</h1>
+<p>Draw with the left button and rub out with the right one, or pick the empty swatch. Drag to keep drawing. The export below is the format the build script reads, so it can be pasted back here or into the script.</p>
+<p>The lasso works the way the Finder's rubber band does: press on the ground and drag, and everything the rectangle covers is caught. Then drag inside the catch to carry it, or nudge it a cell at a time with the arrow keys. Escape lets it go.</p>
+
+<div class="row">
+  <button class="quiet" id="toolDraw" aria-pressed="true">Pencil</button>
+  <button class="quiet" id="toolLasso" aria-pressed="false">Lasso</button>
+</div>
+
+<div class="row">
+  <label>Wide <input type="number" id="wide" min="1" max="200" value="18"></label>
+  <label>High <input type="number" id="high" min="1" max="200" value="20"></label>
+  <label>Cell <input type="number" id="cell" min="3" max="60" value="22"></label>
+  <label><input type="checkbox" id="lines" checked> Grid lines</label>
+  <label>Behind <input type="color" id="behind" value="#262935"></label>
+  <button class="quiet" id="undo" title="Command or Control with Z">Undo</button>
+  <button class="quiet" id="redo" title="Command or Control with Shift and Z">Redo</button>
+  <button class="quiet" id="clear">Empty it</button>
+  <button class="quiet" id="seed">Load the cursor</button>
+  <button class="quiet" id="seedButton">Load the button</button>
+</div>
+
+<div class="row palette" id="palette"></div>
+<div class="row">
+  <label>Add a colour <input type="color" id="pick" value="#dedc6b"></label>
+  <button class="quiet" id="add">Add</button>
+</div>
+
+<div class="stage">
+  <div id="grid"></div>
+  <div class="preview">
+    <span style="color: var(--ink-soft)">At its own size, and at four times</span>
+    <canvas id="one"></canvas>
+    <canvas id="four"></canvas>
+  </div>
+</div>
+
+<div class="row">
+  <button id="export">Export</button>
+  <button class="quiet" id="copy">Copy</button>
+  <button class="quiet" id="import">Read what is below</button>
+</div>
+
+<textarea id="text" spellcheck="false"></textarea>
+
+<script>
+/* The picture is a grid of characters. One character per colour, a full stop
+   for nothing, which is what the build script already reads and what survives
+   being pasted into a message. */
+
+const EMPTY = ".";
+
+/** The colours on offer, and the character each one exports as. Every one of
+ *  them is measured off the 1996 original rather than chosen. The cursor uses
+ *  black and white; the rest belong to the button. */
+const palette = [
+  { key: EMPTY, colour: null, name: "nothing" },
+  { key: "#", colour: "#000000", name: "black" },
+  { key: "O", colour: "#ffffff", name: "white" },
+  { key: "F", colour: "#454c56", name: "button face" },
+  { key: "L", colour: "#dedc6b", name: "label" },
+  { key: "D", colour: "#14171d", name: "dark edge" },
+  { key: "H", colour: "#6d7482", name: "light edge" },
+  { key: "B", colour: "#aaaaaa", name: "lit corner" },
+];
+
+/* Both drawings are what the merge hero is built from, so the editor opens on
+   the thing it last produced rather than on an empty grid. */
+
+const SEED_CURSOR = [
+  "............",
+  ".OO.........",
+  ".O#O........",
+  ".O##O.......",
+  ".O###O......",
+  ".O####O.....",
+  ".O#####O....",
+  ".O######O...",
+  ".O#######O..",
+  ".O########O.",
+  ".O#####OOOO.",
+  ".O##O##O....",
+  ".O#O.O##O...",
+  ".OO..O##O...",
+  "......O##O..",
+  "......O##O..",
+  ".......OO...",
+  "............",
+];
+
+const SEED_BUTTON = [
+  "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDF",
+  "DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFH",
+  "DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFH",
+  "DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFH",
+  "DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFH",
+  "DFFFFLFFFFFFFLFFFFFFFFFFFFFFFFFFFFFFFFFFH",
+  "DFFFFLLFFFFFLLFFFFFFFFFFFFFFFFFFFFFFFFFFH",
+  "DFFFFLLFFFFFLLFFLLLFFLFLFFLLFLFFLLLFFFFFH",
+  "DFFFFLFLFFFLFLFLFFFLFLLFFLFFLLFLFFFLFFFFH",
+  "DFFFFLFLFFFLFLFLFFFLFLFFFLFFFLFLFFFLFFFFH",
+  "DFFFFLFFLFLFFLFLLLLLFLFFFLFFFLFLLLLLFFFFH",
+  "DFFFFLFFLFLFFLFLFFFFFLFFFLFFFLFLFFFFFFFFH",
+  "DFFFFLFFFLFFFLFLFFFLFLFFFLFFLLFLFFFLFFFFH",
+  "DFFFFLFFFLFFFLFFLLLFFLFFFFLLFLFFLLLFFFFFH",
+  "DFFFFFFFFFFFFFFFFFFFFFFFFFFFFLFFFFFFFFFFH",
+  "DFFFFFFFFFFFFFFFFFFFFFFFFLFFFLFFFFFFFFFFH",
+  "DFFFFFFFFFFFFFFFFFFFFFFFFFLLLFFFFFFFFFFFH",
+  "DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFH",
+  "DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFH",
+  "FHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHB",
+];
+
+const grid = document.getElementById("grid");
+const text = document.getElementById("text");
+let wide = 18;
+let high = 20;
+let cells = [];
+let chosen = "#";
+let drawing = 0;
+
+/* What has been drawn, so a stroke can be taken back. A snapshot carries its
+   own size, because resizing is one of the things worth undoing. */
+const past = [];
+const ahead = [];
+const REMEMBERED = 200;
+
+function snapshot() {
+  return { wide, high, cells: cells.map((row) => [...row]) };
+}
+
+/** Called before anything that changes the picture, never after. */
+function remember() {
+  past.push(snapshot());
+  if (past.length > REMEMBERED) past.shift();
+  ahead.length = 0;
+}
+
+function restore(state) {
+  wide = state.wide;
+  high = state.high;
+  cells = state.cells.map((row) => [...row]);
+  document.getElementById("wide").value = wide;
+  document.getElementById("high").value = high;
+  layout();
+}
+
+function undo() {
+  if (!past.length) return;
+  ahead.push(snapshot());
+  restore(past.pop());
+}
+
+function redo() {
+  if (!ahead.length) return;
+  past.push(snapshot());
+  restore(ahead.pop());
+}
+
+/** Looks a character up in the palette. */
+function colourOf(key) {
+  const found = palette.find((entry) => entry.key === key);
+  return found ? found.colour : null;
+}
+
+/** Draws the palette, and marks which colour the next stroke uses. */
+function drawPalette() {
+  const bar = document.getElementById("palette");
+  bar.replaceChildren(...palette.map((entry) => {
+    const swatch = document.createElement("button");
+    swatch.className = "swatch" + (entry.colour ? "" : " clear");
+    swatch.title = `${entry.name} (${entry.key})`;
+    swatch.setAttribute("aria-pressed", String(entry.key === chosen));
+    if (entry.colour) swatch.style.background = entry.colour;
+    swatch.addEventListener("click", () => { chosen = entry.key; drawPalette(); });
+    return swatch;
+  }));
+}
+
+/** Lays out the grid at the current size, keeping whatever is already drawn. */
+function layout(keep = true) {
+  const before = keep ? cells : [];
+  const size = Number(document.getElementById("cell").value);
+  grid.style.gridTemplateColumns = `repeat(${wide}, ${size}px)`;
+  grid.style.gridAutoRows = `${size}px`;
+  grid.style.backgroundSize = `${size}px ${size}px`;
+  grid.style.backgroundPosition = `0 0, ${size / 2}px ${size / 2}px`;
+
+  cells = [];
+  const boxes = [];
+  for (let y = 0; y < high; y += 1) {
+    const row = [];
+    for (let x = 0; x < wide; x += 1) {
+      const was = before[y] && before[y][x] ? before[y][x] : EMPTY;
+      row.push(was);
+      const box = document.createElement("div");
+      box.dataset.x = x;
+      box.dataset.y = y;
+      boxes.push(box);
+    }
+    cells.push(row);
+  }
+  grid.replaceChildren(...boxes);
+  paint();
+  // The cells are new elements, so whatever the lasso holds is marked again.
+  if (typeof caught !== "undefined") showCatch();
+}
+
+/** Puts every cell's colour on screen, and redraws the two previews. */
+function paint() {
+  [...grid.children].forEach((box) => {
+    const key = cells[box.dataset.y][box.dataset.x];
+    const colour = colourOf(key);
+    box.style.background = colour || "transparent";
+  });
+  preview();
+}
+
+function preview() {
+  const behind = document.getElementById("behind").value;
+  for (const [id, scale] of [["one", 1], ["four", 4]]) {
+    const canvas = document.getElementById(id);
+    canvas.width = wide * scale;
+    canvas.height = high * scale;
+    const pen = canvas.getContext("2d");
+    pen.imageSmoothingEnabled = false;
+    pen.fillStyle = behind;
+    pen.fillRect(0, 0, canvas.width, canvas.height);
+    for (let y = 0; y < high; y += 1) {
+      for (let x = 0; x < wide; x += 1) {
+        const colour = colourOf(cells[y][x]);
+        if (!colour) continue;
+        pen.fillStyle = colour;
+        pen.fillRect(x * scale, y * scale, scale, scale);
+      }
+    }
+  }
+}
+
+/** One stroke. The right button always rubs out, whatever is chosen. */
+function stroke(box, button) {
+  if (!box || !box.dataset.x) return;
+  cells[box.dataset.y][box.dataset.x] = button === 2 ? EMPTY : chosen;
+  box.style.background = colourOf(cells[box.dataset.y][box.dataset.x]) || "transparent";
+  preview();
+}
+
+/* The lasso, which works the way the Finder's rubber band does: press on the
+   ground, drag, and everything the rectangle covers is caught. */
+
+let tool = "draw";
+let caught = new Set();
+let band = null;
+let carrying = null;
+let lastDrawn = null;
+
+const at = (x, y) => `${x},${y}`;
+
+/** Every cell on the way from one to the other.
+ *
+ *  A pointer reports where it is, not every cell it crossed, so a quick drag
+ *  arrives several cells on. Without this a stroke comes out dotted and a
+ *  lasso ring comes out with holes the flood pours through. */
+function line([x0, y0], [x1, y1]) {
+  const dx = Math.abs(x1 - x0);
+  const dy = Math.abs(y1 - y0);
+  const stepX = x0 < x1 ? 1 : -1;
+  const stepY = y0 < y1 ? 1 : -1;
+  let error = dx - dy;
+  let x = x0;
+  let y = y0;
+  const path = [];
+  for (;;) {
+    path.push([x, y]);
+    if (x === x1 && y === y1) return path;
+    const doubled = error * 2;
+    if (doubled > -dy) { error -= dy; x += stepX; }
+    if (doubled < dx) { error += dx; y += stepY; }
+  }
+}
+
+function cellUnder(node) {
+  return node && node.dataset && node.dataset.x !== undefined
+    ? [Number(node.dataset.x), Number(node.dataset.y)] : null;
+}
+
+/** Which cell a point falls in, worked out from the grid's own geometry.
+ *
+ *  Hit testing cannot answer this: it returns nothing once the pointer leaves
+ *  the window, so a drag that runs off the edge stops recording without
+ *  saying so, and half a lasso ring is a lasso that catches nothing. */
+function cellFromPoint(clientX, clientY) {
+  const box = grid.getBoundingClientRect();
+  const size = Number(document.getElementById("cell").value);
+  const x = Math.floor((clientX - box.left - 1) / size);
+  const y = Math.floor((clientY - box.top - 1) / size);
+  return x >= 0 && y >= 0 && x < wide && y < high ? [x, y] : null;
+}
+
+/** Every cell the rubber band covers, from where it was pressed to where the
+ *  pointer is now, whichever way round those two are. */
+function underBand({ from, to }) {
+  const held = new Set();
+  for (let y = Math.min(from[1], to[1]); y <= Math.max(from[1], to[1]); y += 1) {
+    for (let x = Math.min(from[0], to[0]); x <= Math.max(from[0], to[0]); x += 1) {
+      held.add(at(x, y));
+    }
+  }
+  return held;
+}
+
+/** Marks which cells are held and where the edge of the catch runs. */
+function showCatch() {
+  [...grid.children].forEach((box) => {
+    const x = Number(box.dataset.x);
+    const y = Number(box.dataset.y);
+    const held = caught.has(at(x, y));
+    box.classList.toggle("caught", held);
+    box.classList.toggle("edge-t", held && !caught.has(at(x, y - 1)));
+    box.classList.toggle("edge-b", held && !caught.has(at(x, y + 1)));
+    box.classList.toggle("edge-l", held && !caught.has(at(x - 1, y)));
+    box.classList.toggle("edge-r", held && !caught.has(at(x + 1, y)));
+  });
+}
+
+function letGo() {
+  caught = new Set();
+  carrying = null;
+  band = null;
+  showCatch();
+}
+
+/** Lifts the catch off the picture so it can be put down somewhere else. */
+function lift() {
+  const held = [];
+  for (const key of caught) {
+    const [x, y] = key.split(",").map(Number);
+    held.push([x, y, cells[y][x]]);
+    cells[y][x] = EMPTY;
+  }
+  return held;
+}
+
+function putDown(held, dx, dy) {
+  const landed = new Set();
+  for (const [x, y, key] of held) {
+    const nx = x + dx;
+    const ny = y + dy;
+    if (nx < 0 || ny < 0 || nx >= wide || ny >= high) continue;
+    cells[ny][nx] = key;
+    landed.add(at(nx, ny));
+  }
+  return landed;
+}
+
+/** Moves the catch by whole cells, picture and outline together. */
+function carry(dx, dy) {
+  if (!caught.size) return;
+  const held = lift();
+  caught = putDown(held, dx, dy);
+  paint();
+  showCatch();
+}
+
+grid.addEventListener("contextmenu", (event) => event.preventDefault());
+
+grid.addEventListener("pointerdown", (event) => {
+  try { grid.setPointerCapture(event.pointerId); } catch { /* still works */ }
+  const cell = cellUnder(event.target);
+
+  if (tool === "lasso") {
+    if (cell && caught.has(at(cell[0], cell[1]))) {
+      // A press inside the catch carries it rather than starting a new one.
+      remember();
+      carrying = { from: cell, held: lift(), was: new Set(caught) };
+      caught = putDown(carrying.held, 0, 0);
+      paint();
+      showCatch();
+      return;
+    }
+    letGo();
+    if (cell) {
+      band = { from: cell, to: cell };
+      caught = underBand(band);
+      showCatch();
+    }
+    return;
+  }
+
+  // One stroke is one thing to take back, so the picture is kept here and not
+  // on every cell the pointer passes over.
+  remember();
+  drawing = event.button === 2 ? 2 : 1;
+  lastDrawn = cell;
+  stroke(event.target, event.button);
+});
+
+grid.addEventListener("pointermove", (event) => {
+  const here = cellFromPoint(event.clientX, event.clientY);
+
+  if (carrying) {
+    const cell = here;
+    if (!cell) return;
+    const dx = cell[0] - carrying.from[0];
+    const dy = cell[1] - carrying.from[1];
+    for (const key of caught) {
+      const [x, y] = key.split(",").map(Number);
+      cells[y][x] = EMPTY;
+    }
+    caught = putDown(carrying.held, dx, dy);
+    paint();
+    showCatch();
+    return;
+  }
+
+  if (band) {
+    // The far corner is clamped to the grid, so a drag that runs past the edge
+    // still stretches the band to it rather than stopping.
+    const corner = here || [
+      Math.min(Math.max(Math.floor((event.clientX - grid.getBoundingClientRect().left - 1)
+        / Number(document.getElementById("cell").value)), 0), wide - 1),
+      Math.min(Math.max(Math.floor((event.clientY - grid.getBoundingClientRect().top - 1)
+        / Number(document.getElementById("cell").value)), 0), high - 1),
+    ];
+    if (corner[0] === band.to[0] && corner[1] === band.to[1]) return;
+    band.to = corner;
+    caught = underBand(band);
+    showCatch();
+    return;
+  }
+
+  if (!drawing || !here) return;
+  if (lastDrawn) {
+    for (const [x, y] of line(lastDrawn, here).slice(1)) {
+      stroke(grid.children[y * wide + x], drawing === 2 ? 2 : 0);
+    }
+  } else {
+    stroke(grid.children[here[1] * wide + here[0]], drawing === 2 ? 2 : 0);
+  }
+  lastDrawn = here;
+});
+
+addEventListener("pointerup", () => {
+  // A band that never left its first cell is a click on the ground, which
+  // catches nothing rather than one stray cell.
+  if (band && band.from[0] === band.to[0] && band.from[1] === band.to[1]) letGo();
+  band = null;
+  carrying = null;
+  drawing = 0;
+  lastDrawn = null;
+});
+
+function chooseTool(which) {
+  tool = which;
+  document.getElementById("toolDraw").setAttribute("aria-pressed", String(which === "draw"));
+  document.getElementById("toolLasso").setAttribute("aria-pressed", String(which === "lasso"));
+  grid.style.cursor = which === "lasso" ? "crosshair" : "default";
+  if (which !== "lasso") letGo();
+}
+
+document.getElementById("toolDraw").addEventListener("click", () => chooseTool("draw"));
+document.getElementById("toolLasso").addEventListener("click", () => chooseTool("lasso"));
+
+document.getElementById("wide").addEventListener("change", (event) => {
+  remember(); wide = Number(event.target.value); layout();
+});
+document.getElementById("high").addEventListener("change", (event) => {
+  remember(); high = Number(event.target.value); layout();
+});
+document.getElementById("cell").addEventListener("change", () => layout());
+document.getElementById("lines").addEventListener("change", (event) => {
+  grid.classList.toggle("lines", event.target.checked);
+});
+document.getElementById("behind").addEventListener("input", preview);
+
+document.getElementById("clear").addEventListener("click", () => {
+  remember();
+  cells = cells.map((row) => row.map(() => EMPTY));
+  paint();
+});
+
+/** Puts one of the two drawings on the grid at its own size. */
+function load(drawing) {
+  remember();
+  wide = Math.max(...drawing.map((row) => row.length));
+  high = drawing.length;
+  document.getElementById("wide").value = wide;
+  document.getElementById("high").value = high;
+  cells = drawing.map((row) => [...row]);
+  layout();
+}
+
+document.getElementById("seed").addEventListener("click", () => load(SEED_CURSOR));
+document.getElementById("seedButton").addEventListener("click", () => load(SEED_BUTTON));
+document.getElementById("undo").addEventListener("click", undo);
+document.getElementById("redo").addEventListener("click", redo);
+
+const NUDGE = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+
+addEventListener("keydown", (event) => {
+  if (event.target.tagName === "TEXTAREA" || event.target.tagName === "INPUT") return;
+
+  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
+    event.preventDefault();
+    if (event.shiftKey) redo(); else undo();
+    return;
+  }
+
+  if (event.key === "Escape") { letGo(); return; }
+
+  if (caught.size && NUDGE[event.key]) {
+    event.preventDefault();
+    remember();
+    carry(...NUDGE[event.key]);
+  }
+});
+
+document.getElementById("add").addEventListener("click", () => {
+  const colour = document.getElementById("pick").value;
+  if (palette.some((entry) => entry.colour === colour)) return;
+  // A character that is not already taken and survives being pasted.
+  const spare = "ABCEGIJKMNPQRSTUVWXYZ".split("")
+    .find((letter) => !palette.some((entry) => entry.key === letter));
+  palette.push({ key: spare, colour, name: colour });
+  chosen = spare;
+  drawPalette();
+});
+
+/** The export: the size, what each character means, then the picture. */
+function exported() {
+  const used = new Set(cells.flat());
+  const legend = palette
+    .filter((entry) => entry.colour && used.has(entry.key))
+    .map((entry) => `${entry.key} ${entry.colour}`);
+  return [`${wide}x${high}`, ...legend, "--", ...cells.map((row) => row.join(""))].join("\n");
+}
+
+document.getElementById("export").addEventListener("click", () => {
+  text.value = exported();
+});
+
+document.getElementById("copy").addEventListener("click", async () => {
+  text.value = exported();
+  try {
+    await navigator.clipboard.writeText(text.value);
+  } catch {
+    text.select();
+  }
+});
+
+document.getElementById("import").addEventListener("click", () => {
+  const lines = text.value.split("\n").map((line) => line.replace(/\s+$/, ""));
+  const split = lines.indexOf("--");
+  if (split < 0) return;
+  for (const line of lines.slice(1, split)) {
+    const [key, colour] = line.trim().split(/\s+/);
+    if (!key || !colour) continue;
+    const found = palette.find((entry) => entry.key === key);
+    if (found) found.colour = colour;
+    else palette.push({ key, colour, name: colour });
+  }
+  const picture = lines.slice(split + 1).filter((line) => line.length);
+  remember();
+  high = picture.length;
+  wide = Math.max(...picture.map((line) => line.length));
+  document.getElementById("wide").value = wide;
+  document.getElementById("high").value = high;
+  cells = picture.map((line) => {
+    const row = [...line];
+    while (row.length < wide) row.push(EMPTY);
+    return row;
+  });
+  drawPalette();
+  layout();
+});
+
+drawPalette();
+grid.classList.add("lines");
+document.getElementById("seed").click();
+</script>
+</body>
+</html>
