@@ -78,6 +78,10 @@
      grey, so a surface next to the accent reads as belonging to it. */
   --paper: #121218;
   --paper-sunk: #1b1b23;
+  /* Where the page starts before it sinks to --paper, which is the only place
+     it is used. It is lighter than the page and carries more of the workspace
+     colour, so the first screen has a horizon rather than an edge. */
+  --paper-raised: #262935;
   --ink: #f2f2f6;
   --ink-soft: #a6a6b4;
   --rule: #2c2c38;
@@ -171,6 +175,17 @@
   /* A window casts further than a card does, and the one on this page is large
      enough that the card's shadow disappears under it. */
   --shadow-window: 0 3px 8px rgb(0 0 0 / 45%), 0 28px 80px rgb(0 0 0 / 55%);
+  /* What the three marks in the opening cast: a tight shadow that sets each
+     shape off the ground, and a wide one that gives it somewhere to sit. A
+     filter rather than a box shadow, because what casts it is the ink of a
+     picture and not a box.
+
+     Black, where the link preview draws the same two shadows in #10101c. That
+     colour is a deeper version of the workspace colour the preview lies on,
+     and on this page's own ground it is barely darker than the ground itself:
+     measured at five values of 255 under the berry, which is nothing. */
+  --shadow-mark: drop-shadow(0 2px 5px rgb(0 0 0 / 60%))
+    drop-shadow(0 10px 24px rgb(0 0 0 / 70%));
 
   /* One scheme, and the browser is told so: form controls and scrollbars take
      their dark variants without anything else being asked of them. */
@@ -440,7 +455,7 @@ kbd {
    on the first screen and the horizon has room to sink into the page. */
 .hero {
   padding-block: var(--space-12) var(--space-16);
-  background: linear-gradient(180deg, #15151b, var(--paper));
+  background: linear-gradient(180deg, var(--paper-raised), var(--paper));
   text-align: center;
 }
 
@@ -467,6 +482,7 @@ kbd {
   width: 450px;
   max-width: 100%;
   height: auto;
+  filter: var(--shadow-mark);
 }
 
 /* Both are held narrower than the page rather than the block around them, so
