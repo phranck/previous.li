@@ -11,10 +11,11 @@
   embedded, so this file stands on its own.
 
   The page opens on the same three marks at the same coordinates, and index.html
-  draws them there out of the two picture files beside this one. The arrow is
-  the one shape written out in both places, because this file has to hold
-  everything it draws and the page has no build step to generate it from. A
-  change to the arrow belongs in both.
+  draws them there out of the two picture files beside this one. Two things are
+  written out in both places, because this file has to hold everything it draws
+  and the page has no build step to generate it from: the arrow, and the pair of
+  shadows the marks cast, which site.css states as --shadow-mark. A change to
+  either belongs in both.
 -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
      width="1200" height="630" viewBox="0 0 1200 630">
