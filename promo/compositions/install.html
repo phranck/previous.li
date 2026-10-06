@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Install: one line</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        /* Inconsolata, because the admin sets its Terminal in it as the face
+           closest to NeXT's Ohlfs. assets/fonts/OFL.txt is its license. */
+        @font-face {
+          font-family: "Inconsolata";
+          src: url("assets/fonts/Inconsolata-Regular.woff2") format("woff2");
+          font-weight: 400;
+        }
+        @font-face {
+          font-family: "Inconsolata";
+          src: url("assets/fonts/Inconsolata-Bold.woff2") format("woff2");
+          font-weight: 700;
+        }
+
+        #install {
+          position: absolute;
+          inset: 0;
+          font-family: var(--font);
+          color: var(--ink);
+        }
+
+        #install-title {
+          margin: 0 0 48px;
+          font-size: 96px;
+          font-weight: 700;
+          letter-spacing: -0.03em;
+          line-height: 1;
+        }
+
+        /* A NeXTSTEP window at twice its size, after the admin's kit: a one
+           pixel black frame, the 19 pixel bar on its gray ledge with two rows
+           of shadow under it, the window's own gray, and a sunken white text
+           view. */
+        #terminal {
+          width: 1440px;
+          border: 2px solid var(--next-black);
+          background: var(--next-light);
+          box-shadow: var(--shadow-window);
+          text-align: left;
+          opacity: 0;
+        }
+
+        #terminal .nx-bar {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          height: 42px;
+          margin: 2px 2px 0;
+          padding: 0 4px 4px;
+          background: linear-gradient(180deg, var(--next-black) 0 38px, var(--next-dark) 38px 40px, var(--next-black) 40px 42px);
+          color: var(--next-white);
+        }
+
+        /* The original window buttons, cut out of the running system. Each
+           is drawn at twice its own pixels and never smoothed. */
+        #terminal .nx-button {
+          width: 30px;
+          height: 30px;
+          image-rendering: pixelated;
+        }
+
+        #terminal .nx-title {
+          flex: 1;
+          text-align: center;
+          font-size: 24px;
+          font-weight: 700;
+        }
+
+        #terminal .nx-face {
+          padding: 16px;
+        }
+
+        #terminal .nx-text {
+          padding: 14px 20px;
+          background: var(--next-white);
+          border: 2px solid;
+          border-color: var(--next-dark) var(--next-white) var(--next-white) var(--next-dark);
+          box-shadow: inset 2px 2px 0 var(--next-black);
+          color: var(--next-black);
+          font-family: "Inconsolata", var(--mono);
+          font-size: 30px;
+          line-height: 38px;
+          white-space: pre;
+        }
+
+        #terminal .tty-row {
+          position: relative;
+          height: 38px;
+        }
+
+        #terminal .tty-out {
+          opacity: 0;
+        }
+
+        #terminal .tty-bold {
+          font-weight: 700;
+        }
+
+        #terminal .tty-dim {
+          color: var(--next-dark);
+        }
+
+        #terminal .tty-check {
+          color: var(--next-live);
+        }
+
+        #typed {
+          display: inline-block;
+          clip-path: inset(0 100% 0 0);
+        }
+
+        /* A block caret, one cell of the face wide and nearly a line tall. */
+        #caret {
+          position: absolute;
+          left: 0;
+          top: 3px;
+          width: 1ch;
+          height: 32px;
+          background: var(--next-black);
+          opacity: 0;
+        }
+      </style>
+
+      <div id="install" data-composition-id="install" data-width="1920" data-height="1080">
+        <div id="install-inner" class="center">
+          <p id="install-title">One line.</p>
+          <div id="terminal">
+            <div class="nx-bar">
+              <img class="nx-button" src="assets/next/wbtn-mini.png" alt="" />
+              <span class="nx-title">Terminal</span>
+              <img class="nx-button" src="assets/next/wbtn-close.png" alt="" />
+            </div>
+            <div class="nx-face">
+              <!-- What install.sh prints, line for line: its banner, a done
+                   line for five of its steps, and its closing line. -->
+              <div class="nx-text"><div class="tty-row">$ <span id="typed">curl -fsSL https://previous.li/install.sh | bash</span><span id="caret"></span></div><div class="tty-row tty-out tty-banner"> </div><div class="tty-row tty-out tty-banner tty-bold">  Previously</div><div class="tty-row tty-out tty-banner tty-dim">  Your fastest way to get NeXTSTEP on your Raspberry Pi up and running.</div><div class="tty-row tty-out tty-banner"> </div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> The Previous emulator</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> The system's disk</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> The emulator's configuration</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> Starting on the first console</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> Starting the machine</div><div class="tty-row tty-out tty-done"> </div><div class="tty-row tty-out tty-done tty-bold">  NeXTSTEP is starting on the Pi's screen.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        (() => {
+          const { tl, at, rise } = window.FILM.scene("install");
+          const cues = window.CUES;
+          const start = cues.scenes.install;
+
+          // A cell of Inconsolata is half an em, so at the Terminal's size of
+          // 30 pixels a character is 15 wide, and the prompt is two of them.
+          const CELL = 15;
+          const PROMPT_CELLS = 2;
+
+          rise("#install-title", start, 40);
+          tl.fromTo("#terminal", { opacity: 0, y: 60, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "expo.out" }, at(start + 0.05));
+
+          // The line, typed one cell at a time, with the caret ahead of it.
+          const [typingStart, typingEnd] = cues.typing;
+          const characters = document.getElementById("typed").textContent.length;
+          tl.set("#caret", { opacity: 1, x: CELL * PROMPT_CELLS }, at(typingStart - 0.15));
+          tl.to("#typed", { clipPath: "inset(0% 0% 0% 0%)", duration: typingEnd - typingStart, ease: `steps(${characters})` }, at(typingStart));
+          tl.to("#caret", { x: CELL * (PROMPT_CELLS + characters), duration: typingEnd - typingStart, ease: `steps(${characters})` }, at(typingStart));
+          tl.set("#caret", { opacity: 0 }, at(cues.enter));
+
+          // What the installer prints, as it prints it.
+          const appear = (targets, filmTime) => tl.to(targets, { opacity: 1, duration: 0.08 }, at(filmTime));
+          appear("#terminal .tty-banner", cues.banner);
+          document.querySelectorAll("#terminal .tty-step").forEach((line, index) => appear(line, cues.steps[index]));
+          appear("#terminal .tty-done", cues.done);
+
+          tl.to("#install-inner", { scale: 1.04, duration: 0.4, ease: "power1.in" }, at(cues.scenes.nothing - 0.4));
+
+          window.__timelines["install"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

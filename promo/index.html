@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Previously, the film</title>
+    <script
+      src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"
+      integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- The page's own stylesheet, so the film takes its colors, its type and
+         its components from where the page does: the install window, the
+         browser frame and the fact chips are the page's, drawn larger. -->
+    <link rel="stylesheet" href="site/site.css" />
+
+    <!-- The cue sheet. Every moment that a sound and a picture share is stated
+         here once: the scenes read it through assets/film.js, and
+         soundtrack.py reads it out of this file to place the music and the
+         effects. Seconds from the start of the film. -->
+    <script id="cues" type="application/json">
+      {
+        "bpm": 120,
+        "length": 30,
+        "scenes": { "opening": 0, "headline": 8, "install": 12, "nothing": 16, "admin": 18, "systems": 24, "end": 26 },
+        "crtOn": 0,
+        "build": [1.0, 2.0],
+        "whooshes": [2.0, 2.5],
+        "press": 4.0,
+        "meet": 4.55,
+        "strike": 9.5,
+        "typing": [12.5, 13.9],
+        "enter": 14.0,
+        "banner": 14.25,
+        "steps": [14.5, 14.75, 15.0, 15.25, 15.5],
+        "done": 15.75,
+        "stabs": [16.0, 16.75, 17.5],
+        "captions": [19.2, 20.8, 22.2],
+        "systems": [24.0, 24.25, 24.5, 24.625, 24.75, 24.875],
+        "facts": [25.0, 25.125, 25.25],
+        "finale": 26.0,
+        "crtOff": 29.45
+      }
+    </script>
+    <script src="assets/film.js"></script>
+    <script src="assets/parts.js"></script>
+
+    <style>
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        margin: 0;
+        overflow: hidden;
+        /* Outside the tube, which is what a CRT shows before it has warmed up
+           and after it is switched off. */
+        background: #000;
+      }
+
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      /* Everything the screen shows, which is what the power on and the power
+         off open and close. */
+      #tube {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      #tube > [data-composition-src] {
+        position: absolute;
+        inset: 0;
+      }
+
+      #ground,
+      #horizon,
+      #lift,
+      #scanlines,
+      #vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      #ground {
+        background: var(--next-desktop);
+      }
+
+      /* The page's opening, which starts a shade lighter and sinks into the
+         page. Shown on the dark scenes only. */
+      #horizon {
+        background: linear-gradient(180deg, var(--paper-raised), transparent 75%);
+        opacity: 0;
+      }
+
+      #lift {
+        background: radial-gradient(ellipse 70% 60% at 50% 38%, rgb(255 255 255 / 7%), transparent 70%);
+      }
+
+      /* A raster a CRT would draw, faint enough to read as texture. */
+      #scanlines {
+        z-index: 101;
+        background: repeating-linear-gradient(180deg, rgb(0 0 0 / 22%) 0 1px, transparent 1px 3px);
+        opacity: 0.35;
+      }
+
+      #vignette {
+        z-index: 102;
+        background: radial-gradient(ellipse 80% 75% at 50% 50%, transparent 60%, rgb(0 0 0 / 45%) 100%);
+      }
+
+      #beam,
+      #dot {
+        position: absolute;
+        pointer-events: none;
+        opacity: 0;
+      }
+
+      #beam {
+        left: 0;
+        top: 539px;
+        width: 1920px;
+        height: 3px;
+        background: #fff;
+        box-shadow: 0 0 18px 4px rgb(200 200 255 / 80%);
+      }
+
+      #dot {
+        left: 948px;
+        top: 528px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 0 30px 10px rgb(200 200 255 / 85%);
+      }
+
+      /* What more than one scene uses. */
+      .center {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .fill {
+        position: absolute;
+        inset: 0;
+      }
+
+      .name {
+        margin: 0;
+        font-size: 156px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        color: var(--next-white);
+      }
+
+      .letter {
+        display: inline-block;
+      }
+
+      .flash {
+        position: absolute;
+        inset: 0;
+        background: #fff;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* From the HyperFrames registry: hyperframes add grain-overlay. */
+      @keyframes hf-grain-noise {
+        0%,
+        100% {
+          transform: translate(0, 0);
+        }
+        10% {
+          transform: translate(-5%, -5%);
+        }
+        20% {
+          transform: translate(-10%, 5%);
+        }
+        30% {
+          transform: translate(5%, -10%);
+        }
+        40% {
+          transform: translate(-5%, 15%);
+        }
+        50% {
+          transform: translate(-10%, 5%);
+        }
+        60% {
+          transform: translate(15%, 0);
+        }
+        70% {
+          transform: translate(0, 10%);
+        }
+        80% {
+          transform: translate(-15%, 0);
+        }
+        90% {
+          transform: translate(10%, 5%);
+        }
+      }
+
+      #grain-overlay .grain-texture {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        opacity: 0.07;
+        animation: hf-grain-noise 0.5s steps(1) infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1920" data-height="1080">
+      <div id="tube">
+        <div id="ground"></div>
+        <div id="horizon"></div>
+        <div id="lift"></div>
+
+        <div id="slot-opening" data-composition-id="opening" data-composition-src="compositions/opening.html" data-start="0" data-duration="8" data-track-index="1" data-width="1920" data-height="1080"></div>
+        <div id="slot-headline" data-composition-id="headline" data-composition-src="compositions/headline.html" data-start="8" data-duration="4" data-track-index="1" data-width="1920" data-height="1080"></div>
+        <div id="slot-install" data-composition-id="install" data-composition-src="compositions/install.html" data-start="12" data-duration="4" data-track-index="1" data-width="1920" data-height="1080"></div>
+        <div id="slot-nothing" data-composition-id="nothing" data-composition-src="compositions/nothing.html" data-start="16" data-duration="2" data-track-index="1" data-width="1920" data-height="1080"></div>
+        <div id="slot-admin" data-composition-id="admin" data-composition-src="compositions/admin.html" data-start="18" data-duration="6" data-track-index="1" data-width="1920" data-height="1080"></div>
+        <div id="slot-systems" data-composition-id="systems" data-composition-src="compositions/systems.html" data-start="24" data-duration="2" data-track-index="1" data-width="1920" data-height="1080"></div>
+        <div id="slot-end" data-composition-id="end" data-composition-src="compositions/end.html" data-start="26" data-duration="4" data-track-index="1" data-width="1920" data-height="1080"></div>
+
+        <div id="scanlines"></div>
+        <div id="vignette"></div>
+        <div id="grain-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100">
+          <div class="grain-texture"></div>
+        </div>
+      </div>
+
+      <div id="beam"></div>
+      <div id="dot"></div>
+
+      <audio id="music" src="assets/music.flac" data-start="0" data-duration="30" data-track-index="10" data-volume="1"></audio>
+      <audio id="effects" src="assets/effects.flac" data-start="0" data-duration="30" data-track-index="11" data-volume="1"></audio>
+    </div>
+
+    <script>
+      (() => {
+        const tl = gsap.timeline({ paused: true });
+        const scenes = window.CUES.scenes;
+        const paper = window.FILM.token("--paper");
+        const workspace = window.FILM.token("--next-desktop");
+        const black = window.FILM.token("--next-black");
+
+        // The soundtrack is laid out from the cue sheet, so a slot that starts
+        // anywhere else plays against the wrong sound. check reports the error.
+        for (const [id, start] of Object.entries(scenes)) {
+          const slot = document.getElementById(`slot-${id}`);
+          if (!slot || Number(slot.dataset.start) !== start) {
+            console.error(`Scene ${id} starts at ${slot && slot.dataset.start} in the markup and at ${start} on the cue sheet.`);
+          }
+        }
+
+        // The power coming on: a line across the middle, which opens upwards
+        // and downwards into a picture that is too bright for a moment.
+        const on = window.CUES.crtOn;
+        tl.set("#tube", { clipPath: "inset(50% 50% 50% 50%)", filter: "brightness(1.6)" }, on);
+        tl.fromTo("#beam", { opacity: 1, scaleX: 0 }, { scaleX: 1, duration: 0.18, ease: "expo.out" }, on);
+        tl.to("#tube", { clipPath: "inset(49.7% 0% 49.7% 0%)", duration: 0.18, ease: "expo.out" }, on);
+        tl.to("#tube", { clipPath: "inset(0% 0% 0% 0%)", duration: 0.34, ease: "expo.out" }, on + 0.18);
+        tl.to("#beam", { opacity: 0, duration: 0.25, ease: "power2.out" }, on + 0.18);
+        tl.to("#tube", { filter: "brightness(1)", duration: 0.8, ease: "power2.out" }, on + 0.18);
+
+        // The ground each scene stands on: the workspace a NeXTSTEP window
+        // lies on, or the page's own dark.
+        tl.to("#ground", { backgroundColor: paper, duration: 0.35, ease: "power1.inOut" }, scenes.headline - 0.35);
+        tl.to("#horizon", { opacity: 1, duration: 0.35 }, scenes.headline - 0.35);
+        tl.set("#ground", { backgroundColor: black }, scenes.nothing);
+        tl.set("#horizon", { opacity: 0 }, scenes.nothing);
+        tl.set("#ground", { backgroundColor: workspace }, window.CUES.stabs[2]);
+        tl.to("#ground", { backgroundColor: paper, duration: 0.35 }, scenes.systems - 0.35);
+        tl.to("#horizon", { opacity: 1, duration: 0.35 }, scenes.systems - 0.35);
+        tl.set("#ground", { backgroundColor: workspace }, window.CUES.finale);
+        tl.set("#horizon", { opacity: 0 }, window.CUES.finale);
+
+        // The power going off: the picture flares, folds to a line, the line
+        // to a point, and the point fades.
+        const off = window.CUES.crtOff;
+        tl.to("#tube", { filter: "brightness(2.2)", duration: 0.15, ease: "power2.in" }, off);
+        tl.to("#tube", { clipPath: "inset(49.7% 0% 49.7% 0%)", duration: 0.17, ease: "power3.in" }, off);
+        tl.set("#beam", { opacity: 1, scaleX: 1 }, off + 0.17);
+        tl.set("#tube", { clipPath: "inset(50% 50% 50% 50%)" }, off + 0.17);
+        tl.to("#beam", { scaleX: 0, duration: 0.12, ease: "power3.in" }, off + 0.17);
+        tl.set("#beam", { opacity: 0 }, off + 0.29);
+        tl.set("#dot", { opacity: 1, scale: 1 }, off + 0.29);
+        tl.to("#dot", { opacity: 0, scale: 0, duration: 0.2, ease: "power2.in" }, off + 0.29);
+
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>
