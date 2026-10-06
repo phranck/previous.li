@@ -13,7 +13,8 @@ moves on its own: the button builds itself and is pressed, the cursor travels,
 and the logos arrive from the edges. The button also needs a raised state, which
 the page never shows, because on the page it has already been pressed.
 
-It writes into promo/assets/ and needs what hero.py needs, numpy and Pillow.
+It writes into promo/assets/ and needs what hero.py needs: numpy, Pillow,
+fontTools and rsvg-convert.
 """
 
 import json
@@ -27,7 +28,7 @@ SITE = HERE.parent / "site"
 ASSETS = HERE / "assets"
 
 sys.path.insert(0, str(SITE))
-import hero  # noqa: E402  (found through the path above)
+import hero
 
 #: The button before it is pressed. A raised button is lit from the top left,
 #: so its two edges trade places with the pressed one's, and the corner where
@@ -55,17 +56,16 @@ def pixel_svg(rows, inks):
             f'width="{width}" height="{height}">\n  {paths}\n</svg>\n')
 
 
-def write_logo(logo, towards, name):
-    """The logo cropped as the page crops it, and its smear beside it.
+def write_logo(picture, towards, name):
+    """The logo as the page draws it, and its smear beside it.
 
     The smear comes back at half the size it was worked out at and reaches one
     logo width past the logo, which is hero.STREAK's reach. The composition
     lines the sharp logo up with the end of its trail from that reach, which
     write_geometry passes on.
     """
-    sharp = Image.open(SITE / logo["file"]).convert("RGBA").crop(logo["box"])
-    sharp.save(ASSETS / f"{name}.png", optimize=True)
-    trail, _ = hero.smear(logo, towards)
+    picture.save(ASSETS / f"{name}.png", optimize=True)
+    trail, _ = hero.smear(picture, towards)
     trail.save(ASSETS / f"{name}-trail.png", optimize=True)
 
 
@@ -84,7 +84,7 @@ def write_geometry():
                    "pressColumn": r_middle, "tipRise": 2},
         "cursor": {"columns": len(hero.CURSOR[0]), "rows": len(hero.CURSOR),
                    "tip": [tip_x, tip_y]},
-        "berry": dict(zip(("width", "height"), Image.open(ASSETS / "berry.png").size, strict=True)),
+        "pi": dict(zip(("width", "height"), Image.open(ASSETS / "pi.png").size, strict=True)),
         "cube": dict(zip(("width", "height"), Image.open(ASSETS / "cube.png").size, strict=True)),
         "streak": {"reach": hero.STREAK["reach"], "opacity": hero.STREAK["opacity"]},
         "mark": dict(zip(("width", "height"), Image.open(SITE / "logo.png").size, strict=True)),
@@ -101,8 +101,8 @@ def main():
     (ASSETS / "merge-pressed.svg").write_text(pixel_svg(hero.BUTTON, hero.BUTTON_INK))
     (ASSETS / "cursor.svg").write_text(
         pixel_svg(hero.CURSOR, {"O": "#ffffff", "#": "#000000"}))
-    write_logo(hero.BERRY, "left", "berry")
-    write_logo(hero.CUBE, "right", "cube")
+    write_logo(hero.pi_picture(), "left", "pi")
+    write_logo(hero.cube_picture(), "right", "cube")
     write_geometry()
 
 

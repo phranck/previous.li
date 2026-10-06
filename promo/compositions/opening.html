@@ -78,9 +78,9 @@
 
       <div id="opening" data-composition-id="opening" data-width="1920" data-height="1080">
         <div id="opening-inner" class="fill">
-          <div id="berry" class="logo">
-            <img id="berry-trail" src="assets/berry-trail.png" alt="" />
-            <img id="berry-sharp" src="assets/berry.png" alt="" />
+          <div id="pi" class="logo">
+            <img id="pi-trail" src="assets/pi-trail.png" alt="" />
+            <img id="pi-sharp" src="assets/pi.png" alt="" />
           </div>
           <div id="cube" class="logo">
             <img id="cube-trail" src="assets/cube-trail.png" alt="" />
@@ -111,7 +111,7 @@
           // value times about one and a half.
           const BUTTON_UNIT = 8;
           const CURSOR_UNIT = 13;
-          const BERRY_HEIGHT = 440;
+          const PI_HEIGHT = 413;
           const CUBE_HEIGHT = 455;
           const LOGO_GAP = 58;
 
@@ -140,17 +140,17 @@
           place("pulse", button);
 
           const reach = parts.streak.reach;
-          const berryWidth = (parts.berry.width / parts.berry.height) * BERRY_HEIGHT;
+          const piWidth = (parts.pi.width / parts.pi.height) * PI_HEIGHT;
           const cubeWidth = (parts.cube.width / parts.cube.height) * CUBE_HEIGHT;
-          const berry = { left: button.left - LOGO_GAP - berryWidth, top: LOGO_MIDDLE_Y - BERRY_HEIGHT / 2, width: berryWidth, height: BERRY_HEIGHT };
+          const pi = { left: button.left - LOGO_GAP - piWidth, top: LOGO_MIDDLE_Y - PI_HEIGHT / 2, width: piWidth, height: PI_HEIGHT };
           const cube = { left: button.left + button.width + LOGO_GAP, top: LOGO_MIDDLE_Y - CUBE_HEIGHT / 2, width: cubeWidth, height: CUBE_HEIGHT };
-          place("berry", berry);
+          place("pi", pi);
           place("cube", cube);
-          place("berry-trail", { left: -berryWidth * reach, width: berryWidth * (1 + reach) });
-          place("berry-sharp", { left: 0, width: berryWidth });
+          place("pi-trail", { left: -piWidth * reach, width: piWidth * (1 + reach) });
+          place("pi-sharp", { left: 0, width: piWidth });
           place("cube-trail", { left: 0, width: cubeWidth * (1 + reach) });
           place("cube-sharp", { left: 0, width: cubeWidth });
-          document.getElementById("berry-trail").style.opacity = parts.streak.opacity;
+          document.getElementById("pi-trail").style.opacity = parts.streak.opacity;
           document.getElementById("cube-trail").style.opacity = parts.streak.opacity;
 
           const tip = {
@@ -184,9 +184,9 @@
           );
 
           // The two machines arrive, each from its own side.
-          const [berryArrives, cubeArrives] = cues.whooshes;
-          tl.fromTo("#berry", { x: -1000 }, { x: 0, duration: 0.45, ease: "expo.out" }, at(berryArrives));
-          tl.fromTo("#berry-trail", { scaleX: 2.2, transformOrigin: "100% 50%" }, { scaleX: 1, duration: 0.6, ease: "expo.out" }, at(berryArrives));
+          const [piArrives, cubeArrives] = cues.whooshes;
+          tl.fromTo("#pi", { x: -1000 }, { x: 0, duration: 0.45, ease: "expo.out" }, at(piArrives));
+          tl.fromTo("#pi-trail", { scaleX: 2.2, transformOrigin: "100% 50%" }, { scaleX: 1, duration: 0.6, ease: "expo.out" }, at(piArrives));
           tl.fromTo("#cube", { x: 1000 }, { x: 0, duration: 0.45, ease: "expo.out" }, at(cubeArrives));
           tl.fromTo("#cube-trail", { scaleX: 2.2, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.6, ease: "expo.out" }, at(cubeArrives));
 
@@ -201,14 +201,14 @@
           // They rush together, and the button and the cursor make way.
           const rush = cues.meet - cues.press - 0.08;
           const travel = {
-            berry: BUTTON_CENTER.x - (berry.left + berry.width / 2),
+            pi: BUTTON_CENTER.x - (pi.left + pi.width / 2),
             cube: BUTTON_CENTER.x - (cube.left + cube.width / 2),
           };
           tl.to(["#button", "#cursor"], { opacity: 0, scale: 0.6, duration: 0.25, ease: "power2.in" }, at(cues.press + 0.1));
-          tl.to("#berry", { x: travel.berry, duration: rush, ease: "power3.in" }, at(cues.press + 0.08));
+          tl.to("#pi", { x: travel.pi, duration: rush, ease: "power3.in" }, at(cues.press + 0.08));
           tl.to("#cube", { x: travel.cube, duration: rush, ease: "power3.in" }, at(cues.press + 0.08));
-          tl.to(["#berry-trail", "#cube-trail"], { scaleX: 1.8, duration: rush, ease: "power2.in" }, at(cues.press + 0.08));
-          tl.set(["#berry", "#cube"], { opacity: 0 }, at(cues.meet));
+          tl.to(["#pi-trail", "#cube-trail"], { scaleX: 1.8, duration: rush, ease: "power2.in" }, at(cues.press + 0.08));
+          tl.set(["#pi", "#cube"], { opacity: 0 }, at(cues.meet));
 
           // One machine, and its name.
           tl.set("#opening-flash", { opacity: 0.85 }, at(cues.meet));

@@ -96,7 +96,7 @@ def read_cues():
             here would otherwise be placed by guess.
     """
     page = (HERE / "index.html").read_text()
-    found = re.search(r'<script id="cues" type="application/json">(.*?)</script>', page, re.S)
+    found = re.search(r'<script id="cues" type="application/json">(.*?)</script>', page, re.DOTALL)
     if not found:
         raise SystemExit("index.html has no cue sheet.")
     return json.loads(found.group(1))
@@ -107,7 +107,7 @@ def read_cues():
 
 def samples(seconds):
     """A length or a moment in seconds as a whole number of samples."""
-    return int(round(seconds * RATE))
+    return round(seconds * RATE)
 
 
 def hertz(note):
