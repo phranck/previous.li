@@ -76,7 +76,7 @@
         }
       </style>
 
-      <div id="opening" data-composition-id="opening" data-width="1920" data-height="1080">
+      <div id="opening" data-composition-id="opening" data-width="1440" data-height="1080">
         <div id="opening-inner" class="fill">
           <div id="pi" class="logo">
             <img id="pi-trail" src="assets/pi-trail.png" alt="" />
@@ -108,12 +108,14 @@
           // The film's scale against the page's hero: a drawn pixel of the
           // button and of the cursor, the height of each logo, and what each
           // logo leaves between itself and the button. Each is the hero's own
-          // value times about one and a half.
-          const BUTTON_UNIT = 8;
-          const CURSOR_UNIT = 13;
-          const PI_HEIGHT = 413;
-          const CUBE_HEIGHT = 455;
-          const LOGO_GAP = 58;
+          // value times about one and a seventh, which sets the row from the
+          // π to the cube about 950 pixels wide, inside the part of the
+          // television's glass that its curve does not bend.
+          const BUTTON_UNIT = 6;
+          const CURSOR_UNIT = 10;
+          const PI_HEIGHT = 310;
+          const CUBE_HEIGHT = 341;
+          const LOGO_GAP = 44;
 
           // The mark the two become, and the light behind it, both standing
           // where the button stood.
@@ -122,7 +124,7 @@
 
           // Where the button's middle stands, and the logos' middles a little
           // above it, as the hero has them.
-          const BUTTON_CENTER = { x: 960, y: 470 };
+          const BUTTON_CENTER = { x: 720, y: 470 };
           const LOGO_MIDDLE_Y = 430;
 
           const px = (box) => Object.fromEntries(Object.entries(box).map(([key, value]) => [key, `${value}px`]));
@@ -170,8 +172,8 @@
 
           // The cursor wanders in from the lower right, then makes for the
           // button and arrives just before the beat it presses on.
-          tl.fromTo("#cursor", { opacity: 0, x: 520, y: 300 }, { opacity: 1, duration: 0.15 }, at(0.6));
-          tl.to("#cursor", { x: 440, y: 230, duration: 2.4, ease: "sine.inOut" }, at(0.6));
+          tl.fromTo("#cursor", { opacity: 0, x: 400, y: 300 }, { opacity: 1, duration: 0.15 }, at(0.6));
+          tl.to("#cursor", { x: 340, y: 230, duration: 2.4, ease: "sine.inOut" }, at(0.6));
           tl.to("#cursor", { x: 0, y: 0, duration: 0.85, ease: "power3.inOut" }, at(cues.press - 1.0));
 
           // The button draws itself one row of its raster at a time.
