@@ -7,11 +7,20 @@
   <body>
     <template>
       <style>
-        /* The admin's own desk, at three quarters of a NeXTSTEP pixel to a
-           film pixel, which puts its menu in the top left of the face. */
         #workspace {
           position: absolute;
           inset: 0;
+        }
+
+        /* The admin's own desk, at three quarters of a NeXTSTEP pixel to a
+           film pixel, which puts its menu in the top left of the face. It is
+           set back from the face's edges, so the cube's black frames it: the
+           desk has the color of the workspace the cube stands on, and the face
+           would otherwise have no edge against it. The desk is set back rather
+           than the scene's root, whose size HyperFrames fixes to the face's. */
+        #workspace-desk {
+          position: absolute;
+          inset: 13px;
           overflow: hidden;
           background: var(--next-desktop) url("assets/admin/desk.png") 0 0 / 672px auto no-repeat;
         }
@@ -25,8 +34,10 @@
       </style>
 
       <div id="workspace" data-composition-id="workspace" data-width="546" data-height="546">
-        <img id="workspace-files" class="window" src="assets/admin/files.png" alt="" />
-        <img id="workspace-info" class="window" src="assets/admin/info.png" alt="" />
+        <div id="workspace-desk">
+          <img id="workspace-files" class="window" src="assets/admin/files.png" alt="" />
+          <img id="workspace-info" class="window" src="assets/admin/info.png" alt="" />
+        </div>
       </div>
 
       <script>
@@ -38,9 +49,9 @@
           // them room, the machine's last and over the File Viewer's corner,
           // at the scale the desk is drawn at.
           const SCALE = 0.75;
-          const holder = document.getElementById("workspace");
+          const holder = document.getElementById("workspace-desk");
           const files = window.FILM.placeWindow(document.getElementById("workspace-files"), "files", [45, 120], SCALE);
-          const info = window.FILM.placeWindow(document.getElementById("workspace-info"), "info", [240, 15], SCALE);
+          const info = window.FILM.placeWindow(document.getElementById("workspace-info"), "info", [214, 15], SCALE);
           window.FILM.openWindow(scene, holder, "#workspace-files", window.FILM.middleOf(files), files, cues.windows[0]);
           window.FILM.openWindow(scene, holder, "#workspace-info", window.FILM.middleOf(info), info, cues.windows[1]);
 
