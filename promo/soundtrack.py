@@ -14,7 +14,12 @@ JSON block in index.html that the scenes read as well. This reads it out of
 that file, so moving a cue there moves the picture and its sound together.
 
 The music is in A minor, at the cue sheet's tempo, with one chord to a bar. It
-is synthwave in its drums, its bass and its pumping pad, and its bells are FM.
+is electro in the manner of Kraftwerk: a syncopated electronic beat with claps
+and claves, a sequencer running through the chords with an echo, a staccato
+bass riff, and a lead like brass. Its melody, riff and rhythm are its own,
+and none of it is taken from one of their recordings. Its timbres are
+modeled on measurements of their album Electric Cafe: synthesizers rich in
+upper harmonics, short and crisp drums, and a wide stereo field.
 
 It needs numpy and scipy, and ffmpeg for reading the MP3s and writing FLAC:
 
@@ -54,58 +59,95 @@ PEAK_CEILING = -4.0
 MAINS = 50
 LINE_FREQUENCY = 625 * 25
 
-#: The chords, by name, as the notes of a pad voicing and the root the bass
-#: plays. MIDI note numbers, so 57 is the A below middle C.
+#: The chords, by name, as the notes the sequencer runs through and the root
+#: the bass plays. MIDI note numbers, so 57 is the A below middle C.
 CHORDS = {
-    "Am": {"pad": [57, 60, 64, 71], "root": 45},
-    "F": {"pad": [53, 57, 60, 64], "root": 41},
-    "C": {"pad": [55, 60, 64, 67], "root": 36},
-    "G": {"pad": [55, 59, 62, 67], "root": 43},
+    "Am": {"tones": [57, 60, 64], "root": 45},
+    "F": {"tones": [53, 57, 60], "root": 41},
+    "G": {"tones": [55, 59, 62], "root": 43},
+    "E": {"tones": [56, 59, 64], "root": 40},
 }
 
 #: One chord per bar, for the sixteen bars of the film: the opening, the
-#: merge, the two grooves either side of the stabs, the build and the end.
-PROGRESSION = ["Am", "F", "Am", "G", "Am", "F", "C", "G", "Am", "Am", "F", "C", "G", "Am", "Am", "Am"]
+#: merge, the first groove, the stabs, the second groove with the build, and
+#: the end. Each groove closes on E, the dominant, so the next part lands.
+PROGRESSION = ["Am", "Am", "F", "G", "Am", "Am", "F", "E", "Am", "Am", "Am", "F", "E", "Am", "Am", "Am"]
 
-#: The bell figure the film opens on and closes with, as beats into a bar and
-#: MIDI notes, one figure for each of the first two chords.
-BELL_FIGURES = {
-    "Am": [(0, 76), (0.5, 81), (1, 83), (1.5, 84), (2.5, 83), (3, 79)],
-    "F": [(0, 81), (0.5, 84), (1, 88), (2.5, 86), (3, 84), (3.5, 81)],
-}
+#: The chords of the three stabs, one each.
+STAB_CHORDS = ("Am", "F", "E")
 
-#: The grooves, as two bars that take turns, in sixteenths of a bar. They are
-#: the backbeat of eighties pop: the kick on beats one and three, the snare on
-#: two and four, and in the second bar a kick on the half beat after three
-#: that pushes into the next bar. That keeps the beat plain to hear without
-#: the kick on every beat that, with a hi-hat on every off-beat, is disco.
+#: The grooves, as two bars that take turns, in sixteenths of a bar: an
+#: electro beat, with the kick syncopated against claps on two and four and
+#: quiet claves between them.
 SIXTEENTHS = 16
 GROOVE = (
-    {"kicks": (0, 8), "snares": (4, 12)},
-    {"kicks": (0, 8, 10), "snares": (4, 12)},
+    {"kicks": (0, 6, 10), "claps": (4, 12), "claves": (3, 7, 13)},
+    {"kicks": (0, 3, 8, 11), "claps": (4, 12), "claves": (3, 11)},
 )
 
-#: How loud the hi-hat is on the sixteenths of a beat: quiet, in the
-#: background, a little more on the beat than between, rather than the
-#: accented off-beat of disco.
-HAT_ACCENTS = (0.22, 0.12, 0.17, 0.12)
+#: How loud the hi-hat is on the sixteenths of a beat: the beat itself, the
+#: sixteenth after it, the half beat and the last. Loud enough to come through
+#: the riff and the bleeps.
+HAT_ACCENTS = (0.44, 0.24, 0.34, 0.24)
 
-#: How hard the bass plays the eighths of a beat: on the beat, and on the
-#: half beat between.
-BASS_ACCENTS = (1.0, 0.7)
+#: The metal in the hi-hat: six square waves at frequencies that share no
+#: harmonics, in Hz.
+HAT_PARTIALS = (205.3, 304.4, 369.6, 522.7, 540.0, 800.0)
 
-#: How loud the kick and the gated snare are in the grooves and the build,
-#: so the beat stands out of the pad, the bells and the arpeggio.
-KICK_GAIN = 1.15
-SNARE_GAIN = 1.05
+#: The bass riff of a bar: the sixteenth a note starts on, how many semitones
+#: it lies over the chord's root, and how many sixteenths it lasts. The notes
+#: on the sixteenths in RIFF_STRONG are played harder.
+RIFF = ((0, 0, 2), (3, 0, 1), (6, 7, 2), (8, 0, 1), (10, 10, 2), (13, 7, 1), (14, 0, 2))
+RIFF_STRONG = (0, 6, 10)
 
-#: The sixteenths of a bar the bells over the first groove fall on, a dotted
-#: eighth apart.
-BELL_STEPS = (0, 3, 6)
+#: Which tone of the chord the sequencer plays on each sixteenth of a beat,
+#: an octave and more above the chord.
+BLEEP_ORDER = (0, 2, 1, 2)
 
-#: The pixels of the Merge button arriving, as rising notes of the A minor
-#: pentatonic scale.
-BLIP_NOTES = [81, 84, 86, 88, 91, 93, 96, 98]
+#: The zapping toms that close a phrase: the sixteenth each falls on and the
+#: frequency its sweep starts from.
+ZAP_FILL = ((12, 3000), (14, 2000), (15, 1300))
+
+#: The lead's phrases, as the bar from the start of the phrase, the beat in
+#: that bar, how many beats a note lasts, and the note. The theme runs over
+#: Am, Am, F and E and comes back through the whole piece; its last note is
+#: the A it resolves to. The call is played over F and G during the merge.
+LEAD_THEME = (
+    (0, 0, 1.5, "E5"), (0, 1.5, 0.5, "E5"), (0, 2, 0.5, "D5"), (0, 2.5, 0.5, "C5"), (0, 3, 1, "D5"),
+    (1, 0, 2, "E5"), (1, 2, 1, "G5"), (1, 3, 1, "E5"),
+    (2, 0, 1.5, "F5"), (2, 1.5, 0.5, "E5"), (2, 2, 1, "D5"), (2, 3, 1, "C5"),
+    (3, 0, 2, "B4"), (3, 2, 1, "G#4"), (3, 3, 1, "B4"),
+)
+LEAD_RESOLUTION = ((0, 0, 4, "A4"),)
+LEAD_CALL = (
+    (0, 0, 1, "A4"), (0, 1, 1, "C5"), (0, 2, 2, "F5"),
+    (1, 0, 1, "D5"), (1, 1, 1, "B4"), (1, 2, 2, "G4"),
+)
+
+#: The theme's notes the lead plays on the three stabs, one each.
+LEAD_STABS = ("E5", "C5", "B4")
+
+#: The two bars of the theme's opening, which open the film and return over
+#: the end card.
+THEME_OPENING = tuple(event for event in LEAD_THEME if event[0] < 2)
+
+#: How long after the end card arrives the music starts to fade, in seconds.
+#: It is gone when the set switches off.
+FADE_AFTER_FINALE = 1.0
+
+#: The names of the notes in an octave, for writing a melody as "G#4".
+NOTE_NAMES = {"C": 0, "C#": 1, "D": 2, "D#": 3, "E": 4, "F": 5, "F#": 6, "G": 7, "G#": 8, "A": 9, "A#": 10, "B": 11}
+
+#: A telephone keypad's tones, after the DTMF standard: each key sounds the
+#: frequency of its row and the frequency of its column together, in Hz.
+DTMF_ROWS = {"123A": 697, "456B": 770, "789C": 852, "*0#D": 941}
+DTMF_COLUMNS = {"147*": 1209, "2580": 1336, "369#": 1477, "ABCD": 1633}
+
+#: The letters on a telephone keypad's keys, so a word can be dialed.
+KEYPAD_LETTERS = {"2": "ABC", "3": "DEF", "4": "GHI", "5": "JKL", "6": "MNO", "7": "PQRS", "8": "TUV", "9": "WXYZ"}
+
+#: What the Merge button's pixels dial as they arrive.
+DIALED = "PREVIOUSLY"
 
 #: One key of the install line. Its length is how much of the key-press
 #: recording it uses, in seconds: the press has died away by then, and the
@@ -284,9 +326,33 @@ class Bus:
         return self.dry + wet
 
 
-def room(seconds=2.4):
+def echo(sound, delay, feedback, wet, repeats=6):
+    """A ping-pong echo over a stereo sound: each repeat on the other side,
+    quieter by the feedback each time.
+
+    Args:
+        sound: Stereo samples, as two rows.
+        delay: The time between repeats, in seconds.
+        feedback: How much of each repeat comes back in the next, as a factor.
+        wet: How loud the first repeat is against the sound, as a factor.
+        repeats: How many repeats there are.
+    """
+    out = sound.copy()
+    shift = samples(delay)
+    left, right = sound[0], sound[1]
+    level = wet
+    for _ in range(repeats):
+        left, right = numpy.concatenate([numpy.zeros(shift), right[:-shift]]), numpy.concatenate([numpy.zeros(shift), left[:-shift]])
+        out[0] += left * level
+        out[1] += right * level
+        level *= feedback
+    return out
+
+
+def room(seconds=1.0):
     """The reverb's impulse response: noise falling 60 dB over its length,
-    darker as it falls, different in each ear so the tail is wide."""
+    darker as it falls, different in each ear so the tail is wide. A small
+    room, so what is sent to it stays close and dry."""
     time = clock(seconds)
     envelope = 10 ** (-3 * time / seconds)
     channels = []
@@ -303,154 +369,220 @@ def room(seconds=2.4):
 # --- instruments -------------------------------------------------------------
 
 
-def saw(frequency, seconds, cutoff, detune=0.0, phase=0.0):
+def midi(name):
+    """A note written as "G#4" as its MIDI number, with C4 at 60."""
+    return NOTE_NAMES[name[:-1]] + 12 * (int(name[-1]) + 1)
+
+
+def sawtooth(note, seconds, cutoff, resonance=0.7071, glide_from=None, glide=0.04, vibrato=0.0, detune=0.0):
     """A sawtooth built from its harmonics, each one already filtered.
 
     Building it from harmonics keeps it free of aliasing, and filtering each
     harmonic by its own frequency lets the cutoff move over time without a
-    filter that runs sample by sample.
+    filter that runs sample by sample. The filter is a two-pole lowpass: at
+    the default resonance it has no peak, and above it the harmonics near the
+    cutoff stand out, as on an analog synthesizer. Harmonics past six times
+    the cutoff are left out, because the filter has taken them down by more
+    than 30 dB.
 
     Args:
-        frequency: The pitch in Hz.
+        note: A MIDI note, which may lie between two semitones.
         seconds: Its length.
         cutoff: The lowpass cutoff in Hz, as one number or one per sample.
-        detune: A shift in cents, for the width of several voices together.
-        phase: Where each harmonic starts, as a fraction of a cycle.
+        resonance: The filter's Q.
+        glide_from: A MIDI note the pitch slides up or down from, or None.
+        glide: How long the slide takes, in seconds.
+        vibrato: How far the pitch swings in cents once the note is held.
+        detune: How far the whole sawtooth lies off the note, in cents.
     """
-    pitch = frequency * 2 ** (detune / 1200)
     time = clock(seconds)
+    shift = 2 ** (detune / 1200)
+    target = hertz(note) * shift
+    frequency = numpy.full(len(time), target)
+    if glide_from is not None:
+        start = hertz(glide_from) * shift
+        frequency = start * (target / start) ** numpy.clip(time / glide, 0, 1)
+    if vibrato:
+        cents = vibrato * numpy.clip((time - 0.2) / 0.3, 0, 1) * numpy.sin(2 * numpy.pi * 5.2 * time)
+        frequency = frequency * 2 ** (cents / 1200)
+    turns = numpy.cumsum(frequency) / RATE
     cutoff = numpy.broadcast_to(numpy.asarray(cutoff, dtype=float), time.shape)
-    highest = int(min(RATE * 0.45, cutoff.max() * 4) // pitch)
+    highest = int(min(RATE * 0.45, cutoff.max() * 6) // frequency.max())
     sound = numpy.zeros_like(time)
     for harmonic in range(1, max(highest, 1) + 1):
-        response = 1 / numpy.sqrt(1 + (harmonic * pitch / cutoff) ** 4)
-        sound += response / harmonic * numpy.sin(2 * numpy.pi * (harmonic * pitch * time + phase * harmonic))
-    return sound * 0.6
+        ratio = harmonic * frequency / cutoff
+        response = 1 / numpy.sqrt((1 - ratio ** 2) ** 2 + (ratio / resonance) ** 2)
+        sound += response / harmonic * numpy.sin(2 * numpy.pi * harmonic * turns)
+    return sound
 
 
-def square(frequency, seconds, cutoff):
-    """A square wave from its odd harmonics, filtered as saw is."""
-    time = clock(seconds)
-    highest = int(min(RATE * 0.45, cutoff * 4) // frequency)
-    sound = numpy.zeros_like(time)
-    for harmonic in range(1, max(highest, 1) + 1, 2):
-        response = 1 / numpy.sqrt(1 + (harmonic * frequency / cutoff) ** 4)
-        sound += response / harmonic * numpy.sin(2 * numpy.pi * harmonic * frequency * time)
-    return sound * 0.8
+def spread(voice, cents, crossfeed):
+    """A voice played twice, detuned apart and leaning one to each side, so
+    it sounds wide and beats slowly against itself, as two oscillators of an
+    analog synthesizer do.
+
+    Args:
+        voice: Makes one voice as mono samples, given how far it lies off the
+            note in cents.
+        cents: How far each of the two lies off the note, one below it and
+            one above.
+        crossfeed: How much of each also sounds on the other side, as a
+            factor.
+
+    Returns:
+        Stereo samples, as two rows.
+    """
+    left, right = voice(-cents), voice(cents)
+    return numpy.stack([left + crossfeed * right, right + crossfeed * left])
 
 
-def bell(note, seconds=1.6, brightness=1.0):
-    """An FM bell over an FM electric piano: a modulator at an inharmonic
-    ratio for the bell's ring, and one at unison for the piano's body.
+def lead(note, seconds, glide_from=None):
+    """The lead: two sawtooths a few cents apart, one to each side, like
+    brass. On each note its filter swells open over the first 50 ms, to
+    twelve times the note's frequency, and settles at eight times it. It
+    slides in from the note before when the two touch, and long notes get a
+    little vibrato.
 
     Args:
         note: A MIDI note.
-        seconds: How long it rings.
-        brightness: Scales the modulation, so the attack can be softer.
+        seconds: How long it sounds.
+        glide_from: The note it slides in from, or None.
+
+    Returns:
+        Stereo samples, as two rows.
     """
-    pitch = hertz(note)
     time = clock(seconds)
-    bell_index = 2.4 * brightness * numpy.exp(-time / 0.35)
-    tone = numpy.sin(2 * numpy.pi * pitch * time + bell_index * numpy.sin(2 * numpy.pi * 3.5 * pitch * time))
-    piano_index = 1.4 * brightness * numpy.exp(-time / 0.25)
-    piano = numpy.sin(2 * numpy.pi * pitch * time + piano_index * numpy.sin(2 * numpy.pi * pitch * time))
-    sound = tone * numpy.exp(-time / (seconds * 0.35)) * 0.55 + piano * numpy.exp(-time / (seconds * 0.5)) * 0.45
-    return ramp_out(ramp_in(sound))
+    swell = numpy.clip(time / 0.05, 0, 1) * (0.6 + 0.4 * numpy.exp(-numpy.maximum(time - 0.05, 0) / 0.25))
+    cutoff = hertz(note) * (2 + 10 * swell)
+    level = numpy.where(time < 0.008, time / 0.008, 0.75 + 0.25 * numpy.exp(-(time - 0.008) / 0.12)) * 0.99
+
+    def voice(cents):
+        sound = sawtooth(note, seconds, cutoff, resonance=1.3, glide_from=glide_from, glide=0.03, vibrato=8, detune=cents)
+        return ramp_out(ramp_in(sound * level), 0.04)
+    return spread(voice, 7, 0.45)
 
 
-def pad(chord, seconds, cutoff, release=0.9):
-    """A chord held by detuned sawtooths, in stereo.
+def bleep(note, accent=1.0):
+    """One step of the sequencer: a sawtooth through a resonant filter that
+    snaps shut.
 
     Args:
-        chord: A name from CHORDS.
-        seconds: How long it is held before it is let go.
-        cutoff: The lowpass cutoff, as one number or one per sample.
-        release: How long it takes to fade once let go.
+        note: A MIDI note.
+        accent: How hard it is played, which opens the filter further.
     """
-    length = seconds + release
-    time = clock(length)
-    envelope = numpy.minimum(time / 0.3, 1.0)
-    held = time > seconds
-    envelope[held] *= numpy.exp(-(time[held] - seconds) / (release / 4))
-    if numpy.ndim(cutoff):
-        cutoff = numpy.concatenate([cutoff, numpy.full(len(time) - len(cutoff), cutoff[-1])])[:len(time)]
-    sides = []
-    for detunes in ((-9, 0, 6), (-5, 3, 10)):
-        voice = sum(
-            saw(hertz(note), length, cutoff, detune, phase=generator.random())
-            for note in CHORDS[chord]["pad"]
-            for detune in detunes
-        )
-        sides.append(voice * envelope / 6)
-    return numpy.stack(sides)
+    time = clock(0.18)
+    cutoff = 1500 + 8000 * accent * numpy.exp(-time / 0.06)
+    return ramp_out(ramp_in(sawtooth(note, 0.18, cutoff, resonance=3.0) * numpy.exp(-time / 0.08) * 0.88))
 
 
-def pluck(note, seconds, accent=1.0):
-    """One note of the bass: a sawtooth whose filter snaps shut, with a sine
-    under it for weight.
+def bass_note(note, seconds, accent=1.0, gate=0.6):
+    """One note of the bass: two sawtooths a few cents apart, one to each
+    side, each driven a little and through a resonant filter that snaps
+    shut, over a sine in the middle for weight. It is held for a share of its
+    length and then let go.
 
     Args:
         note: A MIDI note.
         seconds: Its length.
         accent: How hard it is played, which opens the filter further.
+        gate: The share of its length it is held for.
+
+    Returns:
+        Stereo samples, as two rows.
     """
     time = clock(seconds)
-    cutoff = 200 + 2200 * accent * numpy.exp(-time / 0.07)
-    body = saw(hertz(note), seconds, cutoff)
-    sub = numpy.sin(2 * numpy.pi * hertz(note) * time) * 0.3
-    envelope = numpy.exp(-time / (seconds * 1.4))
-    return ramp_out(ramp_in(body + sub)) * envelope * accent
+    cutoff = 400 + 3200 * accent * numpy.exp(-time / 0.1)
+
+    def voice(cents):
+        sound = sawtooth(note, seconds, cutoff, resonance=4.0, detune=cents)
+        return ramp_out(ramp_in(numpy.tanh(sound * 1.5) / numpy.tanh(1.5)))
+    sub = ramp_out(ramp_in(numpy.sin(2 * numpy.pi * hertz(note) * time) * 0.15))
+    held = seconds * gate
+    level = numpy.where(time < held, 1.0, numpy.exp(-(time - held) / 0.02))
+    return (spread(voice, 4, 0.5) * 0.6 + sub) * level * accent
 
 
 def kick():
-    """A synthesized kick: a sine falling fast from a click to its low note."""
-    time = clock(0.45)
-    pitch = 52 + 130 * numpy.exp(-time / 0.03)
-    body = numpy.sin(2 * numpy.pi * numpy.cumsum(pitch) / RATE) * numpy.exp(-time / 0.16)
-    click = filtered(noise(0.45), "highpass", 2000) * numpy.exp(-time / 0.004) * 0.25
-    return numpy.tanh((body + click) * 1.6)
+    """A short electronic kick: a sine falling from about 134 Hz to 54 Hz
+    within about 30 ms and down 20 dB within about 70 ms, with a click on
+    top, driven until it clips a little."""
+    time = clock(0.3)
+    pitch = 54 + 80 * numpy.exp(-time / 0.01)
+    body = numpy.sin(2 * numpy.pi * numpy.cumsum(pitch) / RATE) * numpy.exp(-time / 0.03)
+    click = filtered(noise(0.3), "highpass", 2000) * numpy.exp(-time / 0.002) * 0.35
+    return ramp_out(ramp_in(numpy.tanh((body + click) * 1.8) * 1.39))
 
 
-def snare():
-    """A snare under a clap: a short tone, a burst of noise, and the clap's
-    three quick hands before its tail."""
-    time = clock(0.35)
-    tone = numpy.sin(2 * numpy.pi * 190 * time) * numpy.exp(-time / 0.06) * 0.5
-    rattle = filtered(noise(0.35), "bandpass", (1200, 7000)) * numpy.exp(-time / 0.12)
-    clap = numpy.zeros_like(time)
-    for offset in (0, 0.011, 0.022):
+def clap():
+    """An electronic clap and snare in one: four bursts of noise a few
+    milliseconds apart, as hands that do not quite meet, with a short tail,
+    and under them a burst of white noise and a low knock."""
+    time = clock(0.25)
+    sound = numpy.zeros_like(time)
+    for offset in (0.0, 0.008, 0.016, 0.026):
         start = samples(offset)
-        burst = filtered(noise(0.35 - offset), "bandpass", (900, 2600)) * numpy.exp(-clock(0.35 - offset) / 0.01)
-        clap[start:start + len(burst)] += burst[:len(clap) - start]
-    tail = filtered(noise(0.35), "bandpass", (900, 2600)) * numpy.exp(-time / 0.09) * 0.6
-    return ramp_in((tone + rattle * 0.6 + clap * 0.7 + tail) * 0.5)
-
-
-def gated_snare():
-    """The snare of the eighties: the snare with a burst of room behind it
-    that stops dead instead of dying away."""
-    seconds = 0.3
-    time = clock(seconds)
-    hit = numpy.zeros_like(time)
-    played = snare()[:len(time)]
-    hit[:len(played)] = played
-    room = filtered(noise(seconds), "bandpass", (700, 6000)) * numpy.exp(-time / 0.5) * 0.3
-    gate = numpy.clip((0.24 - time) / 0.012, 0, 1)
-    return (hit + room) * gate
+        burst = filtered(noise(0.25 - offset), "bandpass", (1000, 7000)) * numpy.exp(-clock(0.25 - offset) / 0.006)
+        sound[start:] += burst[:len(sound) - start]
+    sound += filtered(noise(0.25), "bandpass", (1000, 7000)) * numpy.exp(-time / 0.05) * 0.5
+    sound += filtered(noise(0.25), "highpass", 1800) * numpy.exp(-time / 0.045) * 0.6
+    sound += numpy.sin(2 * numpy.pi * 190 * time) * numpy.exp(-time / 0.03) * 0.5
+    return ramp_out(ramp_in(sound * 0.31))
 
 
 def hat():
-    """A closed hi-hat, made of bright noise."""
-    seconds = 0.06
-    time = clock(seconds)
-    sound = filtered(noise(seconds), "highpass", 7500) * numpy.exp(-time / 0.018)
-    return ramp_in(sound) * 0.5
+    """A closed electronic hi-hat: metal and noise between 4.5 and 12 kHz,
+    down 20 dB within about 50 ms."""
+    time = clock(0.15)
+    metal = sum(numpy.sign(numpy.sin(2 * numpy.pi * frequency * time)) for frequency in HAT_PARTIALS)
+    sound = filtered(metal * 0.25 + noise(0.15), "bandpass", (4500, 12000))
+    return ramp_out(ramp_in(sound * numpy.exp(-time / 0.02) * 1.37))
+
+
+def clave():
+    """An electronic clave: two high tones driven until they are nearly
+    square, stopping at once."""
+    time = clock(0.06)
+    tone = numpy.tanh(2.5 * (numpy.sin(2 * numpy.pi * 2400 * time) + 0.6 * numpy.sin(2 * numpy.pi * 3620 * time)))
+    return ramp_out(ramp_in(tone * numpy.exp(-time / 0.012) * 0.95))
+
+
+def zap(start):
+    """The tom of electro: a tone driven nearly square, swept down fast from
+    a high start.
+
+    Args:
+        start: The frequency the sweep starts from, in Hz.
+    """
+    time = clock(0.2)
+    pitch = 110 + (start - 110) * numpy.exp(-time / 0.03)
+    tone = numpy.tanh(3 * numpy.sin(2 * numpy.pi * numpy.cumsum(pitch) / RATE)) * numpy.exp(-time / 0.07)
+    return ramp_out(ramp_in(filtered(tone, "lowpass", 7000) * 0.78))
 
 
 def crash():
-    """A cymbal: long, bright, falling noise."""
-    time = clock(2.5)
-    return ramp_in(filtered(noise(2.5), "highpass", 4500) * numpy.exp(-time / 0.8)) * 0.35
+    """A short electronic cymbal: bright noise falling away within a second."""
+    time = clock(1.0)
+    return ramp_out(ramp_in(filtered(noise(1.0), "bandpass", (3000, 10000)) * numpy.exp(-time / 0.3))) * 0.35
+
+
+def dtmf(key, seconds=0.07):
+    """A key of a telephone keypad: the frequency of its row and the
+    frequency of its column, sounding together.
+
+    Args:
+        key: One of the keys in DTMF_ROWS and DTMF_COLUMNS, such as "7".
+        seconds: How long the key is held.
+    """
+    time = clock(seconds)
+    low = next(frequency for keys, frequency in DTMF_ROWS.items() if key in keys)
+    high = next(frequency for keys, frequency in DTMF_COLUMNS.items() if key in keys)
+    tone = numpy.sin(2 * numpy.pi * low * time) + 0.8 * numpy.sin(2 * numpy.pi * high * time)
+    return ramp_out(ramp_in(tone * 0.5, 0.004), 0.006)
+
+
+def dialed(word):
+    """The keys a word is dialed on, letter by letter."""
+    return [next(key for key, letters in KEYPAD_LETTERS.items() if letter in letters) for letter in word.upper()]
 
 
 def impact():
@@ -494,12 +626,6 @@ def power_off():
     zap = numpy.sin(2 * numpy.pi * numpy.cumsum(pitch) / RATE) * numpy.exp(-time / 0.18) * 0.5
     fizz = filtered(noise(0.6), "highpass", 3000) * numpy.exp(-time / 0.05) * 0.3
     return ramp_out(ramp_in(zap + fizz))
-
-
-def blip(note):
-    """One pixel of the button arriving: a short square note."""
-    sound = square(hertz(note), 0.07, 5000)
-    return ramp_out(ramp_in(sound * numpy.exp(-clock(0.07) / 0.03)))
 
 
 def tick(note, seconds=0.09):
@@ -561,10 +687,12 @@ def loudest_moment(sound):
 # --- the score ---------------------------------------------------------------
 
 
-def drum_grooves(scenes):
+def drum_grooves(cues):
     """Where the drums play a groove: under the headline and the install
-    line, and under the admin."""
-    return ((scenes["headline"], scenes["nothing"]), (scenes["admin"], scenes["systems"]))
+    line, under the admin, and under the end card until the set switches
+    off, where the music fades away."""
+    scenes = cues["scenes"]
+    return ((scenes["headline"], scenes["nothing"]), (scenes["admin"], scenes["systems"]), (cues["finale"], cues["crtOff"]))
 
 
 def bars(start, end, bar):
@@ -583,12 +711,12 @@ def groove_hits(cues, kind):
 
     Args:
         cues: The cue sheet.
-        kind: "kicks" or "snares", as GROOVE names them.
+        kind: "kicks", "claps" or "claves", as GROOVE names them.
     """
     bar = 4 * 60 / cues["bpm"]
     sixteenth = bar / SIXTEENTHS
     return [moment + step * sixteenth
-            for start, end in drum_grooves(cues["scenes"])
+            for start, end in drum_grooves(cues)
             for _, moment, pattern in bars(start, end, bar)
             for step in pattern[kind]]
 
@@ -605,28 +733,6 @@ def build_kicks(cues):
     beat = 60 / cues["bpm"]
     return list(numpy.arange(cues["scenes"]["systems"], cues["finale"] - 1e-6, beat))
 
-
-def kick_times(cues):
-    """Every moment the kick plays, which the pad and the bass duck under."""
-    times = merge_kicks(cues) + groove_hits(cues, "kicks") + build_kicks(cues)
-    times += list(cues["stabs"]) + [cues["finale"]]
-    return sorted(times)
-
-
-def ducking(cues, length):
-    """How far the pad and the bass dip under each kick, as a gain per sample.
-
-    This is the pumping of synthwave: the sustained parts give way on every
-    kick and swell back in between.
-    """
-    gain = numpy.ones(samples(length))
-    shape_time = clock(0.45)
-    shape = 1 - 0.55 * numpy.minimum(shape_time / 0.004, 1) * numpy.exp(-shape_time / 0.13)
-    for at in kick_times(cues):
-        start = samples(at)
-        end = min(start + len(shape), len(gain))
-        gain[start:end] = numpy.minimum(gain[start:end], shape[:end - start])
-    return gain
 
 
 def dip(length, start, end, level, ramp=0.08):
@@ -647,7 +753,13 @@ def dip(length, start, end, level, ramp=0.08):
 
 
 def write_music(cues, reverb_room):
-    """The music stem.
+    """The music stem: an electro piece with one theme running through it.
+
+    The theme's opening sounds from afar as the set comes on, the merge
+    brings the drums and the lead's call, the whole theme runs over the first
+    groove, the stabs take a note of it each, the whole theme runs again over
+    the second groove and the build, and over the end card it resolves, its
+    opening returns, and the music fades away until the set switches off.
 
     Returns:
         Stereo samples for the whole film.
@@ -656,133 +768,146 @@ def write_music(cues, reverb_room):
     beat = 60 / cues["bpm"]
     bar = 4 * beat
     sixteenth = bar / SIXTEENTHS
-    eighth = 2 * sixteenth
     scenes = cues["scenes"]
+    press, finale, off = cues["press"], cues["finale"], cues["crtOff"]
     drums = Bus(length)
-    tonal = Bus(length)
-    pads = Bus(length)
+    sequencer = Bus(length)
+    leads = Bus(length)
     bass = Bus(length)
+    hits = Bus(length)
 
     def chord_at(moment):
         return PROGRESSION[min(int(moment // bar), len(PROGRESSION) - 1)]
 
-    # The pad, in every bar up to the end card but the stabs' one, dark and
-    # quiet at the start and opening up as the film does. The end card holds
-    # one chord until the set goes off.
-    for index, chord in enumerate(PROGRESSION):
-        start = index * bar
-        if scenes["nothing"] <= start < scenes["admin"] or start >= cues["finale"]:
-            continue
-        gain = 0.5
-        if start < cues["press"]:
-            cutoff = numpy.linspace(700 + start * 250, 1200 + start * 250, samples(bar))
-            gain = 0.22
-        elif start < scenes["headline"]:
-            cutoff = 2200
-        elif start < scenes["admin"]:
-            cutoff = 3000
-        elif start < scenes["systems"]:
-            cutoff = 3600
-        else:
-            cutoff = numpy.linspace(2500, 6000, samples(bar))
-        pads.add(pad(chord, bar, cutoff), start, gain=gain, reverb=0.3)
-    pads.add(pad(chord_at(cues["finale"]), cues["crtOff"] - cues["finale"], 4000, release=2.4), cues["finale"], gain=0.55, reverb=0.4)
+    def phrase(events, start, gain=0.32):
+        """Lays a lead phrase down from a bar on, sliding between notes that
+        touch."""
+        previous = None
+        for offset, beat_in_bar, beats, name in events:
+            at = start + offset * bar + beat_in_bar * beat
+            note = midi(name)
+            glide_from = previous[1] if previous and abs(previous[0] - at) < 1e-6 else None
+            leads.add(lead(note, beats * beat + 0.05, glide_from), at, gain=gain)
+            previous = (at + beats * beat, note)
 
-    # The bell figure over the opening, from the moment the picture is up, and
-    # over the end card.
+    def fill(bar_start):
+        for step, start in ZAP_FILL:
+            drums.add(zap(start), bar_start + step * sixteenth, gain=0.55, pan=-0.54)
+
+    # The sequencer: sixteenths through the chord, an octave and more above
+    # it. It opens up from the moment the picture is up to the merge, rests
+    # for the stabs, and runs on until the set switches off.
     picture_up = cues["crtOn"] + beat
-    for index, chord in enumerate(("Am", "F")):
-        for beat_offset, note in BELL_FIGURES[chord]:
-            at = picture_up + index * bar + beat_offset * beat
-            tonal.add(bell(note, brightness=0.8), at, gain=0.3, pan=-0.2 + 0.1 * (note % 3), reverb=0.45)
-    for beat_offset, note in BELL_FIGURES["Am"] + [(4.5, 81)]:
-        tonal.add(bell(note, 2.4), cues["finale"] + beat + beat_offset * beat, gain=0.4, pan=0.15, reverb=0.5)
+    for start, end in ((picture_up, scenes["nothing"]), (scenes["admin"], off)):
+        for moment in numpy.arange(start, end - 1e-6, sixteenth):
+            step = int(round((moment % bar) / sixteenth)) % SIXTEENTHS
+            tones = CHORDS[chord_at(moment)]["tones"]
+            opening = min(1.0, 0.3 + 0.7 * (moment - picture_up) / (press - picture_up))
+            accent = (1.0 if step in RIFF_STRONG else 0.55) * opening
+            note = tones[BLEEP_ORDER[step % len(BLEEP_ORDER)]] + 24
+            sequencer.add(bleep(note, accent), moment, gain=0.09 * min(opening + 0.3, 1.0), pan=0.72 if step % 2 else -0.72)
 
-    # Bells over the first groove, a dotted eighth apart, from the chord.
-    for index, moment, _ in bars(scenes["headline"], scenes["nothing"], bar):
-        tones = CHORDS[chord_at(moment)]["pad"]
-        for place, step in enumerate(BELL_STEPS):
-            note = tones[(index + place) % len(tones)] + 12
-            tonal.add(bell(note, 0.9, 0.6), moment + step * sixteenth, gain=0.2, pan=0.5 if place % 2 else -0.5, reverb=0.4)
-
-    # The arpeggio over the admin, in sixteenths up and down the chord.
-    pattern = [0, 1, 2, 3, 4, 3, 2, 1]
-    for step, moment in enumerate(numpy.arange(scenes["admin"], scenes["systems"] - 1e-6, beat / 4)):
-        tones = CHORDS[chord_at(moment)]["pad"]
-        ladder = tones + [tones[0] + 12]
-        note = ladder[pattern[step % len(pattern)]] + 12
-        sound = square(hertz(note), 0.12, 3200) * numpy.exp(-clock(0.12) / 0.05)
-        tonal.add(ramp_out(ramp_in(sound)), moment, gain=0.11, pan=0.35 * numpy.sin(step * 0.4), reverb=0.25)
-
-    # The bass: long notes through the merge, even eighths on the root in the
-    # grooves and the build, and one held note under the end card.
-    for moment in (cues["press"], cues["press"] + bar):
-        bass.add(pluck(CHORDS[chord_at(moment)]["root"], bar, 0.6), moment, gain=0.4)
-    for start, end in ((scenes["headline"], scenes["nothing"]), (scenes["admin"], cues["finale"])):
-        for step, moment in enumerate(numpy.arange(start, end - 1e-6, eighth)):
+    # The bass riff, quiet and closed from the second bar of the opening,
+    # through the merge and the first groove, then from the admin on until
+    # the set switches off.
+    for start, end in ((bar, scenes["nothing"]), (scenes["admin"], off)):
+        for moment in numpy.arange(start, end - 1e-6, bar):
             root = CHORDS[chord_at(moment)]["root"]
-            bass.add(pluck(root, eighth, BASS_ACCENTS[step % len(BASS_ACCENTS)]), moment, gain=0.38)
-    bass.add(pluck(CHORDS[chord_at(cues["finale"])]["root"], cues["crtOff"] - cues["finale"], 0.8), cues["finale"], gain=0.4)
+            closed = 0.45 if moment < press else 1.0
+            for step, interval, steps in RIFF:
+                accent = (1.0 if step in RIFF_STRONG else 0.7) * closed
+                bass.add(bass_note(root + interval, steps * sixteenth, accent), moment + step * sixteenth, gain=0.5)
 
-    # The drums. Half time through the merge, a roll into the first groove,
-    # the backbeat in both grooves, and a roll that speeds up into the end
-    # card.
-    merge = cues["press"]
+    # The lead and its theme, through the whole piece.
+    phrase(THEME_OPENING, 0.0, gain=0.12)
+    phrase(LEAD_CALL, press)
+    phrase(LEAD_THEME, scenes["headline"])
+    for at, name in zip(cues["stabs"], LEAD_STABS, strict=True):
+        leads.add(lead(midi(name), 0.45), at, gain=0.32)
+    phrase(LEAD_THEME, scenes["admin"])
+    phrase(LEAD_RESOLUTION, finale)
+    phrase(THEME_OPENING, finale + bar)
+
+    # The drums through the merge: half time, claps on the third beat of each
+    # bar, the hi-hats from the second bar, and a fill into the groove.
     for at in merge_kicks(cues):
-        drums.add(kick(), at, gain=0.7)
-    for at in (merge + 2 * beat, merge + 6 * beat):
-        drums.add(snare(), at, gain=0.6, reverb=0.3)
-    for step in range(8):
-        drums.add(snare(), scenes["headline"] - beat + step * beat / 8, gain=0.15 + 0.06 * step, reverb=0.2)
-    for moment in numpy.arange(merge + 4 * beat, scenes["headline"] - 1e-6, beat / 2):
-        drums.add(hat(), moment, gain=0.45, pan=0.3)
+        drums.add(kick(), at, gain=1.0)
+    for at in (press + 2 * beat, press + 6 * beat):
+        drums.add(clap(), at, gain=0.8, pan=0.09)
+    for step, moment in enumerate(numpy.arange(press + bar, scenes["headline"] - 1e-6, sixteenth)):
+        drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)] * 0.7, pan=0.54)
+    fill(scenes["headline"] - bar)
 
+    # The grooves. The two that end on a scene close on a fill; the one under
+    # the end card fades instead.
     for at in groove_hits(cues, "kicks"):
-        drums.add(kick(), at, gain=KICK_GAIN)
-    for at in groove_hits(cues, "snares"):
-        drums.add(gated_snare(), at, gain=SNARE_GAIN, reverb=0.15)
-    for start, end in drum_grooves(scenes):
+        drums.add(kick(), at, gain=1.0)
+    for at in groove_hits(cues, "claps"):
+        drums.add(clap(), at, gain=0.8, pan=0.09)
+    for at in groove_hits(cues, "claves"):
+        drums.add(clave(), at, gain=0.12, pan=1.0)
+    grooves = drum_grooves(cues)
+    for start, end in grooves:
         for step, moment in enumerate(numpy.arange(start, end - 1e-6, sixteenth)):
-            drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)], pan=0.3)
-        drums.add(crash(), start, gain=0.7, pan=-0.2, reverb=0.2)
+            drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)], pan=0.54)
+    for _, end in grooves[:-1]:
+        fill(end - bar)
 
-    for index, at in enumerate(cues["stabs"]):
-        chord = ("Am", "F", "G")[index]
-        stab = pad(chord, 0.18, 6000, release=0.5)
-        tonal.add(stab, at, gain=0.8, reverb=0.6)
-        drums.add(kick(), at, gain=0.8)
-        drums.add(snare(), at, gain=0.55, reverb=0.5)
-        drums.add(crash(), at, gain=0.45, reverb=0.3)
-    for step in range(4):
-        drums.add(snare(), scenes["admin"] - beat / 2 + step * beat / 8, gain=0.25 + 0.1 * step, reverb=0.2)
+    # The stabs: the chord in the sequencer's voice, two octaves of it at
+    # once, on a kick and a clap.
+    for at, chord in zip(cues["stabs"], STAB_CHORDS, strict=True):
+        stab = sum(bleep(tone + octave, 1.0) for tone in CHORDS[chord]["tones"] for octave in (12, 24))
+        sequencer.add(stab, at, gain=0.2)
+        drums.add(kick(), at, gain=1.0)
+        drums.add(clap(), at, gain=0.8)
 
+    # The build into the end card: a kick on every beat, the hi-hats, and a
+    # roll of claps that speeds up and swells, over a riser.
     systems = scenes["systems"]
     for at in build_kicks(cues):
-        drums.add(kick(), at, gain=KICK_GAIN)
+        drums.add(kick(), at, gain=1.0)
+    for step, moment in enumerate(numpy.arange(systems, finale - 1e-6, sixteenth)):
+        drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)], pan=0.54)
     roll = [systems + step * beat / 2 for step in range(4)]
     roll += [systems + 2 * beat + step * beat / 4 for step in range(4)]
     roll += [systems + 3 * beat + step * beat / 8 for step in range(8)]
     for index, at in enumerate(roll):
-        drums.add(snare(), at, gain=0.2 + 0.45 * index / len(roll), reverb=0.25)
-    tonal.add(riser(cues["finale"] - systems), systems, gain=0.4, reverb=0.2)
+        drums.add(clap(), at, gain=0.25 + 0.55 * index / len(roll))
+    hits.add(riser(finale - systems), systems, gain=0.4, reverb=0.1)
 
     # The two hits: the merge, with a riser into it, and the end card.
-    tonal.add(riser(cues["press"] - cues["whooshes"][0]), cues["whooshes"][0], gain=0.35, reverb=0.2)
-    for at in (cues["press"], cues["finale"]):
-        drums.add(impact(), at, gain=0.7, reverb=0.5)
-        drums.add(crash(), at, gain=0.7, reverb=0.3)
+    hits.add(riser(press - cues["whooshes"][0]), cues["whooshes"][0], gain=0.35, reverb=0.1)
+    for at in (press, finale):
+        hits.add(impact(), at, gain=0.7, reverb=0.2)
+        hits.add(crash(), at, gain=0.6, reverb=0.1)
 
-    # The pad keeps out of the bass's way, and nothing goes below what a
-    # speaker can play.
-    pumped = (highpassed(pads.mix(reverb_room), 160) + highpassed(bass.mix(reverb_room), 35)) * ducking(cues, length)
-    music = highpassed(drums.mix(reverb_room) + tonal.mix(reverb_room) + pumped, 28)
+    # The sequencer and the lead echo a dotted eighth apart, from side to
+    # side, and nothing goes below what a speaker can play.
+    dotted_eighth = 3 * sixteenth
+    music = (drums.mix(reverb_room) + bass.mix(reverb_room) + hits.mix(reverb_room)
+             + echo(sequencer.mix(reverb_room), dotted_eighth, 0.35, 0.35)
+             + echo(leads.mix(reverb_room), dotted_eighth, 0.3, 0.22))
+    music = highpassed(music, 28)
 
     # The music steps back while the line is typed, so the keys are heard.
     music *= dip(length, cues["keys"][0] - 0.1, cues["enter"] + 0.15, 0.5)
 
-    # The set goes off with the picture: the music stops as the picture folds
-    # to a line, and only the tube's own sound is left.
-    cut = samples(cues["crtOff"] + 0.17)
+    # The music comes up with the picture, from the moment the set is
+    # switched on until the picture stands. A tone at full level on the very
+    # first sample is what an AAC encoder overshoots on, and the television's
+    # second encode would then lower the whole track to keep that one peak
+    # under -1 dBTP.
+    time = clock(length)
+    music *= numpy.clip((time - cues["crtOn"]) / (picture_up - cues["crtOn"]), 0, 1)
+
+    # The music fades away over the end card along a quarter of a cosine:
+    # three decibels down halfway, and gone as the set switches off.
+    fade_start = finale + FADE_AFTER_FINALE
+    music *= numpy.cos(numpy.pi / 2 * numpy.clip((time - fade_start) / (off - fade_start), 0, 1))
+
+    # The set goes off with the picture: whatever is left stops as the
+    # picture folds to a line, and only the tube's own sound remains.
+    cut = samples(off + 0.17)
     fade = samples(0.05)
     music[:, cut:cut + fade] *= numpy.linspace(1, 0, fade)
     music[:, cut + fade:] = 0
@@ -800,15 +925,18 @@ def write_effects(cues, reverb_room):
 
     bus.add(power_on(), cues["crtOn"], gain=1.0)
 
+    # The Merge button's pixels arrive as the film's word is dialed, one key
+    # after another, at the pace of a telephone dialing a stored number.
     build_start, build_end = cues["build"]
-    for index, at in enumerate(numpy.linspace(build_start, build_end, len(BLIP_NOTES), endpoint=False)):
-        bus.add(blip(BLIP_NOTES[index]), at, gain=0.25, pan=-0.3 + 0.6 * index / len(BLIP_NOTES), reverb=0.2)
+    keys = dialed(DIALED)
+    for index, at in enumerate(numpy.linspace(build_start, build_end, len(keys), endpoint=False)):
+        bus.add(dtmf(keys[index]), at, gain=0.3, pan=-0.54 + 1.08 * index / len(keys), reverb=0.05)
 
     # Each logo lands at the loudest moment of its whoosh, a little after the
     # move begins, because the move eases out and covers most of its way at
     # once.
     whoosh = recording("whoosh-short")
-    for at, pan in zip(cues["whooshes"], (-0.5, 0.5), strict=True):
+    for at, pan in zip(cues["whooshes"], (-0.9, 0.9), strict=True):
         bus.add(whoosh, at + 0.08 - loudest_moment(whoosh), gain=1.4, pan=pan)
 
     bus.add(recording("click"), cues["press"], gain=1.8)
@@ -817,9 +945,9 @@ def write_effects(cues, reverb_room):
     pull = cues["meet"] - cues["press"]
     pull_time = clock(pull)
     drawn_in = swept_band(noise(pull), 400 * 20 ** (pull_time / pull), width=0.8) * (pull_time / pull) ** 2
-    bus.add(drawn_in, cues["press"], gain=0.9, reverb=0.3)
-    for note in (81, 88, 95):
-        bus.add(bell(note, 2.0), cues["meet"], gain=0.3, reverb=0.6)
+    bus.add(drawn_in, cues["press"], gain=0.9, reverb=0.15)
+    for note in (69, 76, 81):
+        bus.add(lead(note, 1.4), cues["meet"], gain=0.2, reverb=0.2)
 
     bus.add(scratch(), cues["strike"], gain=1.0)
 
@@ -832,23 +960,23 @@ def write_effects(cues, reverb_room):
         speed = 1 + KEY_VARIATION * (generator.random() - 0.5)
         varied = numpy.interp(numpy.arange(0, len(key) - 1, speed), numpy.arange(len(key)), key)
         level = KEY_GAIN * (1 + KEY_VARIATION * (generator.random() - 0.5))
-        bus.add(varied, at, gain=level, pan=0.3 * (generator.random() - 0.5))
+        bus.add(varied, at, gain=level, pan=0.54 * (generator.random() - 0.5))
     bus.add(key_press, cues["enter"], gain=RETURN_GAIN)
     bus.add(tick(84), cues["banner"], gain=0.5)
     for index, at in enumerate(cues["steps"]):
-        bus.add(tick(88 + (index % 2) * 3), at, gain=0.6, pan=0.2)
+        bus.add(tick(88 + (index % 2) * 3), at, gain=0.6, pan=0.36)
     bus.add(tick(93, 0.2), cues["done"], gain=0.7, reverb=0.3)
 
     for at in cues["captions"]:
-        bus.add(swish(), at - 0.15, gain=0.5, pan=-0.4)
+        bus.add(swish(), at - 0.15, gain=0.5, pan=-0.72)
     for index, at in enumerate(cues["windows"]):
-        bus.add(swish(0.25), at, gain=0.3, pan=0.35 if index % 2 else -0.15)
+        bus.add(swish(0.25), at, gain=0.3, pan=0.63 if index % 2 else -0.27)
 
     for index, at in enumerate(cues["systems"]):
-        bus.add(flap(), at, gain=1.0, pan=0.1 * (index % 3 - 1))
+        bus.add(flap(), at, gain=1.0, pan=0.18 * (index % 3 - 1))
     pop = recording("pop")
     for index, at in enumerate(cues["facts"]):
-        bus.add(pop, at, gain=0.9, pan=-0.4 + 0.4 * index)
+        bus.add(pop, at, gain=0.9, pan=-0.72 + 0.72 * index)
 
     bus.add(power_off(), cues["crtOff"] + 0.17, gain=1.0)
     return bus.mix(reverb_room)
