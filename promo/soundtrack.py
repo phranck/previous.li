@@ -103,20 +103,31 @@ BLEEP_ORDER = (0, 2, 1, 2)
 ZAP_FILL = ((12, 3000), (14, 2000), (15, 1300))
 
 #: The lead's phrases, as the bar from the start of the phrase, the beat in
-#: that bar, how many beats a note lasts, and the note. The call is played
-#: over F and G during the merge, the melody over the admin and the build,
-#: and its last note lands on the end card.
-LEAD_CALL = (
-    (0, 0, 1, "A4"), (0, 1, 1, "C5"), (0, 2, 2, "F5"),
-    (1, 0, 1, "D5"), (1, 1, 1, "B4"), (1, 2, 2, "G4"),
-)
-LEAD_MELODY = (
+#: that bar, how many beats a note lasts, and the note. The theme runs over
+#: Am, Am, F and E and comes back through the whole piece; its last note is
+#: the A it resolves to. The call is played over F and G during the merge.
+LEAD_THEME = (
     (0, 0, 1.5, "E5"), (0, 1.5, 0.5, "E5"), (0, 2, 0.5, "D5"), (0, 2.5, 0.5, "C5"), (0, 3, 1, "D5"),
     (1, 0, 2, "E5"), (1, 2, 1, "G5"), (1, 3, 1, "E5"),
     (2, 0, 1.5, "F5"), (2, 1.5, 0.5, "E5"), (2, 2, 1, "D5"), (2, 3, 1, "C5"),
     (3, 0, 2, "B4"), (3, 2, 1, "G#4"), (3, 3, 1, "B4"),
-    (4, 0, 6, "A4"),
 )
+LEAD_RESOLUTION = ((0, 0, 4, "A4"),)
+LEAD_CALL = (
+    (0, 0, 1, "A4"), (0, 1, 1, "C5"), (0, 2, 2, "F5"),
+    (1, 0, 1, "D5"), (1, 1, 1, "B4"), (1, 2, 2, "G4"),
+)
+
+#: The theme's notes the lead plays on the three stabs, one each.
+LEAD_STABS = ("E5", "C5", "B4")
+
+#: The two bars of the theme's opening, which open the film and return over
+#: the end card.
+THEME_OPENING = tuple(event for event in LEAD_THEME if event[0] < 2)
+
+#: How long after the end card arrives the music starts to fade, in seconds.
+#: It is gone when the set switches off.
+FADE_AFTER_FINALE = 1.0
 
 #: The names of the notes in an octave, for writing a melody as "G#4".
 NOTE_NAMES = {"C": 0, "C#": 1, "D": 2, "D#": 3, "E": 4, "F": 5, "F#": 6, "G": 7, "G#": 8, "A": 9, "A#": 10, "B": 11}
@@ -620,10 +631,12 @@ def loudest_moment(sound):
 # --- the score ---------------------------------------------------------------
 
 
-def drum_grooves(scenes):
+def drum_grooves(cues):
     """Where the drums play a groove: under the headline and the install
-    line, and under the admin."""
-    return ((scenes["headline"], scenes["nothing"]), (scenes["admin"], scenes["systems"]))
+    line, under the admin, and under the end card until the set switches
+    off, where the music fades away."""
+    scenes = cues["scenes"]
+    return ((scenes["headline"], scenes["nothing"]), (scenes["admin"], scenes["systems"]), (cues["finale"], cues["crtOff"]))
 
 
 def bars(start, end, bar):
@@ -647,7 +660,7 @@ def groove_hits(cues, kind):
     bar = 4 * 60 / cues["bpm"]
     sixteenth = bar / SIXTEENTHS
     return [moment + step * sixteenth
-            for start, end in drum_grooves(cues["scenes"])
+            for start, end in drum_grooves(cues)
             for _, moment, pattern in bars(start, end, bar)
             for step in pattern[kind]]
 
@@ -684,11 +697,13 @@ def dip(length, start, end, level, ramp=0.08):
 
 
 def write_music(cues, reverb_room):
-    """The music stem: an electro piece in four parts. The sequencer opens the
-    film alone, the merge brings the drums and the lead's call, the first
-    groove runs under the headline and the install line, the stabs stand on
-    their own, and the second groove carries the lead's melody through the
-    admin and the build to its last note on the end card.
+    """The music stem: an electro piece with one theme running through it.
+
+    The theme's opening sounds from afar as the set comes on, the merge
+    brings the drums and the lead's call, the whole theme runs over the first
+    groove, the stabs take a note of it each, the whole theme runs again over
+    the second groove and the build, and over the end card it resolves, its
+    opening returns, and the music fades away until the set switches off.
 
     Returns:
         Stereo samples for the whole film.
@@ -708,7 +723,7 @@ def write_music(cues, reverb_room):
     def chord_at(moment):
         return PROGRESSION[min(int(moment // bar), len(PROGRESSION) - 1)]
 
-    def phrase(events, start):
+    def phrase(events, start, gain=0.32):
         """Lays a lead phrase down from a bar on, sliding between notes that
         touch."""
         previous = None
@@ -716,7 +731,7 @@ def write_music(cues, reverb_room):
             at = start + offset * bar + beat_in_bar * beat
             note = midi(name)
             glide_from = previous[1] if previous and abs(previous[0] - at) < 1e-6 else None
-            leads.add(lead(note, beats * beat + 0.05, glide_from), at, gain=0.32, pan=0.1)
+            leads.add(lead(note, beats * beat + 0.05, glide_from), at, gain=gain, pan=0.1)
             previous = (at + beats * beat, note)
 
     def fill(bar_start):
@@ -725,35 +740,37 @@ def write_music(cues, reverb_room):
 
     # The sequencer: sixteenths through the chord, an octave and more above
     # it. It opens up from the moment the picture is up to the merge, rests
-    # for the stabs, and dies away over the end card.
+    # for the stabs, and runs on until the set switches off.
     picture_up = cues["crtOn"] + beat
     for start, end in ((picture_up, scenes["nothing"]), (scenes["admin"], off)):
         for moment in numpy.arange(start, end - 1e-6, sixteenth):
             step = int(round((moment % bar) / sixteenth)) % SIXTEENTHS
             tones = CHORDS[chord_at(moment)]["tones"]
             opening = min(1.0, 0.3 + 0.7 * (moment - picture_up) / (press - picture_up))
-            dying = max(0.0, 1 - (moment - finale) / (2 * bar)) if moment >= finale else 1.0
-            if dying <= 0:
-                break
             accent = (1.0 if step in RIFF_STRONG else 0.55) * opening
             note = tones[BLEEP_ORDER[step % len(BLEEP_ORDER)]] + 24
-            sequencer.add(bleep(note, accent), moment, gain=0.09 * min(opening + 0.3, 1.0) * dying, pan=0.4 if step % 2 else -0.4)
+            sequencer.add(bleep(note, accent), moment, gain=0.09 * min(opening + 0.3, 1.0), pan=0.4 if step % 2 else -0.4)
 
     # The bass riff, quiet and closed from the second bar of the opening,
-    # through the merge and the first groove, then through the second groove
-    # and the build, and one held note under the end card.
-    for start, end in ((bar, scenes["nothing"]), (scenes["admin"], finale)):
+    # through the merge and the first groove, then from the admin on until
+    # the set switches off.
+    for start, end in ((bar, scenes["nothing"]), (scenes["admin"], off)):
         for moment in numpy.arange(start, end - 1e-6, bar):
             root = CHORDS[chord_at(moment)]["root"]
             closed = 0.45 if moment < press else 1.0
             for step, interval, steps in RIFF:
                 accent = (1.0 if step in RIFF_STRONG else 0.7) * closed
                 bass.add(bass_note(root + interval, steps * sixteenth, accent), moment + step * sixteenth, gain=0.5)
-    bass.add(bass_note(CHORDS[chord_at(finale)]["root"], off - finale, 0.8, gate=1.0), finale, gain=0.45)
 
-    # The lead: its call over the merge, its melody from the admin on.
+    # The lead and its theme, through the whole piece.
+    phrase(THEME_OPENING, 0.0, gain=0.12)
     phrase(LEAD_CALL, press)
-    phrase(LEAD_MELODY, scenes["admin"])
+    phrase(LEAD_THEME, scenes["headline"])
+    for at, name in zip(cues["stabs"], LEAD_STABS, strict=True):
+        leads.add(lead(midi(name), 0.45), at, gain=0.32, pan=0.1)
+    phrase(LEAD_THEME, scenes["admin"])
+    phrase(LEAD_RESOLUTION, finale)
+    phrase(THEME_OPENING, finale + bar)
 
     # The drums through the merge: half time, claps on the third beat of each
     # bar, the hi-hats from the second bar, and a fill into the groove.
@@ -765,16 +782,19 @@ def write_music(cues, reverb_room):
         drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)] * 0.7, pan=0.3)
     fill(scenes["headline"] - bar)
 
-    # The grooves, each closing on a fill.
+    # The grooves. The two that end on a scene close on a fill; the one under
+    # the end card fades instead.
     for at in groove_hits(cues, "kicks"):
         drums.add(kick(), at, gain=1.0)
     for at in groove_hits(cues, "claps"):
         drums.add(clap(), at, gain=0.8, pan=0.05)
     for at in groove_hits(cues, "claves"):
         drums.add(clave(), at, gain=0.12, pan=0.55)
-    for start, end in drum_grooves(scenes):
+    grooves = drum_grooves(cues)
+    for start, end in grooves:
         for step, moment in enumerate(numpy.arange(start, end - 1e-6, sixteenth)):
             drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)], pan=0.3)
+    for _, end in grooves[:-1]:
         fill(end - bar)
 
     # The stabs: the chord in the sequencer's voice, two octaves of it at
@@ -816,8 +836,14 @@ def write_music(cues, reverb_room):
     # The music steps back while the line is typed, so the keys are heard.
     music *= dip(length, cues["keys"][0] - 0.1, cues["enter"] + 0.15, 0.5)
 
-    # The set goes off with the picture: the music stops as the picture folds
-    # to a line, and only the tube's own sound is left.
+    # The music fades away over the end card along a quarter of a cosine:
+    # three decibels down halfway, and gone as the set switches off.
+    time = clock(length)
+    fade_start = finale + FADE_AFTER_FINALE
+    music *= numpy.cos(numpy.pi / 2 * numpy.clip((time - fade_start) / (off - fade_start), 0, 1))
+
+    # The set goes off with the picture: whatever is left stops as the
+    # picture folds to a line, and only the tube's own sound remains.
     cut = samples(off + 0.17)
     fade = samples(0.05)
     music[:, cut:cut + fade] *= numpy.linspace(1, 0, fade)
