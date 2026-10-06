@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>The cube</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #cube {
+          position: absolute;
+          inset: 0;
+          font-family: var(--font);
+          color: var(--next-white);
+        }
+
+        /* The place is a point at the cube's middle that holds the camera: its
+           perspective, where the cube stands and how large it looks. The three
+           wrappers inside turn the cube about z, x and y, in that order from
+           the outside in, which is how parts.py states the mark's pose. The
+           shadow's place and wrappers are the same, and move with the cube's. */
+        #cube-place,
+        #shadow-place {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 0;
+          height: 0;
+          perspective-origin: 0 0;
+          opacity: 0;
+        }
+
+        #cube .spatial {
+          position: absolute;
+          left: 0;
+          top: 0;
+          transform-style: preserve-3d;
+        }
+
+        /* The cube's shadow on the workspace: a black copy of the cube behind
+           it, dropped below it and softened, as film.js's SHADOW says. */
+        #cube-shadow {
+          position: absolute;
+          inset: 0;
+        }
+
+        /* A face, set back from the cube's edges on every side, so the faces
+           meet with a fugue between them, as the mark draws them. */
+        #cube .face {
+          position: absolute;
+          left: calc(var(--face) / -2);
+          top: calc(var(--face) / -2);
+          width: var(--face);
+          height: var(--face);
+          overflow: hidden;
+          background: var(--next-black);
+          backface-visibility: hidden;
+        }
+
+        #cube .front { transform: translateZ(var(--half)); }
+        #cube .right { transform: rotateY(90deg) translateZ(var(--half)); }
+        #cube .back { transform: rotateY(180deg) translateZ(var(--half)); }
+        #cube .left { transform: rotateY(-90deg) translateZ(var(--half)); }
+        #cube .top { transform: rotateX(90deg) translateZ(var(--half)); }
+        #cube .bottom { transform: rotateX(-90deg) translateZ(var(--half)); }
+
+        /* The mark's top face, with its letters, which arrive as the two
+           machines become one. */
+        #top-letters {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0;
+        }
+
+        /* Each face carries several panels over the film and shows one at a
+           time, changed while the face looks away. A panel is hidden by its
+           opacity rather than its visibility, because HyperFrames makes every
+           timed element inside it visible, which a scene mounted in a panel
+           is. */
+        #cube .panel {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          opacity: 0;
+        }
+
+        #cube .panel > [data-composition-src] {
+          position: absolute;
+          inset: 0;
+        }
+
+        /* The two machines, sliding in along the faces they land on. */
+        #cube .decal {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          visibility: hidden;
+        }
+
+        #cube .decal img {
+          position: absolute;
+          top: 0;
+          height: 100%;
+        }
+
+        /* The three stabs, one to a face. */
+        #cube .slam {
+          margin: 0;
+          font-size: 86px;
+          font-weight: 800;
+          letter-spacing: -0.04em;
+          line-height: 1;
+        }
+
+        /* Four of the File Viewer's applications, and the NeXTcube in the
+           machine's window, each enlarged on the window's own gray. */
+        #panel-icons,
+        #panel-pixels {
+          background: var(--next-light);
+        }
+
+        #icons {
+          width: 463px;
+          height: 329px;
+          background: url("assets/admin/files.png") no-repeat;
+        }
+
+        #pixels {
+          width: 416px;
+          height: 416px;
+          background: url("assets/admin/info.png") no-repeat;
+          image-rendering: pixelated;
+        }
+
+        /* A system, one to a face. */
+        #cube .system {
+          margin: 0;
+          font-size: 50px;
+          font-weight: 600;
+          letter-spacing: -0.01em;
+          color: var(--ink-soft);
+        }
+
+        #cube .version {
+          margin: 0;
+          font-size: 176px;
+          font-weight: 800;
+          letter-spacing: -0.05em;
+          line-height: 1;
+        }
+      </style>
+
+      <div id="cube" data-composition-id="cube" data-width="1440" data-height="1080">
+        <div id="cube-shadow"><div id="shadow-place" data-layout-allow-overflow><div id="shadow-drop" class="spatial"><div id="shadow-z" class="spatial"><div id="shadow-x" class="spatial"><div id="shadow-y" class="spatial">
+          <div class="face front"></div><div class="face right"></div><div class="face back"></div><div class="face left"></div><div class="face top"></div><div class="face bottom"></div>
+        </div></div></div></div></div></div>
+        <div id="cube-place" data-layout-allow-overflow>
+          <div id="cube-z" class="spatial">
+            <div id="cube-x" class="spatial">
+              <div id="cube-y" class="spatial">
+                <div id="face-front" class="face front">
+                  <div id="decal-pi" class="decal"><img id="pi-trail" src="assets/pi-trail.png" alt="" /><img id="pi-sharp" src="assets/pi.png" alt="" /></div>
+                  <div id="panel-headline" class="panel"><div id="slot-headline" data-composition-id="headline" data-composition-src="compositions/faces/headline.html" data-start="0" data-duration="32" data-width="546" data-height="546"></div></div>
+                  <div id="panel-nextstep" class="panel"><p class="slam">Just<br />NeXTSTEP.</p></div>
+                  <div id="panel-browser" class="panel"><div id="slot-browser" data-composition-id="browser" data-composition-src="compositions/faces/browser.html" data-start="0" data-duration="32" data-width="546" data-height="546"></div></div>
+                  <div id="panel-system-3" class="panel"><p class="system">NeXTSTEP</p><p class="version">3.3</p></div>
+                </div>
+                <div id="face-right" class="face right">
+                  <div id="decal-cube" class="decal"><img id="cube-trail" src="assets/cube-trail.png" alt="" /><img id="cube-sharp" src="assets/cube.png" alt="" /></div>
+                  <div id="panel-install" class="panel"><div id="slot-terminal" data-composition-id="terminal" data-composition-src="compositions/faces/terminal.html" data-start="0" data-duration="32" data-width="546" data-height="546"></div></div>
+                  <div id="panel-workspace" class="panel"><div id="slot-workspace" data-composition-id="workspace" data-composition-src="compositions/faces/workspace.html" data-start="0" data-duration="32" data-width="546" data-height="546"></div></div>
+                  <div id="panel-system-0" class="panel"><p class="system">NeXTSTEP</p><p class="version">2.2</p></div>
+                  <div id="panel-system-4" class="panel"><p class="system">OPENSTEP</p><p class="version">4.0</p></div>
+                </div>
+                <div id="face-back" class="face back">
+                  <div id="panel-desktop" class="panel"><p class="slam">No<br />desktop.</p></div>
+                  <div id="panel-icons" class="panel"><div id="icons"></div></div>
+                  <div id="panel-system-1" class="panel"><p class="system">NeXTSTEP</p><p class="version">3.0</p></div>
+                  <div id="panel-system-5" class="panel"><p class="system">OPENSTEP</p><p class="version">4.2</p></div>
+                </div>
+                <div id="face-left" class="face left">
+                  <div id="panel-login" class="panel"><p class="slam">No<br />login.</p></div>
+                  <div id="panel-pixels" class="panel"><div id="pixels"></div></div>
+                  <div id="panel-system-2" class="panel"><p class="system">NeXTSTEP</p><p class="version">3.2</p></div>
+                </div>
+                <div id="face-top" class="face top"><img id="top-letters" src="assets/cube-top.png" alt="" /></div>
+                <div id="face-bottom" class="face bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        (() => {
+          const { tl, at } = window.FILM.scene("cube");
+          const cues = window.CUES;
+          const parts = window.PARTS;
+          const pose = parts.markPose;
+          window.FILM.checkSlots(document.getElementById("cube"));
+
+          // The cube's edge, and the face set back from it on each side by half
+          // the fugue the mark leaves between its faces, which is about two and
+          // a half percent of its edge.
+          const EDGE = 560;
+          const HALF = EDGE / 2;
+          const FACE = EDGE - 14;
+          const root = document.getElementById("cube");
+          root.style.setProperty("--half", `${HALF}px`);
+          root.style.setProperty("--face", `${FACE}px`);
+
+          // The shadow drops and softens inside its place, so it scales with
+          // the cube as the camera moves in and out.
+          const { SHADOW } = window.FILM;
+          document.getElementById("cube-shadow").style.opacity = SHADOW.opacity;
+          document.getElementById("shadow-place").style.filter = `blur(${SHADOW.blur * EDGE}px)`;
+          document.getElementById("shadow-drop").style.transform = `translateY(${SHADOW.drop * EDGE}px)`;
+
+          // How far the camera stands from the cube's middle while the cube
+          // shows its faces, and while it stands as the mark, which is the
+          // distance parts.py fits to the mark's own drawing.
+          const PERSPECTIVE = 2400;
+          const MARK_PERSPECTIVE = HALF * pose.distance;
+
+          // Where the cube stands, and how large it looks, in each part: its
+          // middle in film pixels and a scale over its own size.
+          const PLACES = {
+            opening: { x: 720, y: 470, scale: 0.75 },
+            faces: { x: 720, y: 545, scale: 1 },
+            admin: { x: 720, y: 628, scale: 0.86 },
+            systems: { x: 720, y: 500, scale: 0.85 },
+          };
+
+          // A face shown to the viewer: tipped back a little so the top shows,
+          // and turned a little so the next face shows at the right.
+          const SHOWING = { rotation: 0, rotationX: -12 };
+          const turnedTo = (index) => -10 - 90 * index;
+
+          // The place and angles that put the cube where the mark's picture
+          // stands, a whole number of turns from where it comes from.
+          const asMark = (box, fromY) => {
+            const size = box.height / parts.mark.height;
+            return {
+              x: box.left + pose.center[0] * size,
+              y: box.top + pose.center[1] * size,
+              scale: (pose.halfEdge * size) / HALF,
+              perspective: MARK_PERSPECTIVE,
+              rotation: pose.rotationZ,
+              rotationX: pose.rotationX,
+              rotationY: pose.rotationY + 360 * Math.round((fromY - pose.rotationY) / 360),
+            };
+          };
+
+          // Moves the cube and its shadow: where they stand, how large, how far
+          // the camera is, and the three angles, each on its own wrapper. A
+          // move of no length is set rather than tweened, so seeking past it
+          // shows it.
+          const both = (part) => `#cube-${part}, #shadow-${part}`;
+          const move = (state, filmTime, duration = 0, ease = "none") => {
+            const pick = (...keys) => Object.fromEntries(keys.filter((key) => state[key] !== undefined).map((key) => [key, state[key]]));
+            const targets = {
+              [both("place")]: pick("x", "y", "scale", "perspective"),
+              [both("z")]: pick("rotation"),
+              [both("x")]: pick("rotationX"),
+              [both("y")]: pick("rotationY"),
+            };
+            for (const [target, vars] of Object.entries(targets)) {
+              if (!Object.keys(vars).length) continue;
+              if (duration) tl.to(target, { ...vars, duration, ease }, at(filmTime));
+              else tl.set(target, vars, at(filmTime));
+            }
+          };
+
+          // The faces in the order the quarter turns bring them round, and the
+          // panel each turn shows, in the order of the cue sheet's turns.
+          const FACES = ["front", "right", "back", "left"];
+          const PANELS = ["headline", "install", "desktop", "login", "nextstep", "workspace", "icons", "pixels", "browser", "system-0", "system-1", "system-2", "system-3", "system-4", "system-5"];
+          const turns = cues.turns;
+          const lock = (index) => turns[index][1];
+
+          // A panel has to sit on the face its turn brings round, and the
+          // moments the music marks have to be the moments the cube locks.
+          // check is told when either has drifted.
+          if (turns.length !== PANELS.length) console.error(`The cue sheet has ${turns.length} turns for ${PANELS.length} panels.`);
+          PANELS.forEach((name, index) => {
+            const face = document.getElementById(`panel-${name}`).parentElement.id.replace("face-", "");
+            if (face !== FACES[index % FACES.length]) console.error(`Panel ${name} is on the ${face} face, and turn ${index + 1} shows the ${FACES[index % FACES.length]} face.`);
+          });
+          const locking = (label, moments, first) => moments.forEach((moment, index) => {
+            if (lock(first + index) !== moment) console.error(`${label} ${index + 1} is at ${moment} s, and its turn locks at ${lock(first + index)} s.`);
+          });
+          locking("The headline", [cues.parts.headline], 0);
+          locking("The install line", [cues.parts.install], 1);
+          locking("Stab", cues.stabs, 2);
+          locking("The admin", [cues.parts.admin], 5);
+          locking("Caption", cues.captions, 6);
+          locking("System", cues.systems, 9);
+
+          // --- the merge ---------------------------------------------------
+
+          // The cube grows out of the middle of the picture as it comes up,
+          // half a turn round, and steps round one notch for each key of the
+          // word as it is dialed, a quarter turn in all.
+          const { from: dialFrom, to: dialTo, word } = cues.dial;
+          const NOTCH = 90 / word.length;
+          move({ ...PLACES.opening, scale: 0, perspective: PERSPECTIVE, rotation: 0, rotationX: -20, rotationY: 45 + 180 }, 0);
+          tl.set(both("place"), { opacity: 1 }, at(cues.crtOn));
+          move({ scale: PLACES.opening.scale, rotationY: 45 }, cues.crtOn + 0.45, dialFrom - cues.crtOn - 0.45, "expo.out");
+          for (let index = 0; index < word.length; index++) {
+            move({ rotationY: 45 - NOTCH * (index + 1) }, dialFrom + ((dialTo - dialFrom) * index) / word.length, 0.07, "power2.out");
+          }
+
+          // The two machines slide in along the faces they land on, each from
+          // its own side, with the smear the page's picture gives them. The
+          // NeXT cube is drawn larger, because its own black body disappears
+          // into the face and only its letters show.
+          const DECAL_HEIGHTS = { pi: 300, cube: 430 };
+          const placeDecal = (name, towards) => {
+            const height = DECAL_HEIGHTS[name];
+            const width = (parts[name].width / parts[name].height) * height;
+            const reach = parts.streak.reach;
+            Object.assign(document.getElementById(`decal-${name}`).style, { width: `${width}px`, height: `${height}px`, marginLeft: `${-width / 2}px`, marginTop: `${-height / 2}px` });
+            Object.assign(document.getElementById(`${name}-trail`).style, { left: `${towards === "left" ? -width * reach : 0}px`, width: `${width * (1 + reach)}px`, opacity: parts.streak.opacity });
+            document.getElementById(`${name}-sharp`).style.width = `${width}px`;
+          };
+          placeDecal("pi", "left");
+          placeDecal("cube", "right");
+          const arrivals = { pi: [cues.whooshes[0], -900, "100% 50%"], cube: [cues.whooshes[1], 900, "0% 50%"] };
+          for (const [name, [arrives, from, origin]] of Object.entries(arrivals)) {
+            tl.set(`#decal-${name}`, { visibility: "visible" }, at(arrives));
+            tl.fromTo(`#decal-${name}`, { x: from }, { x: 0, duration: 0.45, ease: "expo.out" }, at(arrives));
+            tl.fromTo(`#${name}-trail`, { scaleX: 2.2, transformOrigin: origin }, { scaleX: 1, duration: 0.6, ease: "expo.out" }, at(arrives));
+          }
+
+          // The cube leans in while the riser climbs. On the press it tips onto
+          // the mark's pose, the machines slide up their faces towards the top
+          // and are gone, and the top shows the letters of the two together.
+          const landed = cues.whooshes[1] + 0.45;
+          move({ scale: 0.82, rotationX: -26, rotationY: -52 }, landed, cues.press - landed, "sine.inOut");
+          const tipping = cues.meet - cues.press;
+          move(asMark(window.FILM.markBox("merge"), -52), cues.press, tipping, "power3.in");
+          tl.to(["#decal-pi", "#decal-cube"], { y: -320, scale: 0.55, opacity: 0, duration: tipping - 0.05, ease: "power2.in" }, at(cues.press));
+          tl.set(["#decal-pi", "#decal-cube"], { visibility: "hidden" }, at(cues.meet));
+          tl.set("#top-letters", { opacity: 1 }, at(cues.meet));
+
+          // The mark's own picture stands in for the cube from the flash until
+          // the cube turns away to the headline.
+          tl.set(both("place"), { opacity: 0 }, at(cues.meet));
+          tl.set(both("place"), { opacity: 1 }, at(turns[0][0]));
+
+          // --- the faces ---------------------------------------------------
+
+          // Each panel shows from the moment its face has turned away, two
+          // turns before its own, and goes once its face has turned away again,
+          // the turn after its own. The first two wait until the cube stops
+          // being the mark, whose sides are plain.
+          const EARLY = 0.01;
+          PANELS.forEach((name, index) => {
+            const shows = index === 0 ? turns[0][0] : index === 1 ? lock(0) + EARLY : lock(index - 2) + EARLY;
+            const goes = index + 1 < turns.length ? lock(index + 1) + EARLY : (cues.spin[0] + cues.spin[1]) / 2;
+            tl.set(`#panel-${name}`, { opacity: 1 }, at(shows));
+            tl.set(`#panel-${name}`, { opacity: 0 }, at(goes));
+          });
+
+          // How each turn moves: the stabs snap round and overshoot, the
+          // systems flick past, and the rest turn as a heavy thing does. A turn
+          // into a new part also moves the cube to that part's place.
+          const kindOf = (index) => (index >= 2 && index <= 4 ? "back.out(1.5)" : index >= 9 ? "power2.inOut" : "power3.inOut");
+          const placeFor = (index) => (index <= 4 ? PLACES.faces : index <= 8 ? PLACES.admin : PLACES.systems);
+          turns.forEach(([start, end], index) => {
+            const state = { ...SHOWING, rotationY: turnedTo(index) };
+            if (index === 0 || placeFor(index) !== placeFor(index - 1)) Object.assign(state, placeFor(index), { perspective: PERSPECTIVE });
+            move(state, start, end - start, kindOf(index));
+          });
+
+          // The install line: the camera moves in on the Terminal while the
+          // line is typed, close enough that its 17 pixel letters come out at
+          // about 32, which reads through the television's scanlines, and back
+          // out before the stabs.
+          const CLOSER = 1.9;
+          const terminal = project("right", 0, 37, { ...SHOWING, rotationY: turnedTo(1) });
+          move({ x: 720 - terminal[0] * CLOSER, y: 580 - terminal[1] * CLOSER, scale: CLOSER }, cues.parts.install + 0.02, 0.4, "power2.inOut");
+          move(PLACES.faces, cues.stabs[0] - 0.36, 0.2, "power2.in");
+
+          // The stabs land a little larger and settle, each on its face.
+          cues.stabs.forEach((filmTime) => {
+            tl.fromTo(both("place"), { scale: PLACES.faces.scale * 1.06 }, { scale: PLACES.faces.scale, duration: 0.35, ease: "expo.out", immediateRender: false }, at(filmTime));
+          });
+
+          // The icons and the pixels: a part of each window's picture, enlarged.
+          const { ADMIN } = window.FILM;
+          const ICONS = { scale: 1.8, from: [163, 262] };
+          Object.assign(document.getElementById("icons").style, {
+            backgroundSize: `${ADMIN.windows.files[0] * ICONS.scale}px auto`,
+            backgroundPosition: `${-ICONS.from[0] * ICONS.scale}px ${-ICONS.from[1] * ICONS.scale}px`,
+          });
+          const PIXELS = { scale: 8, middle: [64.5, 63.5], size: 416 };
+          Object.assign(document.getElementById("pixels").style, {
+            backgroundSize: `${ADMIN.windows.info[0] * PIXELS.scale}px auto`,
+            backgroundPosition: `${PIXELS.size / 2 - PIXELS.middle[0] * PIXELS.scale}px ${PIXELS.size / 2 - PIXELS.middle[1] * PIXELS.scale}px`,
+          });
+
+          // --- the end -------------------------------------------------------
+
+          // After the last system the cube spins up and stops dead on the end
+          // card's beat as the mark, where the mark's picture takes over under
+          // the flash.
+          const [spinStart, spinEnd] = cues.spin;
+          move(asMark(window.FILM.markBox("end"), turnedTo(turns.length - 1) - 540), spinStart, spinEnd - spinStart, "power2.in");
+          tl.set(both("place"), { opacity: 0 }, at(cues.finale));
+
+          /**
+           * Where a point on one of the cube's side faces lands in the film,
+           * before the place moves and scales it: CSS's perspective, with the
+           * cube turned the way its three wrappers turn it.
+           *
+           * @param {string} face "front", "right", "back" or "left".
+           * @param {number} across Film pixels right of the face's middle.
+           * @param {number} down Film pixels below the face's middle.
+           * @param {{rotation: number, rotationX: number, rotationY: number}} angles
+           *   The cube's angles, in degrees.
+           * @returns {number[]} The offset from the cube's middle in film
+           *   pixels, at a scale of one.
+           */
+          function project(face, across, down, angles) {
+            const radians = (degrees) => (degrees * Math.PI) / 180;
+            const aboutY = (degrees, [x, y, z]) => [x * Math.cos(radians(degrees)) + z * Math.sin(radians(degrees)), y, -x * Math.sin(radians(degrees)) + z * Math.cos(radians(degrees))];
+            const aboutX = (degrees, [x, y, z]) => [x, y * Math.cos(radians(degrees)) - z * Math.sin(radians(degrees)), y * Math.sin(radians(degrees)) + z * Math.cos(radians(degrees))];
+            const aboutZ = (degrees, [x, y, z]) => [x * Math.cos(radians(degrees)) - y * Math.sin(radians(degrees)), x * Math.sin(radians(degrees)) + y * Math.cos(radians(degrees)), z];
+            const onCube = aboutY({ front: 0, right: 90, back: 180, left: -90 }[face], [across, down, HALF]);
+            const [x, y, z] = aboutZ(angles.rotation, aboutX(angles.rotationX, aboutY(angles.rotationY, onCube)));
+            const depth = PERSPECTIVE / (PERSPECTIVE - z);
+            return [x * depth, y * depth];
+          }
+
+          window.__timelines["cube"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>The cube's face: one line</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        /* Inconsolata, because the admin sets its Terminal in it as the face
+           closest to NeXT's Ohlfs. assets/fonts/OFL.txt is its license. */
+        @font-face {
+          font-family: "Inconsolata";
+          src: url("assets/fonts/Inconsolata-Regular.woff2") format("woff2");
+          font-weight: 400;
+        }
+        @font-face {
+          font-family: "Inconsolata";
+          src: url("assets/fonts/Inconsolata-Bold.woff2") format("woff2");
+          font-weight: 700;
+        }
+
+        /* The Terminal lies on the NeXTSTEP workspace, as it does on a
+           NeXTSTEP screen, so its black bar stands out from what is behind
+           it, which the cube's black face would swallow. */
+        #terminal {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background: var(--next-desktop);
+          font-family: var(--font);
+          color: var(--next-white);
+        }
+
+        #terminal-title {
+          margin: 0 0 26px;
+          font-size: 48px;
+          font-weight: 700;
+          letter-spacing: -0.03em;
+          line-height: 1;
+        }
+
+        /* A NeXTSTEP Terminal at a little over its own size, after the
+           admin's kit: a one pixel black frame, the bar on its gray ledge, the
+           window's own gray, and a sunken white text view. */
+        #terminal-window {
+          width: 466px;
+          border: 1px solid var(--next-black);
+          background: var(--next-light);
+          text-align: left;
+        }
+
+        #terminal-window .nx-bar {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          height: 26px;
+          padding: 0 3px 2px;
+          background: linear-gradient(180deg, var(--next-black) 0 23px, var(--next-dark) 23px 24px, var(--next-black) 24px 26px);
+          color: var(--next-white);
+        }
+
+        /* The original window buttons, cut out of the running system, drawn
+           at their own pixels and never smoothed. */
+        #terminal-window .nx-button {
+          width: 19px;
+          height: 19px;
+          image-rendering: pixelated;
+        }
+
+        #terminal-window .nx-title {
+          flex: 1;
+          text-align: center;
+          font-size: 15px;
+          font-weight: 700;
+        }
+
+        #terminal-window .nx-face {
+          padding: 9px;
+        }
+
+        #terminal-window .nx-text {
+          padding: 8px 10px;
+          background: var(--next-white);
+          border: 1px solid;
+          border-color: var(--next-dark) var(--next-white) var(--next-white) var(--next-dark);
+          box-shadow: inset 1px 1px 0 var(--next-black);
+          color: var(--next-black);
+          font-family: "Inconsolata", var(--mono);
+          font-size: 17px;
+          line-height: 22px;
+          white-space: pre;
+        }
+
+        #terminal-window .tty-row {
+          position: relative;
+          height: 22px;
+        }
+
+        #terminal-window .tty-out {
+          opacity: 0;
+        }
+
+        /* The steps in bold too, so they read at a glance through the
+           television's scanlines. */
+        #terminal-window .tty-step,
+        #terminal-window .tty-bold {
+          font-weight: 700;
+        }
+
+        #terminal-window .tty-check {
+          color: var(--next-live);
+        }
+
+        #terminal-typed {
+          display: inline-block;
+          clip-path: inset(0 100% 0 0);
+        }
+
+        /* A block caret, one cell of the face wide and nearly a line tall. */
+        #terminal-caret {
+          position: absolute;
+          left: 0;
+          top: 2px;
+          width: 1ch;
+          height: 18px;
+          background: var(--next-black);
+          opacity: 0;
+        }
+      </style>
+
+      <div id="terminal" data-composition-id="terminal" data-width="546" data-height="546">
+        <p id="terminal-title">One line.</p>
+        <div id="terminal-window">
+          <div class="nx-bar">
+            <img class="nx-button" src="assets/next/wbtn-mini.png" alt="" />
+            <span class="nx-title">Terminal</span>
+            <img class="nx-button" src="assets/next/wbtn-close.png" alt="" />
+          </div>
+          <div class="nx-face">
+            <!-- What install.sh prints, cut down to what can be read at a
+                 glance: its name, three of its steps in the order it takes
+                 them, and that NeXTSTEP starts. -->
+            <div class="nx-text"><div class="tty-row">$ <span id="terminal-typed">curl -fsSL https://previous.li/install.sh | bash</span><span id="terminal-caret"></span></div><div class="tty-row tty-out tty-banner"> </div><div class="tty-row tty-out tty-banner tty-bold">  Previously</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> Admin</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> Emulator</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> NeXTSTEP</div><div class="tty-row tty-out tty-done"> </div><div class="tty-row tty-out tty-done tty-bold">  NeXTSTEP starts.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        (() => {
+          const { tl, at } = window.FILM.scene("terminal");
+          const cues = window.CUES;
+
+          // A cell of Inconsolata is half an em, so at the Terminal's size of
+          // 17 pixels a character is 8.5 wide, and the prompt is two of them.
+          const CELL = 8.5;
+          const PROMPT_CELLS = 2;
+
+          // The line, typed one character per keystroke, with the caret ahead
+          // of it. The cue sheet holds one time per character, and
+          // soundtrack.py lays a keystroke on each, so a letter and its key
+          // land on the same frame. Each letter is set half a frame early, so
+          // a time that rounds a hair past its frame still shows on it.
+          const HALF_FRAME = 1 / 60;
+          const characters = document.getElementById("terminal-typed").textContent.length;
+          if (cues.keys.length !== characters) {
+            console.error(`The cue sheet has ${cues.keys.length} keystrokes for a line of ${characters} characters.`);
+          }
+          tl.set("#terminal-caret", { opacity: 1, x: CELL * PROMPT_CELLS }, at(cues.keys[0] - 0.15));
+          cues.keys.forEach((filmTime, index) => {
+            const typed = index + 1;
+            tl.set("#terminal-typed", { clipPath: `inset(0 ${CELL * (characters - typed)}px 0 0)` }, at(filmTime - HALF_FRAME));
+            tl.set("#terminal-caret", { x: CELL * (PROMPT_CELLS + typed) }, at(filmTime - HALF_FRAME));
+          });
+          tl.set("#terminal-caret", { opacity: 0 }, at(cues.enter - HALF_FRAME));
+
+          // What the installer prints, as it prints it.
+          const appear = (targets, filmTime) => tl.to(targets, { opacity: 1, duration: 0.08 }, at(filmTime));
+          appear("#terminal-window .tty-banner", cues.banner);
+          document.querySelectorAll("#terminal-window .tty-step").forEach((line, index) => appear(line, cues.steps[index]));
+          appear("#terminal-window .tty-done", cues.done);
+
+          window.__timelines["terminal"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

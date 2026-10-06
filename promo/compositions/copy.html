@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>The words around the cube, and the mark</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #copy {
+          position: absolute;
+          inset: 0;
+          font-family: var(--font);
+          color: var(--next-white);
+        }
+
+        /* The light behind the mark while it stands as the mark. */
+        #copy-glow {
+          position: absolute;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgb(143 143 196 / 55%), transparent 62%);
+          opacity: 0;
+        }
+
+        /* The mark's own picture, wherever it holds still. */
+        #copy-mark {
+          position: absolute;
+          opacity: 0;
+        }
+
+        /* The word being dialed, a letter for each key. */
+        #copy-dialed {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 846px;
+          margin: 0;
+          font-size: 42px;
+          font-weight: 700;
+          letter-spacing: 0.4em;
+          text-align: center;
+          color: var(--on-workspace-soft);
+        }
+
+        #copy-dialed .letter {
+          opacity: 0;
+        }
+
+        #copy-name,
+        #copy-end-name {
+          position: absolute;
+          left: 0;
+          right: 0;
+          text-align: center;
+        }
+
+        /* The words over the admin's faces: the title, and one caption at a
+           time under it. */
+        #copy-admin {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 132px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          text-align: center;
+        }
+
+        #copy-title {
+          margin: 0;
+          font-size: 56px;
+          font-weight: 650;
+          letter-spacing: -0.02em;
+          line-height: 1.08;
+          opacity: 0;
+        }
+
+        #copy .captions {
+          position: relative;
+          width: 100%;
+          height: 48px;
+          margin: 0;
+          padding: 0;
+          list-style: none;
+        }
+
+        #copy .caption {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 14px;
+          font-size: 34px;
+          line-height: 1.2;
+          opacity: 0;
+        }
+
+        #copy .caption .icon {
+          width: 40px;
+          height: 40px;
+          padding: 7px;
+          border-radius: 10px;
+          background: rgb(255 255 255 / 14%);
+        }
+
+        /* The page's fact chip, at two and a half times the page's size. */
+        #copy .hero__facts {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 862px;
+          gap: 12px;
+          font-size: 38px;
+        }
+
+        #copy .hero__fact {
+          padding-inline: 40px;
+          line-height: 80px;
+          border-width: 2px;
+          border-color: rgb(255 255 255 / 30%);
+          border-radius: 40px;
+          color: var(--next-white);
+          opacity: 0;
+        }
+
+        /* The end card under the mark: what it is, and where. */
+        #copy-claim,
+        #copy-url {
+          position: absolute;
+          left: 0;
+          right: 0;
+          margin: 0;
+          text-align: center;
+          opacity: 0;
+        }
+
+        #copy-claim {
+          font-size: 40px;
+          font-weight: 600;
+          letter-spacing: -0.01em;
+        }
+
+        #copy-url {
+          font-size: 44px;
+          font-weight: 600;
+          color: var(--on-workspace-soft);
+        }
+
+        #copy-trademarks {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 130px;
+          margin: 0 auto;
+          max-width: 1000px;
+          font-size: 16px;
+          color: var(--on-workspace-soft);
+          text-align: center;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="copy" data-composition-id="copy" data-width="1440" data-height="1080">
+        <div id="copy-glow"></div>
+        <img id="copy-mark" src="site/logo.png" alt="" />
+        <p id="copy-dialed"></p>
+        <p id="copy-name" class="name">Previously</p>
+
+        <div id="copy-admin">
+          <p id="copy-title">A browser admin for Previous.</p>
+          <ul class="captions">
+            <li class="caption"><svg class="icon" aria-hidden="true"><use href="site/icons.svg#check"></use></svg>Original icons</li>
+            <li class="caption"><svg class="icon" aria-hidden="true"><use href="site/icons.svg#check"></use></svg>Pixel exact</li>
+            <li class="caption"><svg class="icon" aria-hidden="true"><use href="site/icons.svg#check"></use></svg>In your browser</li>
+          </ul>
+        </div>
+
+        <ul class="hero__facts">
+          <li id="copy-fact" class="hero__fact">Raspberry Pi 4 or 5</li>
+        </ul>
+
+        <p id="copy-end-name" class="name">Previously</p>
+        <p id="copy-claim">The browser admin for the Previous emulator</p>
+        <p id="copy-url">previous.li</p>
+        <p id="copy-trademarks">NeXT, NeXTSTEP, OPENSTEP and the NeXT cube logo are registered trademarks of Apple Computer, Inc. Raspberry Pi is a trademark of Raspberry Pi Ltd.</p>
+
+        <div id="copy-flash" class="flash"></div>
+      </div>
+
+      <script>
+        (() => {
+          const { tl, at, rise } = window.FILM.scene("copy");
+          const cues = window.CUES;
+          const turns = cues.turns;
+          const place = (id, style) => Object.assign(document.getElementById(id).style, Object.fromEntries(Object.entries(style).map(([key, value]) => [key, `${value}px`])));
+
+          // The word being dialed, a letter on each key, while the cube steps
+          // round a notch for each.
+          const { from: dialFrom, to: dialTo, word } = cues.dial;
+          const dialed = document.getElementById("copy-dialed");
+          dialed.textContent = word;
+          const letters = window.FILM.splitLetters(dialed);
+          letters.forEach((letter, index) => {
+            const moment = dialFrom + ((dialTo - dialFrom) * index) / letters.length;
+            tl.fromTo(letter, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.12, ease: "power2.out" }, at(moment));
+          });
+          tl.to(letters, { opacity: 0, y: -10, duration: 0.3, stagger: 0.02, ease: "power2.in" }, at(cues.press - 0.45));
+
+          // The merge ends on a flash, under which the cube gives way to the
+          // mark's own picture, which no cube matches exactly. The picture casts
+          // the cube's shadow, so the shadow stays as it takes over. The name
+          // rises under it, and both go as the cube turns away to the headline.
+          const merge = window.FILM.markBox("merge");
+          place("copy-mark", merge);
+          document.getElementById("copy-mark").style.filter = window.FILM.markShadow(merge);
+          const GLOW = 1000;
+          place("copy-glow", { left: 720 - GLOW / 2, top: merge.top + merge.height / 2 - GLOW / 2, width: GLOW, height: GLOW });
+          tl.set("#copy-flash", { opacity: 0.85 }, at(cues.meet));
+          tl.to("#copy-flash", { opacity: 0, duration: 0.5, ease: "power2.out" }, at(cues.meet));
+          tl.set("#copy-mark", { opacity: 1 }, at(cues.meet));
+          tl.fromTo("#copy-glow", { opacity: 0, scale: 0.5 }, { opacity: 0.9, scale: 1.15, duration: 0.9, ease: "power2.out" }, at(cues.meet));
+          place("copy-name", { top: merge.top + merge.height + 56 });
+          rise(window.FILM.splitLetters(document.getElementById("copy-name")), cues.meet + 1.0, 90);
+          const [leaving] = turns[0];
+          tl.to("#copy-mark", { opacity: 0, duration: 0.12, ease: "power1.in" }, at(leaving));
+          tl.to("#copy-glow", { opacity: 0, duration: 0.3 }, at(leaving));
+          tl.to("#copy-name", { opacity: 0, y: 40, filter: "blur(10px)", duration: 0.3, ease: "power2.in" }, at(leaving - 0.15));
+
+          // The title over the admin's faces, and each caption as its turn
+          // brings round what it says, in the place of the one before it. Both
+          // go as the cube turns to the first system.
+          rise("#copy-title", cues.parts.admin + 0.25, 30);
+          const captions = document.querySelectorAll("#copy-admin .caption");
+          cues.captions.forEach((filmTime, index) => {
+            tl.fromTo(captions[index], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, at(filmTime));
+            if (index > 0) tl.to(captions[index - 1], { opacity: 0, y: -16, duration: 0.25, ease: "power2.in" }, at(filmTime - 0.1));
+          });
+          const firstSystem = turns.findIndex(([, locks]) => locks === cues.systems[0]);
+          tl.to(["#copy-title", captions[captions.length - 1]], { opacity: 0, y: -20, duration: 0.3, ease: "power2.in" }, at(turns[firstSystem][0] - 0.25));
+
+          // The fact chip under the spinning cube.
+          tl.fromTo("#copy-fact", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, at(cues.facts[0]));
+          tl.to("#copy-fact", { opacity: 0, duration: 0.2 }, at(cues.finale - 0.2));
+
+          // The end card: the cube stops dead as the mark under a flash, the
+          // mark's picture takes over, and its name, what it is and where to
+          // find it rise under it.
+          const end = window.FILM.markBox("end");
+          tl.set("#copy-mark", { left: end.left, top: end.top, width: end.width, height: end.height, filter: window.FILM.markShadow(end), opacity: 1 }, at(cues.finale));
+          tl.set("#copy-flash", { opacity: 0.55 }, at(cues.finale));
+          tl.to("#copy-flash", { opacity: 0, duration: 0.6, ease: "power2.out" }, at(cues.finale));
+          // Each line of the end card stands a gap below the one before it:
+          // the name's line of 156 pixels, then the claim's of 48, then the
+          // address.
+          const LINES = { nameGap: 28, name: 156, claimGap: 26, claim: 48, urlGap: 18 };
+          const nameTop = end.top + end.height + LINES.nameGap;
+          const claimTop = nameTop + LINES.name + LINES.claimGap;
+          place("copy-end-name", { top: nameTop });
+          place("copy-claim", { top: claimTop });
+          place("copy-url", { top: claimTop + LINES.claim + LINES.urlGap });
+          rise(window.FILM.splitLetters(document.getElementById("copy-end-name")), cues.finale + 0.2, 70);
+          rise("#copy-claim", cues.finale + 0.55, 30);
+          rise("#copy-url", cues.finale + 0.8, 30);
+          tl.to("#copy-trademarks", { opacity: 1, duration: 0.6 }, at(cues.finale + 1.4));
+
+          window.__timelines["copy"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>
