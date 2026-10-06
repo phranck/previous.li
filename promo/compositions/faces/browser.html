@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>The cube's face: the admin in a browser</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #browser {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* The page's browser frame, holding the admin's whole desk. */
+        #browser .browser {
+          width: 520px;
+        }
+
+        #browser-desk {
+          position: relative;
+          width: 520px;
+          height: 386px;
+          overflow: hidden;
+          background: url("assets/admin/desk.png") 0 0 / 100% 100% no-repeat;
+        }
+
+        /* The two windows that already lie on the desk are drawn as
+           backgrounds, because the workspace face shows the same pictures as
+           images and HyperFrames would find each picture twice. */
+        #browser .window {
+          position: absolute;
+          display: block;
+          max-width: none;
+          background-size: 100% 100%;
+        }
+
+        #browser-files {
+          background-image: url("assets/admin/files.png");
+        }
+
+        #browser-info {
+          background-image: url("assets/admin/info.png");
+        }
+
+        #browser-pi {
+          opacity: 0;
+        }
+      </style>
+
+      <div id="browser" data-composition-id="browser" data-width="546" data-height="546">
+        <div class="browser">
+          <div class="browser__bar">
+            <div class="browser__lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="browser__address">cube.local:8810</div>
+          </div>
+          <div id="browser-desk">
+            <div id="browser-files" class="window"></div>
+            <div id="browser-info" class="window"></div>
+            <img id="browser-pi" class="window" src="assets/admin/pi.png" alt="" />
+          </div>
+        </div>
+      </div>
+
+      <script>
+        (() => {
+          const scene = window.FILM.scene("browser");
+          const cues = window.CUES;
+          const { ADMIN } = window.FILM;
+
+          // The desk fills the frame, so a NeXTSTEP pixel on it is the frame's
+          // width over the desk's width in NeXTSTEP pixels.
+          const DESK_WIDTH = 2240 / ADMIN.deskPixels;
+          const SCALE = 520 / DESK_WIDTH;
+          const onDesk = ([x, y]) => [x * SCALE, y * SCALE];
+
+          // Where the admin keeps its windows on the desk, in NeXTSTEP pixels,
+          // and the Workspace menu's item that opens Info.
+          const DESK = { files: [165, 170], info: [420, 8], pi: [460, 250] };
+          const INFO_MENU_ITEM = { x: 8, y: 50, width: 148, height: 19 };
+
+          window.FILM.placeWindow(document.getElementById("browser-files"), "files", onDesk(DESK.files), SCALE);
+          window.FILM.placeWindow(document.getElementById("browser-info"), "info", onDesk(DESK.info), SCALE);
+          const pi = window.FILM.placeWindow(document.getElementById("browser-pi"), "pi", onDesk(DESK.pi), SCALE);
+          const menuItem = { x: INFO_MENU_ITEM.x * SCALE, y: INFO_MENU_ITEM.y * SCALE, width: INFO_MENU_ITEM.width * SCALE, height: INFO_MENU_ITEM.height * SCALE };
+          window.FILM.openWindow(scene, document.getElementById("browser-desk"), "#browser-pi", menuItem, pi, cues.windows[2]);
+
+          window.__timelines["browser"] = scene.tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

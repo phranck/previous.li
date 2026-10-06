@@ -18,17 +18,27 @@
     <!-- The cue sheet. Every moment that a sound and a picture share is stated
          here once: the scenes read it through assets/film.js, and
          soundtrack.py reads it out of this file to place the music and the
-         effects. Seconds from the start of the film. -->
+         effects. Seconds from the start of the film.
+
+         The scenes are the compositions: the cube and the words around it,
+         and the four faces of the cube that are scenes of their own. The parts
+         are the story's, and the music's sections follow them. The dial is
+         the word the cube steps round to as it is dialed. The turns are the
+         cube's quarter turns, each from when it starts to when it locks, and
+         the cube checks that the stabs, the captions and the systems lock
+         where the cue sheet places them. -->
     <script id="cues" type="application/json">
       {
         "bpm": 120,
         "length": 32,
-        "scenes": { "opening": 0, "headline": 8, "install": 12, "nothing": 16, "admin": 18, "systems": 24, "end": 26 },
+        "scenes": { "cube": 0, "copy": 0, "headline": 0, "terminal": 0, "workspace": 0, "browser": 0 },
+        "parts": { "opening": 0, "headline": 8, "install": 12, "nothing": 16, "admin": 18, "systems": 24, "end": 26 },
         "crtOn": 0,
-        "build": [1.0, 2.0],
+        "dial": { "word": "PREVIOUSLY", "from": 1.0, "to": 2.0 },
         "whooshes": [2.0, 2.5],
         "press": 4.0,
         "meet": 4.55,
+        "turns": [[7.6, 8.0], [11.6, 12.0], [15.82, 16.0], [16.57, 16.75], [17.32, 17.5], [17.7, 18.0], [18.9, 19.2], [20.5, 20.8], [21.9, 22.2], [23.8, 24.0], [24.08, 24.25], [24.33, 24.5], [24.52, 24.625], [24.65, 24.75], [24.775, 24.875]],
         "strike": 9.5,
         "keys": [12.3, 12.3333, 12.3666, 12.4, 12.4333, 12.5, 12.5333, 12.5666, 12.6, 12.6333, 12.6666, 12.7333, 12.7666, 12.8, 12.8333, 12.8666, 12.9, 12.9666, 13.0333, 13.1, 13.1333, 13.1666, 13.2, 13.2333, 13.2666, 13.3, 13.3333, 13.3666, 13.4333, 13.4666, 13.5, 13.5666, 13.6, 13.6333, 13.6666, 13.7, 13.7333, 13.7666, 13.8, 13.8666, 13.9, 13.9333, 14, 14.0333, 14.1, 14.1333, 14.1666, 14.2],
         "enter": 14.3333,
@@ -40,6 +50,7 @@
         "captions": [19.2, 20.8, 22.2],
         "systems": [24.0, 24.25, 24.5, 24.625, 24.75, 24.875],
         "facts": [25.0],
+        "spin": [24.875, 26.0],
         "finale": 26.0,
         "crtOff": 31.45
       }
@@ -79,8 +90,9 @@
         inset: 0;
       }
 
+      /* The NeXTSTEP workspace the cube stands on for the whole film, lit a
+         little above its middle. */
       #ground,
-      #horizon,
       #lift {
         position: absolute;
         inset: 0;
@@ -89,13 +101,6 @@
 
       #ground {
         background: var(--next-desktop);
-      }
-
-      /* The page's opening, which starts a shade lighter and sinks into the
-         page. Shown on the dark scenes only. */
-      #horizon {
-        background: linear-gradient(180deg, var(--paper-raised), transparent 75%);
-        opacity: 0;
       }
 
       #lift {
@@ -128,22 +133,6 @@
         box-shadow: 0 0 30px 10px rgb(200 200 255 / 85%);
       }
 
-      /* What more than one scene uses. */
-      .center {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-      }
-
-      .fill {
-        position: absolute;
-        inset: 0;
-      }
-
       .name {
         margin: 0;
         font-size: 156px;
@@ -164,22 +153,24 @@
         opacity: 0;
         pointer-events: none;
       }
+
+      /* One of the outlines a NeXTSTEP window opens through. */
+      .outline {
+        position: absolute;
+        border: 1px solid rgb(255 255 255 / 85%);
+        box-sizing: border-box;
+        opacity: 0;
+      }
     </style>
   </head>
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="32" data-width="1440" data-height="1080">
       <div id="tube">
         <div id="ground"></div>
-        <div id="horizon"></div>
         <div id="lift"></div>
 
-        <div id="slot-opening" data-composition-id="opening" data-composition-src="compositions/opening.html" data-start="0" data-duration="8" data-track-index="1" data-width="1440" data-height="1080"></div>
-        <div id="slot-headline" data-composition-id="headline" data-composition-src="compositions/headline.html" data-start="8" data-duration="4" data-track-index="1" data-width="1440" data-height="1080"></div>
-        <div id="slot-install" data-composition-id="install" data-composition-src="compositions/install.html" data-start="12" data-duration="4" data-track-index="1" data-width="1440" data-height="1080"></div>
-        <div id="slot-nothing" data-composition-id="nothing" data-composition-src="compositions/nothing.html" data-start="16" data-duration="2" data-track-index="1" data-width="1440" data-height="1080"></div>
-        <div id="slot-admin" data-composition-id="admin" data-composition-src="compositions/admin.html" data-start="18" data-duration="6" data-track-index="1" data-width="1440" data-height="1080"></div>
-        <div id="slot-systems" data-composition-id="systems" data-composition-src="compositions/systems.html" data-start="24" data-duration="2" data-track-index="1" data-width="1440" data-height="1080"></div>
-        <div id="slot-end" data-composition-id="end" data-composition-src="compositions/end.html" data-start="26" data-duration="6" data-track-index="1" data-width="1440" data-height="1080"></div>
+        <div id="slot-cube" data-composition-id="cube" data-composition-src="compositions/cube.html" data-start="0" data-duration="32" data-track-index="1" data-width="1440" data-height="1080"></div>
+        <div id="slot-copy" data-composition-id="copy" data-composition-src="compositions/copy.html" data-start="0" data-duration="32" data-track-index="2" data-width="1440" data-height="1080"></div>
       </div>
 
       <div id="beam"></div>
@@ -192,27 +183,15 @@
     <script>
       (() => {
         const tl = gsap.timeline({ paused: true });
-        const scenes = window.CUES.scenes;
-        const paper = window.FILM.token("--paper");
-        const workspace = window.FILM.token("--next-desktop");
-        const black = window.FILM.token("--next-black");
 
-        // The soundtrack is laid out from the cue sheet, so a slot that starts
-        // anywhere else plays against the wrong sound. check reports the error.
-        for (const [id, start] of Object.entries(scenes)) {
-          const slot = document.getElementById(`slot-${id}`);
-          if (!slot || Number(slot.dataset.start) !== start) {
-            console.error(`Scene ${id} starts at ${slot && slot.dataset.start} in the markup and at ${start} on the cue sheet.`);
-          }
-        }
-
-        // The film, its two sound tracks and its last scene end where the cue
-        // sheet says, which is also how long soundtrack.py makes the stems.
+        // The scenes start where the cue sheet places them, and the film and
+        // its two sound tracks end where it says, which is also how long
+        // soundtrack.py makes the stems. check reports any that do not.
+        window.FILM.checkSlots(document.getElementById("tube"));
         const ends = {
           "The film": Number(document.getElementById("root").dataset.duration),
           "The music track": Number(document.getElementById("music").dataset.duration),
           "The effects track": Number(document.getElementById("effects").dataset.duration),
-          "The last scene": Number(document.getElementById("slot-end").dataset.start) + Number(document.getElementById("slot-end").dataset.duration),
         };
         for (const [part, end] of Object.entries(ends)) {
           if (end !== window.CUES.length) {
@@ -229,18 +208,6 @@
         tl.to("#tube", { clipPath: "inset(0% 0% 0% 0%)", duration: 0.34, ease: "expo.out" }, on + 0.18);
         tl.to("#beam", { opacity: 0, duration: 0.25, ease: "power2.out" }, on + 0.18);
         tl.to("#tube", { filter: "brightness(1)", duration: 0.8, ease: "power2.out" }, on + 0.18);
-
-        // The ground each scene stands on: the workspace a NeXTSTEP window
-        // lies on, or the page's own dark.
-        tl.to("#ground", { backgroundColor: paper, duration: 0.35, ease: "power1.inOut" }, scenes.headline - 0.35);
-        tl.to("#horizon", { opacity: 1, duration: 0.35 }, scenes.headline - 0.35);
-        tl.set("#ground", { backgroundColor: black }, scenes.nothing);
-        tl.set("#horizon", { opacity: 0 }, scenes.nothing);
-        tl.set("#ground", { backgroundColor: workspace }, window.CUES.stabs[2]);
-        tl.to("#ground", { backgroundColor: paper, duration: 0.35 }, scenes.systems - 0.35);
-        tl.to("#horizon", { opacity: 1, duration: 0.35 }, scenes.systems - 0.35);
-        tl.set("#ground", { backgroundColor: workspace }, window.CUES.finale);
-        tl.set("#horizon", { opacity: 0 }, window.CUES.finale);
 
         // The power going off: the picture flares, folds to a line, the line
         // to a point, and the point fades.

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>The cube's face: a NeXTSTEP workspace</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        /* The admin's own desk, at three quarters of a NeXTSTEP pixel to a
+           film pixel, which puts its menu in the top left of the face. */
+        #workspace {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          background: var(--next-desktop) url("assets/admin/desk.png") 0 0 / 672px auto no-repeat;
+        }
+
+        #workspace .window {
+          position: absolute;
+          display: block;
+          max-width: none;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="workspace" data-composition-id="workspace" data-width="546" data-height="546">
+        <img id="workspace-files" class="window" src="assets/admin/files.png" alt="" />
+        <img id="workspace-info" class="window" src="assets/admin/info.png" alt="" />
+      </div>
+
+      <script>
+        (() => {
+          const scene = window.FILM.scene("workspace");
+          const cues = window.CUES;
+
+          // The File Viewer and the machine's window open where the menu leaves
+          // them room, the machine's last and over the File Viewer's corner,
+          // at the scale the desk is drawn at.
+          const SCALE = 0.75;
+          const holder = document.getElementById("workspace");
+          const files = window.FILM.placeWindow(document.getElementById("workspace-files"), "files", [45, 120], SCALE);
+          const info = window.FILM.placeWindow(document.getElementById("workspace-info"), "info", [240, 15], SCALE);
+          window.FILM.openWindow(scene, holder, "#workspace-files", window.FILM.middleOf(files), files, cues.windows[0]);
+          window.FILM.openWindow(scene, holder, "#workspace-info", window.FILM.middleOf(info), info, cues.windows[1]);
+
+          window.__timelines["workspace"] = scene.tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

@@ -24,6 +24,7 @@ window.FILM = {
   scene(id) {
     const tl = gsap.timeline({ paused: true });
     const start = window.CUES.scenes[id];
+    if (start === undefined) console.error(`Scene ${id} is not on the cue sheet.`);
     const at = (filmTime) => filmTime - start;
 
     /**
@@ -45,6 +46,24 @@ window.FILM = {
     };
 
     return { tl, at, rise };
+  },
+
+  /**
+   * Tells check about every slot in a container that starts or ends anywhere
+   * else than the cue sheet says: the soundtrack is laid out from the cue
+   * sheet, so a scene that starts elsewhere plays against the wrong sound, and
+   * every scene of this film runs to its end.
+   *
+   * @param {Element} container Where the slots are mounted.
+   */
+  checkSlots(container) {
+    container.querySelectorAll("[data-composition-src]").forEach((slot) => {
+      const id = slot.dataset.compositionId;
+      const start = window.CUES.scenes[id];
+      const end = Number(slot.dataset.start) + Number(slot.dataset.duration);
+      if (Number(slot.dataset.start) !== start) console.error(`Scene ${id} starts at ${slot.dataset.start} in the markup and at ${start} on the cue sheet.`);
+      if (end !== window.CUES.length) console.error(`Scene ${id} ends at ${end} s, and the cue sheet says the film lasts ${window.CUES.length} s.`);
+    });
   },
 
   /**
@@ -74,5 +93,111 @@ window.FILM = {
     });
     element.replaceChildren(...letters);
     return letters;
+  },
+
+  /**
+   * Where the mark stands while it holds still, as the box its picture fills:
+   * large under the merge, and small over the end card's name. The cube
+   * stops in this box as the mark, and the mark's own picture takes over in
+   * it, so both scenes read it from here.
+   *
+   * @param {"merge"|"end"} moment Which of the two.
+   * @returns {{left: number, top: number, width: number, height: number}} The
+   *   box in film pixels, centered across the picture.
+   */
+  markBox(moment) {
+    const MARK_BOXES = { merge: { height: 420, top: 170 }, end: { height: 230, top: 252 } };
+    const { height, top } = MARK_BOXES[moment];
+    const width = (height * window.PARTS.mark.width) / window.PARTS.mark.height;
+    return { left: 720 - width / 2, top, width, height };
+  },
+
+  /**
+   * The admin's windows and its desk, as site/shot.py takes them: each
+   * window's size in NeXTSTEP pixels, and how many image pixels a side each
+   * NeXTSTEP pixel is drawn with, in a window's picture and in the desk's.
+   */
+  ADMIN: {
+    windowPixels: 4,
+    deskPixels: 2.5,
+    windows: { files: [470, 480], info: [400, 259], pi: [360, 373] },
+  },
+
+  /**
+   * Places one of the admin's windows by its size in NeXTSTEP pixels. A
+   * picture retaken at another size would be placed by the wrong numbers, so
+   * an img is decoded and check is told when its size differs.
+   *
+   * @param {Element} element The window's img, or a div showing its picture.
+   * @param {"files"|"info"|"pi"} name The window, by the admin's name for it.
+   * @param {number[]} corner Its top left in film pixels, inside its holder.
+   * @param {number} scale Film pixels to a NeXTSTEP pixel.
+   * @returns {{x: number, y: number, width: number, height: number}} What it
+   *   covers, in film pixels.
+   */
+  placeWindow(element, name, corner, scale) {
+    const [x, y] = corner;
+    const [width, height] = this.ADMIN.windows[name];
+    const box = { x, y, width: width * scale, height: height * scale };
+    Object.assign(element.style, { left: `${box.x}px`, top: `${box.y}px`, width: `${box.width}px`, height: `${box.height}px` });
+    if (element instanceof HTMLImageElement) {
+      element
+        .decode()
+        .then(() => {
+          const taken = [element.naturalWidth / this.ADMIN.windowPixels, element.naturalHeight / this.ADMIN.windowPixels];
+          if (taken[0] !== width || taken[1] !== height) {
+            console.error(`assets/admin/${name}.png is ${taken.join(" by ")} NeXTSTEP pixels, and the film places it as ${width} by ${height}.`);
+          }
+        })
+        .catch(() => console.error(`assets/admin/${name}.png did not load.`));
+    }
+    return box;
+  },
+
+  /**
+   * Opens a window as NeXTSTEP opens one, and as the admin does: eight
+   * outlines growing from where it was asked for to where it will be, each
+   * drawn for a moment, and then the window itself.
+   *
+   * @param {{tl: object, at: function(number): number}} scene The scene's
+   *   timeline and its clock, as `scene` returns them.
+   * @param {Element} holder Where the outlines are drawn: the window's own
+   *   container.
+   * @param {Element|string} target The window, or a selector for it, which
+   *   appears after the outlines.
+   * @param {{x: number, y: number, width: number, height: number}} from Where
+   *   it was asked for.
+   * @param {{x: number, y: number, width: number, height: number}} to Where it
+   *   will be.
+   * @param {number} filmTime When the first outline is drawn.
+   */
+  openWindow({ tl, at }, holder, target, from, to, filmTime) {
+    const OUTLINES = 8;
+    const OUTLINE_STEP = 0.03;
+    const OUTLINE_LIFE = 0.06;
+    for (let index = 1; index <= OUTLINES; index++) {
+      const share = index / OUTLINES;
+      const between = (key) => from[key] + (to[key] - from[key]) * share;
+      const outline = document.createElement("div");
+      outline.className = "outline";
+      holder.append(outline);
+      const shown = filmTime + (index - 1) * OUTLINE_STEP;
+      tl.set(outline, { opacity: 1, left: between("x"), top: between("y"), width: between("width"), height: between("height") }, at(shown));
+      tl.set(outline, { opacity: 0 }, at(shown + OUTLINE_LIFE));
+    }
+    tl.set(target, { opacity: 1 }, at(filmTime + OUTLINES * OUTLINE_STEP));
+  },
+
+  /**
+   * A small rectangle in the middle of where a window will be, which is
+   * where a window opened from nothing in particular starts.
+   *
+   * @param {{x: number, y: number, width: number, height: number}} box The
+   *   window's rectangle.
+   * @returns {{x: number, y: number, width: number, height: number}} A tenth
+   *   of it, in its middle.
+   */
+  middleOf(box) {
+    return { x: box.x + box.width * 0.45, y: box.y + box.height * 0.45, width: box.width * 0.1, height: box.height * 0.1 };
   },
 };

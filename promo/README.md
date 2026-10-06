@@ -4,7 +4,7 @@ A 32 second promo film for Previously, with sound. It is a [HyperFrames](https:/
 
 ## Making it
 
-HyperFrames needs Node 22 or later and FFmpeg. The two Python scripts need the environment `site/hero.py` uses, with SciPy added for the sound:
+HyperFrames needs Node 22 or later and FFmpeg. The two Python scripts need the environment `site/hero.py` uses, with SciPy added for the sound and for fitting the cube:
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install numpy pillow scipy
@@ -27,7 +27,7 @@ The first stage encodes at CRF 4, close to lossless, and the second reads its fr
 
 ## Taking the admin's windows
 
-The admin scene is made of windows taken out of a running admin, one at a time, and of its desk with no window on it. `site/shot.py` opens its own Chrome on the admin and takes them. It needs websocket-client:
+The admin's faces of the cube are made of windows taken out of a running admin, one at a time, and of its desk with no window on it. `site/shot.py` opens its own Chrome on the admin and takes them. It needs websocket-client:
 
 ```bash
 .venv/bin/pip install websocket-client
@@ -42,16 +42,16 @@ for name in files info pi; do .venv/bin/python site/shot.py window "$name" "prom
 oxipng -o 4 --strip safe promo/assets/admin/*.png
 ```
 
-A window comes out with four image pixels to each of NeXTSTEP's, which is what lets the film go close enough to show them. The scene places each window by its size in NeXTSTEP pixels, and the check reports a picture whose size no longer matches.
+A window comes out with four image pixels to each of NeXTSTEP's, which is what lets the film go close enough to show them. The film places each window by its size in NeXTSTEP pixels, and the check reports a picture whose size no longer matches.
 
 ## How it is put together
 
-- `index.html` is the film. It holds the cue sheet, the ground every scene stands on, the screen switching on and off, and the two sound tracks.
+- `index.html` is the film. It holds the cue sheet, the NeXTSTEP workspace the film stands on, the screen switching on and off, and the two sound tracks.
 - `tv/` is a second HyperFrames project, the television. It plays the rendered film with the HyperFrames CRT treatment on it: curvature, scanlines, a slight channel separation, bloom, vignette and grain, set in `data-color-grading` on its video. Over that it draws what the treatment has no control for, which is the phosphor stripes, the light on the glass, the hum bar rolling through the picture, and the set's bezel, whose opening gives the glass its round corners. The film's sound plays from the video, so it is defined only in the film.
 - Both are 4:3, at 1440 by 1080, as a television of the time was. Every scene keeps its content inside the part of the glass the curve does not bend, about 150 pixels in from the sides and 120 from the top and the bottom.
-- `compositions/` holds one file per scene, in the order they play.
-- The cue sheet in `index.html` is the one place where a moment that a picture and a sound share is written down. The scenes read it through `assets/film.js`, and `soundtrack.py` reads it out of `index.html`.
-- `parts.py` draws the Merge button, the cursor and the two smeared logos with the code in `site/hero.py`, so the film and the page draw them the same way.
+- The film is staged on one cube, the cube of the mark, which turns from face to face on the music's beat. `compositions/cube.html` is the cube, and `compositions/copy.html` the words around it and the mark's own picture, which takes the cube's place wherever the mark holds still. The four faces with the most on them are scenes of their own in `compositions/faces/`: the headline, the Terminal, the workspace and the browser.
+- The cue sheet in `index.html` is the one place where a moment that a picture and a sound share is written down. The scenes read it through `assets/film.js`, and `soundtrack.py` reads it out of `index.html`. Its parts are the story's, and the music's sections follow them. Its turns are the cube's quarter turns, and the cube checks that the stabs, the captions and the systems lock where the cue sheet places them.
+- `parts.py` draws the two smeared logos with the code in `site/hero.py`, so the film and the page draw them the same way. It also measures the mark in `site/logo.png`: the pose the cube takes to look like it, and its top face with the letters, laid flat in `assets/cube-top.png` for the cube to carry. No cube matches the drawn mark exactly, and `parts.py` prints how far the cube's corners miss it.
 - `soundtrack.py` synthesizes all of the music and mixes it with the effects into `assets/music.flac` and `assets/effects.flac`.
 - `assets/admin/` holds the admin's windows and its desk, as `site/shot.py` takes them.
 - `site` links to `../site`, because HyperFrames serves only the project's own folder, and the film uses the page's stylesheet, type, mark and icons.
@@ -59,7 +59,7 @@ A window comes out with four image pixels to each of NeXTSTEP's, which is what l
 ## What belongs to somebody else
 
 - Inconsolata in `assets/fonts/` is under the SIL Open Font License, which `OFL.txt` beside it carries.
-- The four recorded effects in `assets/sfx/` are under the Pixabay Content License, as `CREDITS.md` there says.
+- The three recorded effects in `assets/sfx/` are under the Pixabay Content License, as `CREDITS.md` there says.
 - The two window buttons in `assets/next/` are cut out of a screenshot of NeXTSTEP 3.3 by the admin's `design/extract.py`, and are not covered by this repository's license.
 - The windows in `assets/admin/` show the admin's icons, which are the original files out of a NeXTSTEP 3.3 disk image, and are not covered by this repository's license.
 - GSAP is loaded from jsDelivr when the film plays or renders, and comes under [GSAP's standard license](https://gsap.com/standard-license).
