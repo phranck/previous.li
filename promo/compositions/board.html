@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>The board</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #board {
+          position: absolute;
+          inset: 0;
+          font-family: var(--font);
+          color: var(--ink);
+        }
+
+        /* The board's housing, a shade darker than the page, with the
+           modules set into it. The board fills the television's glass, so
+           its housing is all the screen shows around the modules. */
+        #board-housing,
+        #board-modules {
+          position: absolute;
+          inset: 0;
+        }
+
+        #board-housing {
+          background: #09090d;
+        }
+
+        #board .module {
+          position: absolute;
+          perspective: 300px;
+        }
+
+        #board .module.large {
+          perspective: 600px;
+        }
+
+        /* A module's two halves and its flap, each a pixel off the middle so
+           the split between them shows the housing. The halves and the flap's
+           front are lit a little from above. */
+        #board .half,
+        #board .flap {
+          position: absolute;
+          left: 0;
+          width: 100%;
+          height: calc(50% - 1px);
+        }
+
+        #board .half,
+        #board .side {
+          overflow: hidden;
+        }
+
+        #board .upper,
+        #board .front {
+          border-radius: 3px 3px 0 0;
+          background: linear-gradient(180deg, #25252e, #1c1c23);
+        }
+
+        #board .lower,
+        #board .back {
+          border-radius: 0 0 3px 3px;
+          background: linear-gradient(180deg, #18181e, #202027);
+        }
+
+        #board .upper {
+          top: 0;
+        }
+
+        #board .lower {
+          top: calc(50% + 1px);
+        }
+
+        /* The flap lies over the upper half and turns about the split, so a
+         half turn lays it over the lower half, its back showing. */
+        #board .flap {
+          top: 0;
+          transform-origin: 50% calc(100% + 1px);
+          transform-style: preserve-3d;
+        }
+
+        #board .side {
+          position: absolute;
+          inset: 0;
+          backface-visibility: hidden;
+        }
+
+        #board .back {
+          transform: rotateX(180deg);
+        }
+
+        /* A face is the module's full face, of which each half shows its own
+           part. What it shows comes from the module's custom properties: the
+           upper half and the flap's back what the module turns to, the lower
+           half and the flap's front what it turns from. */
+        #board .face {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: var(--face);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          line-height: 1;
+        }
+
+        #board .lower .face,
+        #board .back .face {
+          top: calc(var(--face) / -2 - 1px);
+        }
+
+        #board .upper .face,
+        #board .back .face {
+          color: var(--to-color);
+          background: var(--to-background);
+          image-rendering: var(--to-rendering);
+        }
+
+        #board .upper .face::after,
+        #board .back .face::after {
+          content: var(--to-glyph);
+        }
+
+        #board .lower .face,
+        #board .front .face {
+          color: var(--from-color);
+          background: var(--from-background);
+          image-rendering: var(--from-rendering);
+        }
+
+        #board .lower .face::after,
+        #board .front .face::after {
+          content: var(--from-glyph);
+        }
+
+        #board-trademarks {
+          position: absolute;
+          left: 0;
+          right: 0;
+          margin: 0 auto;
+          max-width: 1000px;
+          font-size: 16px;
+          color: var(--ink-soft);
+          text-align: center;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="board" data-composition-id="board" data-width="1440" data-height="1080">
+        <div id="board-housing"></div>
+        <div id="board-modules" data-layout-allow-overflow></div>
+        <p id="board-trademarks">NeXT, NeXTSTEP, OPENSTEP and the NeXT cube logo are registered trademarks of Apple Computer, Inc. Raspberry Pi is a trademark of Raspberry Pi Ltd.</p>
+        <div id="board-flash" class="flash"></div>
+      </div>
+
+      <script>
+        (() => {
+          const scene = window.FILM.scene("board");
+          const { tl, at } = scene;
+          const cues = window.CUES;
+          const parts = window.PARTS;
+          const { BLANK, KEEP } = window.BOARD;
+          const from = (name) => cues.flips[name][0];
+          const to = (name) => cues.flips[name][1];
+
+          // --- the board -----------------------------------------------------
+
+          // Three rows of large modules for the words, and under them a grid of
+          // small ones, fifty across, wide enough for the install line in one
+          // row, which also shows pictures a part to a module. Both are as
+          // wide as each other.
+          //
+          // The board is laid out at the sizes below and drawn SCALE times as
+          // large about its middle, so it fills the glass of the television
+          // in tv/index.html. Through that set's curve and the opening in its
+          // bezel, the outer modules then end some 25 pixels inside the
+          // opening, where the bezel's shadow has faded. The fifty columns leave no
+          // room to draw the board any larger.
+          const WIDTH = 1117.6;
+          const LEFT = 720 - WIDTH / 2;
+          const LARGE = { name: "large", x: LEFT, y: 190, columns: 18, rows: 3, width: 56, height: 88, gapX: 6.45, gapY: 12, letters: 64 };
+          const SMALL = { name: "small", x: LEFT, y: 510, columns: 50, rows: 9, width: 20, height: 34, gapX: 2.4, gapY: 4, letters: 22 };
+          const GRID_HEIGHT = SMALL.rows * (SMALL.height + SMALL.gapY) - SMALL.gapY;
+          const SCALE = 1.18;
+          const MIDDLE = (LARGE.y + SMALL.y + GRID_HEIGHT) / 2;
+          const holder = document.getElementById("board-modules");
+          Object.assign(holder.style, { transform: `scale(${SCALE})`, transformOrigin: `720px ${MIDDLE}px` });
+
+          // The trademarks stand under the board as it is drawn.
+          const TRADEMARKS_GAP = 24;
+          document.getElementById("board-trademarks").style.top = `${MIDDLE + (SMALL.y + GRID_HEIGHT - MIDDLE) * SCALE + TRADEMARKS_GAP}px`;
+          const board = window.BOARD.create(scene, holder, [LARGE, SMALL], window.FILM.token("--ink"));
+          const [title, middle, caption] = board.rows.large;
+          const small = board.rows.small;
+          const block = (rows, columns) => small.slice(rows[0], rows[1] + 1).flatMap((line) => line.slice(columns[0], columns[1] + 1));
+          const all = (...groups) => groups.flat();
+          const except = (cells, left) => cells.filter((module) => !left.includes(module));
+          const largeRows = board.rows.large.flat();
+          const everything = all(largeRows, small.flat());
+
+          // Lands a text over one of the cue sheet's flips: its first
+          // character on the flip's first moment, and the rest evenly over
+          // the flip, so it fits the clatter soundtrack.py lays under it.
+          const land = (line, words, name) => board.text(line, words, { start: from(name), step: (to(name) - from(name)) / [...words].length });
+
+          // --- the pictures, in the small grid's own pixels ------------------
+
+          const column = (index) => index * (SMALL.width + SMALL.gapX);
+          const FLAP = "#1c1c23";
+          const centeredIn = (columns, image, size, height) => {
+            const width = (size.width / size.height) * height;
+            const span = column(columns[1]) + SMALL.width - column(columns[0]);
+            return { image, x: column(columns[0]) + (span - width) / 2, y: (GRID_HEIGHT - height) / 2, width, height };
+          };
+          const PI_COLUMNS = [4, 19];
+          const NEXT_COLUMNS = [30, 45];
+          const MARK_COLUMNS = [17, 32];
+          const END_MARK = { rows: [0, 6], columns: [18, 31] };
+          const PICTURES = {
+            pi: { color: FLAP, layers: [centeredIn(PI_COLUMNS, "assets/pi.png", parts.pi, 320)] },
+            next: { color: FLAP, layers: [centeredIn(NEXT_COLUMNS, "assets/cube.png", parts.cube, 330)] },
+            mark: { color: FLAP, layers: [centeredIn(MARK_COLUMNS, "site/logo.png", parts.mark, 330)] },
+          };
+          const endHeight = 236;
+          PICTURES.end = { color: FLAP, layers: [{ ...centeredIn(END_MARK.columns, "site/logo.png", parts.mark, endHeight), y: 6 }] };
+
+          // The admin's windows, by their size in NeXTSTEP pixels: floating on
+          // the workspace, and docked on the desk in a browser frame drawn from
+          // gradients, as the page's frame looks.
+          const { windows, desk: deskSize } = window.FILM.ADMIN;
+          for (const name of Object.keys(windows)) window.FILM.checkWindow(name);
+          const windowAt = (name, x, y, scale) => ({ image: `assets/admin/${name}.png`, x, y, width: windows[name][0] * scale, height: windows[name][1] * scale });
+          const FLOATING = 0.68;
+          const desk = { image: "assets/admin/desk.png", x: 0, y: 0, width: deskSize[0] * FLOATING, height: deskSize[1] * FLOATING };
+          const files = windowAt("files", 140, 6, FLOATING);
+          const info = windowAt("info", 700, 30, FLOATING);
+          const workspace = (layers) => ({ color: "#555577", layers: [...layers, desk] });
+          PICTURES.desk = workspace([]);
+          PICTURES.files = workspace([files]);
+          PICTURES.info = workspace([info, files]);
+          const ICONS = { scale: 1.75, from: [35, 262], size: [410, 183] };
+          PICTURES.icons = {
+            color: "#aaaaaa",
+            layers: [{
+              image: "assets/admin/files.png",
+              x: (WIDTH - ICONS.size[0] * ICONS.scale) / 2 - ICONS.from[0] * ICONS.scale,
+              y: (GRID_HEIGHT - ICONS.size[1] * ICONS.scale) / 2 - ICONS.from[1] * ICONS.scale,
+              width: windows.files[0] * ICONS.scale,
+              height: windows.files[1] * ICONS.scale,
+            }],
+          };
+          const PIXELS = { scale: 7, middle: [64.5, 63.5] };
+          PICTURES.pixels = {
+            color: "#aaaaaa",
+            pixelated: true,
+            layers: [{
+              image: "assets/admin/info.png",
+              x: WIDTH / 2 - PIXELS.middle[0] * PIXELS.scale,
+              y: GRID_HEIGHT / 2 - PIXELS.middle[1] * PIXELS.scale,
+              width: windows.info[0] * PIXELS.scale,
+              height: windows.info[1] * PIXELS.scale,
+            }],
+          };
+          const FRAME = { x: (WIDTH - 400) / 2, y: 6, width: 400, bar: 26 };
+          const DOCKED = FRAME.width / deskSize[0];
+          const onDesk = (name, [x, y]) => windowAt(name, FRAME.x + x * DOCKED, FRAME.y + FRAME.bar + y * DOCKED, DOCKED);
+          const light = (index, color) => ({ gradient: `radial-gradient(circle, ${color} 0 5px, transparent 5.5px)`, x: FRAME.x + 8 + index * 16, y: FRAME.y + 7, width: 12, height: 12 });
+          const browser = (extra) => ({
+            color: FLAP,
+            layers: [
+              ...extra,
+              light(0, "#ff5f57"), light(1, "#febc2e"), light(2, "#28c840"),
+              { gradient: "linear-gradient(#373737, #373737)", x: FRAME.x + 120, y: FRAME.y + 5, width: 160, height: 16 },
+              { gradient: "linear-gradient(#272727, #272727)", x: FRAME.x, y: FRAME.y, width: FRAME.width, height: FRAME.bar },
+              onDesk("info", [420, 8]),
+              onDesk("files", [165, 170]),
+              { image: "assets/admin/desk.png", x: FRAME.x, y: FRAME.y + FRAME.bar, width: FRAME.width, height: deskSize[1] * DOCKED },
+            ],
+          });
+          const pi = onDesk("pi", [460, 250]);
+          PICTURES.browser = browser([]);
+          PICTURES.browserPi = browser([pi]);
+          const frame = block([0, SMALL.rows - 1], [Math.floor(FRAME.x / column(1)), Math.ceil((FRAME.x + FRAME.width) / column(1))]);
+
+          // --- the merge -----------------------------------------------------
+
+          // The board wakes with a ripple, PREVIOUSLY lands a letter on each key
+          // as it is dialed, and the π and the NeXT cube flip in, each from its
+          // own side.
+          board.flutter(everything, { start: from("wake"), end: to("wake"), passing: 1, share: 0.35 });
+          const { word, from: dialFrom, to: dialTo } = cues.dial;
+          board.text(middle, word, { landAt: (place) => dialFrom + ((dialTo - dialFrom) * place) / word.length });
+          board.picture(block([0, 8], PI_COLUMNS), PICTURES.pi, { start: from("pi"), end: to("pi"), from: "left" });
+          board.picture(block([0, 8], NEXT_COLUMNS), PICTURES.next, { start: from("next"), end: to("next"), from: "right" });
+
+          // The press: the whole board flutters, the mark's modules landing on
+          // the mark and all the others blank, and the name lands over it a
+          // second later.
+          const markModules = block([0, 8], MARK_COLUMNS);
+          board.flutter(markModules, { start: from("merge"), end: to("merge"), passing: 3, content: board.tile(PICTURES.mark) });
+          board.flutter(except(everything, markModules), { start: from("merge"), end: to("merge"), passing: 3 });
+          land(middle, "Previously", "name");
+          tl.set("#board-flash", { opacity: 0.85 }, at(cues.meet));
+          tl.to("#board-flash", { opacity: 0, duration: 0.5, ease: "power2.out" }, at(cues.meet));
+          board.flutter(everything, { start: from("clearMerge"), end: to("clearMerge"), passing: 0 });
+
+          // --- the headline and the install line -----------------------------
+
+          // Raspberry Pi on the first beats, the word the sentence nearly says
+          // on the third, and on its cue BOOSTS turns into BOOTS in place, a
+          // letter at a time. NeXTSTEP lands on the next bar.
+          const BOOSTS = "boosts";
+          land(title, "Raspberry Pi", "raspberryPi");
+          land(middle, BOOSTS, "boosts");
+          board.text(middle, "boots", { start: cues.strike, step: 0.04, align: "left", from: Math.floor((LARGE.columns - BOOSTS.length) / 2), passing: 1 });
+          land(caption, "NeXTSTEP.", "nextstep");
+          board.flutter(largeRows, { start: from("clearHeadline"), end: to("clearHeadline"), passing: 0 });
+
+          const PROMPT = "$ ";
+          const LINE = "curl -fsSL https://previous.li/install.sh | bash";
+          if (cues.keys.length !== LINE.length) console.error(`The cue sheet has ${cues.keys.length} keystrokes for a line of ${LINE.length} characters.`);
+          land(title, "One line.", "title");
+          board.text(small[1], PROMPT + LINE, { align: "left", landAt: (place) => (place < PROMPT.length ? cues.keys[0] - 0.12 : cues.keys[place - PROMPT.length]), passing: 1 });
+          const green = (place) => (place === 0 ? window.FILM.token("--next-live") : undefined);
+          board.text(small[3], "Previously", { start: cues.banner, align: "left", from: 2, step: 0.015 });
+          ["✓ Admin", "✓ Emulator", "✓ NeXTSTEP"].forEach((line, index) => board.text(small[4 + index], line, { start: cues.steps[index], align: "left", from: 2, step: 0.015, color: green }));
+          board.text(small[8], "NeXTSTEP starts.", { start: cues.done, align: "left", from: 2, step: 0.015 });
+
+          // --- the stabs -----------------------------------------------------
+
+          // The large rows flutter into each stab, the middle one landing the
+          // stab's words on its beat, while the small grid clears.
+          board.flutter(small.flat(), { start: cues.stabs[0] - 0.4, end: cues.stabs[0], passing: 0 });
+          ["No desktop.", "No login.", "Just NeXTSTEP."].forEach((words, index) => {
+            const lands = cues.stabs[index];
+            board.flutter([...title, ...caption], { start: lands - 0.35, end: lands, passing: 2, content: index === 0 ? BLANK : KEEP });
+            board.text(middle, words, { start: lands, step: 0, passing: 3 });
+          });
+          board.flutter(middle, { start: from("clearStabs"), end: to("clearStabs"), passing: 0 });
+
+          // --- the admin -----------------------------------------------------
+
+          // The workspace flips in, and each window opens as the modules under
+          // it turn. Each caption turns the picture to what it says.
+          const grid = small.flat();
+          board.text(title, "A browser admin", { start: from("adminTitle"), step: 0.02 });
+          board.text(middle, "for Previous.", { start: from("adminTitle") + 0.2, step: 0.02 });
+          board.picture(small, PICTURES.desk, { start: from("admin"), end: to("admin"), from: "left" });
+          board.picture(small, PICTURES.files, { start: cues.windows[0], end: cues.windows[0] + 0.25, from: "middle", only: files });
+          board.picture(small, PICTURES.info, { start: cues.windows[1], end: cues.windows[1] + 0.25, from: "middle", only: info });
+          const SHOWS = [["Original icons", PICTURES.icons], ["Pixel exact", PICTURES.pixels]];
+          SHOWS.forEach(([words, picture], index) => {
+            const lands = cues.captions[index];
+            board.text(caption, words, { start: lands, step: 0.015 });
+            board.picture(small, picture, { start: lands - 0.2, end: lands + 0.2, from: index === 1 ? "middle" : "left" });
+          });
+          const inBrowser = cues.captions[2];
+          board.text(caption, "In your browser", { start: inBrowser, step: 0.015 });
+          board.flutter(except(grid, frame), { start: inBrowser - 0.2, end: inBrowser + 0.1, passing: 0 });
+          board.picture([frame], PICTURES.browser, { start: inBrowser - 0.2, end: inBrowser + 0.2, from: "left" });
+          board.picture([frame], PICTURES.browserPi, { start: cues.windows[2], end: cues.windows[2] + 0.25, from: "middle", only: pi });
+          board.flutter(everything, { start: from("clearAdmin"), end: to("clearAdmin"), passing: 0 });
+
+          // --- the systems and the end ---------------------------------------
+
+          // The six systems arrive as departures, each on its beat, with the
+          // size it travels at, and under them the line that says what they
+          // run on.
+          land(title, "Departures", "departures");
+          const SYSTEMS = [["NeXTSTEP 2.2", "23 MB"], ["NeXTSTEP 3.0", "26 MB"], ["NeXTSTEP 3.2", "39 MB"], ["NeXTSTEP 3.3", "61 MB"], ["OPENSTEP 4.0", "75 MB"], ["OPENSTEP 4.2", "75 MB"]];
+          SYSTEMS.forEach(([name, size], index) => {
+            const lands = cues.systems[index];
+            board.text(small[index], `${name.padEnd(40)}${size.padStart(6)}`, { align: "left", from: 2, landAt: (place) => lands - 0.1 + place * 0.002, passing: 1 });
+          });
+          board.text(small[7], "Raspberry Pi 4 or 5", { start: cues.facts[0], step: 0.01 });
+
+          // The end card: the board flutters into the mark, and its name, its
+          // address and its claim land under and beside it.
+          const endModules = block(END_MARK.rows, END_MARK.columns);
+          board.flutter(endModules, { start: from("end"), end: to("end"), passing: 2, content: board.tile(PICTURES.end) });
+          board.flutter(except(everything, endModules), { start: from("end"), end: to("end"), passing: 2 });
+          land(middle, "Previously", "endName");
+          land(caption, "previous.li", "endUrl");
+          land(small[8], "The browser admin for the Previous emulator", "endClaim");
+          tl.set("#board-flash", { opacity: 0.55 }, at(cues.finale));
+          tl.to("#board-flash", { opacity: 0, duration: 0.6, ease: "power2.out" }, at(cues.finale));
+          tl.to("#board-trademarks", { opacity: 1, duration: 0.6 }, at(cues.finale + 1.4));
+
+          board.build();
+          window.__timelines["board"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

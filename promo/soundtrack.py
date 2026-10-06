@@ -4,13 +4,12 @@ effects, each exactly as long as the film.
 
     .venv/bin/python promo/soundtrack.py
 
-Nothing in the music is a recording. Every instrument is synthesized here, so
-the film carries no music anybody else holds a license to. The four effects
-that are recordings come from assets/sfx/, and CREDITS.md there states their
-license.
+Nothing in the film's sound is a recording. Every instrument and every effect
+is synthesized here, so the film carries no sound anybody else holds a
+license to.
 
 Every moment a sound shares with a picture is taken from the cue sheet, the
-JSON block in index.html that the scenes read as well. This reads it out of
+JSON block in index.html that the board reads as well. This reads it out of
 that file, so moving a cue there moves the picture and its sound together.
 
 The music is in A minor, at the cue sheet's tempo, with one chord to a bar. It
@@ -21,7 +20,7 @@ and none of it is taken from one of their recordings. Its timbres are
 modeled on measurements of their album Electric Cafe: synthesizers rich in
 upper harmonics, short and crisp drums, and a wide stereo field.
 
-It needs numpy and scipy, and ffmpeg for reading the MP3s and writing FLAC:
+It needs numpy and scipy, and ffmpeg for writing FLAC:
 
     .venv/bin/pip install numpy scipy
 """
@@ -146,21 +145,17 @@ DTMF_COLUMNS = {"147*": 1209, "2580": 1336, "369#": 1477, "ABCD": 1633}
 #: The letters on a telephone keypad's keys, so a word can be dialed.
 KEYPAD_LETTERS = {"2": "ABC", "3": "DEF", "4": "GHI", "5": "JKL", "6": "MNO", "7": "PQRS", "8": "TUV", "9": "WXYZ"}
 
-#: What the Merge button's pixels dial as they arrive.
-DIALED = "PREVIOUSLY"
-
-#: One key of the install line. Its length is how much of the key-press
-#: recording it uses, in seconds: the press has died away by then, and the
-#: keys are a frame apart, so none runs into the next. Its gain keeps the keys
-#: clear of the music, which dips under them. Its variation is how widely pitch
-#: and level spread from one key to the next, as a fraction, half of it to
-#: either side.
-KEY_LENGTH = 0.03
-KEY_GAIN = 2.6
-KEY_VARIATION = 0.15
-
-#: Return, the whole key-press recording, a firmer stroke than the keys.
-RETURN_GAIN = 3.0
+#: How many flaps clatter for each kind of turn of the board, and how loud
+#: each one is: a single letter, a few, a word, a row, a block of the picture
+#: grid, or the whole board.
+CLATTER = {
+    "letter": (1, 0.3),
+    "letters": (4, 0.25),
+    "word": (10, 0.18),
+    "row": (24, 0.13),
+    "block": (60, 0.09),
+    "board": (140, 0.07),
+}
 
 generator = numpy.random.default_rng(SEED)
 
@@ -628,60 +623,29 @@ def power_off():
     return ramp_out(ramp_in(zap + fizz))
 
 
-def tick(note, seconds=0.09):
-    """A line of the installer arriving: a soft sine with a click on it."""
-    time = clock(seconds)
-    tone = numpy.sin(2 * numpy.pi * hertz(note) * time) * numpy.exp(-time / 0.03)
-    click = filtered(noise(seconds), "highpass", 4000) * numpy.exp(-time / 0.002) * 0.3
-    return ramp_out(ramp_in(tone + click))
-
-
 def flap():
-    """A system name rolling into place: the clack of a split-flap display."""
+    """One flap of the board landing: the clack of a split-flap module."""
     time = clock(0.08)
     clack = filtered(noise(0.08), "bandpass", (1500, 6000)) * numpy.exp(-time / 0.008)
     knock = numpy.sin(2 * numpy.pi * 420 * time) * numpy.exp(-time / 0.015) * 0.5
     return ramp_in(clack + knock)
 
 
-def scratch():
-    """The pen striking the word out: noise drawn quickly downwards."""
-    seconds = 0.22
-    time = clock(seconds)
-    sound = swept_band(noise(seconds), 6000 * 0.08 ** (time / seconds), width=0.8)
-    return ramp_out(ramp_in(sound * numpy.sin(numpy.pi * time / seconds)), 0.02)
+def clatter(bus, start, end, kind):
+    """The board's flaps landing between two moments, as many and as loud as
+    CLATTER gives for the kind of turn, each at a random moment and place
+    across the board, so a large turn rattles and a single letter clacks.
 
-
-def swish(seconds=0.35):
-    """Air moving, as a caption slides in or a window opens."""
-    time = clock(seconds)
-    shape = numpy.sin(numpy.pi * time / seconds) ** 2
-    return swept_band(noise(seconds), 900 * 4 ** (time / seconds), width=1.2) * shape
-
-
-def recording(name):
-    """One of the recorded effects in assets/sfx, as mono samples at RATE,
-    starting at its first audible sample.
-
-    Starting at the onset rather than at the file's first sample is what lets
-    a click land exactly on the frame it belongs to.
+    Args:
+        bus: Where the clacks are laid down.
+        start: When the first may land, in seconds.
+        end: When the last has landed, in seconds.
+        kind: How much of the board turns, as CLATTER names it.
     """
-    with tempfile.NamedTemporaryFile(suffix=".wav") as decoded:
-        subprocess.run(
-            ["ffmpeg", "-v", "error", "-y", "-i", str(ASSETS / "sfx" / f"{name}.mp3"),
-             "-ac", "1", "-ar", str(RATE), "-c:a", "pcm_f32le", decoded.name],
-            check=True)
-        _, sound = wavfile.read(decoded.name)
-    level = numpy.abs(sound)
-    onset = int(numpy.argmax(level > level.max() * 0.05))
-    return sound[onset:].astype(float)
-
-
-def loudest_moment(sound):
-    """Where a sound is loudest, in seconds, measured over 10 ms windows."""
-    window = samples(0.01)
-    energy = numpy.convolve(sound ** 2, numpy.ones(window), "same")
-    return int(numpy.argmax(energy)) / RATE
+    flaps, gain = CLATTER[kind]
+    for _ in range(flaps):
+        at = start + generator.random() * (end - start)
+        bus.add(flap(), at, gain=gain * (0.7 + 0.6 * generator.random()), pan=0.7 * (2 * generator.random() - 1))
 
 
 # --- the score ---------------------------------------------------------------
@@ -691,8 +655,8 @@ def drum_grooves(cues):
     """Where the drums play a groove: under the headline and the install
     line, under the admin, and under the end card until the set switches
     off, where the music fades away."""
-    scenes = cues["scenes"]
-    return ((scenes["headline"], scenes["nothing"]), (scenes["admin"], scenes["systems"]), (cues["finale"], cues["crtOff"]))
+    parts = cues["parts"]
+    return ((parts["headline"], parts["nothing"]), (parts["admin"], parts["systems"]), (cues["finale"], cues["crtOff"]))
 
 
 def bars(start, end, bar):
@@ -731,8 +695,7 @@ def merge_kicks(cues):
 def build_kicks(cues):
     """A kick on every beat of the build into the end card."""
     beat = 60 / cues["bpm"]
-    return list(numpy.arange(cues["scenes"]["systems"], cues["finale"] - 1e-6, beat))
-
+    return list(numpy.arange(cues["parts"]["systems"], cues["finale"] - 1e-6, beat))
 
 
 def dip(length, start, end, level, ramp=0.08):
@@ -768,7 +731,7 @@ def write_music(cues, reverb_room):
     beat = 60 / cues["bpm"]
     bar = 4 * beat
     sixteenth = bar / SIXTEENTHS
-    scenes = cues["scenes"]
+    parts = cues["parts"]
     press, finale, off = cues["press"], cues["finale"], cues["crtOff"]
     drums = Bus(length)
     sequencer = Bus(length)
@@ -798,7 +761,7 @@ def write_music(cues, reverb_room):
     # it. It opens up from the moment the picture is up to the merge, rests
     # for the stabs, and runs on until the set switches off.
     picture_up = cues["crtOn"] + beat
-    for start, end in ((picture_up, scenes["nothing"]), (scenes["admin"], off)):
+    for start, end in ((picture_up, parts["nothing"]), (parts["admin"], off)):
         for moment in numpy.arange(start, end - 1e-6, sixteenth):
             step = int(round((moment % bar) / sixteenth)) % SIXTEENTHS
             tones = CHORDS[chord_at(moment)]["tones"]
@@ -810,7 +773,7 @@ def write_music(cues, reverb_room):
     # The bass riff, quiet and closed from the second bar of the opening,
     # through the merge and the first groove, then from the admin on until
     # the set switches off.
-    for start, end in ((bar, scenes["nothing"]), (scenes["admin"], off)):
+    for start, end in ((bar, parts["nothing"]), (parts["admin"], off)):
         for moment in numpy.arange(start, end - 1e-6, bar):
             root = CHORDS[chord_at(moment)]["root"]
             closed = 0.45 if moment < press else 1.0
@@ -821,10 +784,10 @@ def write_music(cues, reverb_room):
     # The lead and its theme, through the whole piece.
     phrase(THEME_OPENING, 0.0, gain=0.12)
     phrase(LEAD_CALL, press)
-    phrase(LEAD_THEME, scenes["headline"])
+    phrase(LEAD_THEME, parts["headline"])
     for at, name in zip(cues["stabs"], LEAD_STABS, strict=True):
         leads.add(lead(midi(name), 0.45), at, gain=0.32)
-    phrase(LEAD_THEME, scenes["admin"])
+    phrase(LEAD_THEME, parts["admin"])
     phrase(LEAD_RESOLUTION, finale)
     phrase(THEME_OPENING, finale + bar)
 
@@ -834,9 +797,9 @@ def write_music(cues, reverb_room):
         drums.add(kick(), at, gain=1.0)
     for at in (press + 2 * beat, press + 6 * beat):
         drums.add(clap(), at, gain=0.8, pan=0.09)
-    for step, moment in enumerate(numpy.arange(press + bar, scenes["headline"] - 1e-6, sixteenth)):
+    for step, moment in enumerate(numpy.arange(press + bar, parts["headline"] - 1e-6, sixteenth)):
         drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)] * 0.7, pan=0.54)
-    fill(scenes["headline"] - bar)
+    fill(parts["headline"] - bar)
 
     # The grooves. The two that end on a scene close on a fill; the one under
     # the end card fades instead.
@@ -863,7 +826,7 @@ def write_music(cues, reverb_room):
 
     # The build into the end card: a kick on every beat, the hi-hats, and a
     # roll of claps that speeds up and swells, over a riser.
-    systems = scenes["systems"]
+    systems = parts["systems"]
     for at in build_kicks(cues):
         drums.add(kick(), at, gain=1.0)
     for step, moment in enumerate(numpy.arange(systems, finale - 1e-6, sixteenth)):
@@ -875,8 +838,10 @@ def write_music(cues, reverb_room):
         drums.add(clap(), at, gain=0.25 + 0.55 * index / len(roll))
     hits.add(riser(finale - systems), systems, gain=0.4, reverb=0.1)
 
-    # The two hits: the merge, with a riser into it, and the end card.
-    hits.add(riser(press - cues["whooshes"][0]), cues["whooshes"][0], gain=0.35, reverb=0.1)
+    # The two hits: the merge, with a riser into it from the moment the π
+    # starts to flip in, and the end card.
+    arrival = cues["flips"]["pi"][0]
+    hits.add(riser(press - arrival), arrival, gain=0.35, reverb=0.1)
     for at in (press, finale):
         hits.add(impact(), at, gain=0.7, reverb=0.2)
         hits.add(crash(), at, gain=0.6, reverb=0.1)
@@ -916,7 +881,8 @@ def write_music(cues, reverb_room):
 
 def write_effects(cues, reverb_room):
     """The effects stem: everything that belongs to one thing on the screen
-    rather than to the music.
+    rather than to the music. On the board that is mostly the clatter of its
+    flaps, as much of it as turns, when it turns.
 
     Returns:
         Stereo samples for the whole film.
@@ -925,23 +891,20 @@ def write_effects(cues, reverb_room):
 
     bus.add(power_on(), cues["crtOn"], gain=1.0)
 
-    # The Merge button's pixels arrive as the film's word is dialed, one key
-    # after another, at the pace of a telephone dialing a stored number.
-    build_start, build_end = cues["build"]
-    keys = dialed(DIALED)
-    for index, at in enumerate(numpy.linspace(build_start, build_end, len(keys), endpoint=False)):
+    # PREVIOUSLY is dialed a key at a time, at the pace of a telephone dialing
+    # a stored number, and each key's letter lands on the board as it sounds.
+    dial = cues["dial"]
+    keys = dialed(dial["word"])
+    for index, at in enumerate(numpy.linspace(dial["from"], dial["to"], len(keys), endpoint=False)):
         bus.add(dtmf(keys[index]), at, gain=0.3, pan=-0.54 + 1.08 * index / len(keys), reverb=0.05)
+        clatter(bus, at, at, "letter")
 
-    # Each logo lands at the loudest moment of its whoosh, a little after the
-    # move begins, because the move eases out and covers most of its way at
-    # once.
-    whoosh = recording("whoosh-short")
-    for at, pan in zip(cues["whooshes"], (-0.9, 0.9), strict=True):
-        bus.add(whoosh, at + 0.08 - loudest_moment(whoosh), gain=1.4, pan=pan)
+    # The board's turns that the cue sheet names for them alone.
+    for start, end, kind in cues["flips"].values():
+        clatter(bus, start, end, kind)
 
-    bus.add(recording("click"), cues["press"], gain=1.8)
-
-    # The two logos drawn into each other, ending on the flash.
+    # The two logos drawn into the mark as the board flutters, ending as the
+    # mark lands under the flash.
     pull = cues["meet"] - cues["press"]
     pull_time = clock(pull)
     drawn_in = swept_band(noise(pull), 400 * 20 ** (pull_time / pull), width=0.8) * (pull_time / pull) ** 2
@@ -949,34 +912,31 @@ def write_effects(cues, reverb_room):
     for note in (69, 76, 81):
         bus.add(lead(note, 1.4), cues["meet"], gain=0.2, reverb=0.2)
 
-    bus.add(scratch(), cues["strike"], gain=1.0)
+    # BOOSTS turns into BOOTS, a letter at a time.
+    clatter(bus, cues["strike"] - 0.08, cues["strike"] + 0.12, "letters")
 
-    # One key on each character's time in the cue sheet, which is the frame
-    # that character appears on. Each one strays a little in pitch and level,
-    # so a run of them sounds like a hand rather than one sample repeated.
-    key_press = recording("key-press")
-    key = ramp_out(key_press[:samples(KEY_LENGTH)].copy())
+    # The install line lands a character on each key, and the installer's
+    # lines land under it.
     for at in cues["keys"]:
-        speed = 1 + KEY_VARIATION * (generator.random() - 0.5)
-        varied = numpy.interp(numpy.arange(0, len(key) - 1, speed), numpy.arange(len(key)), key)
-        level = KEY_GAIN * (1 + KEY_VARIATION * (generator.random() - 0.5))
-        bus.add(varied, at, gain=level, pan=0.54 * (generator.random() - 0.5))
-    bus.add(key_press, cues["enter"], gain=RETURN_GAIN)
-    bus.add(tick(84), cues["banner"], gain=0.5)
-    for index, at in enumerate(cues["steps"]):
-        bus.add(tick(88 + (index % 2) * 3), at, gain=0.6, pan=0.36)
-    bus.add(tick(93, 0.2), cues["done"], gain=0.7, reverb=0.3)
+        clatter(bus, at, at, "letter")
+    for at in (cues["banner"], *cues["steps"], cues["done"]):
+        clatter(bus, at - 0.2, at + 0.15, "word")
 
+    # Each stab lands with the large rows fluttering into it.
+    for at in cues["stabs"]:
+        clatter(bus, at - 0.35, at, "board")
+
+    # The windows open as the modules under them turn, and each caption turns
+    # the picture to what it says.
+    for at in cues["windows"]:
+        clatter(bus, at, at + 0.25, "row")
     for at in cues["captions"]:
-        bus.add(swish(), at - 0.15, gain=0.5, pan=-0.72)
-    for index, at in enumerate(cues["windows"]):
-        bus.add(swish(0.25), at, gain=0.3, pan=0.63 if index % 2 else -0.27)
+        clatter(bus, at - 0.25, at + 0.2, "block")
 
-    for index, at in enumerate(cues["systems"]):
-        bus.add(flap(), at, gain=1.0, pan=0.18 * (index % 3 - 1))
-    pop = recording("pop")
-    for index, at in enumerate(cues["facts"]):
-        bus.add(pop, at, gain=0.9, pan=-0.72 + 0.72 * index)
+    # The systems arrive as departures, and under them the line that says
+    # what they run on.
+    for at in (*cues["systems"], *cues["facts"]):
+        clatter(bus, at - 0.2, at + 0.12, "word")
 
     bus.add(power_off(), cues["crtOff"] + 0.17, gain=1.0)
     return bus.mix(reverb_room)

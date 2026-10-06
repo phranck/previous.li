@@ -10,25 +10,55 @@
       crossorigin="anonymous"
     ></script>
 
-    <!-- The page's own stylesheet, so the film takes its colors, its type and
-         its components from where the page does: the browser frame and the
-         fact chip are the page's, drawn larger. -->
+    <!-- The page's own stylesheet, so the film takes its colors and its type
+         from where the page does. -->
     <link rel="stylesheet" href="site/site.css" />
 
     <!-- The cue sheet. Every moment that a sound and a picture share is stated
-         here once: the scenes read it through assets/film.js, and
+         here once: the board reads it through assets/film.js, and
          soundtrack.py reads it out of this file to place the music and the
-         effects. Seconds from the start of the film. -->
+         effects. Seconds from the start of the film.
+
+         The parts are the story's, and the music's sections follow them. The
+         dial names the word that is dialed, a letter landing on the board
+         with each key, and when the dialing starts and ends. The flips are
+         the board's turns that no other cue names. Each runs
+         between its two moments, and its third entry says how much of the
+         board turns, which is how loud its clatter is. A flip that clears the
+         board ends before the next words start to turn, because a module set
+         twice keeps whichever change starts last. -->
     <script id="cues" type="application/json">
       {
         "bpm": 120,
         "length": 32,
-        "scenes": { "opening": 0, "headline": 8, "install": 12, "nothing": 16, "admin": 18, "systems": 24, "end": 26 },
+        "scenes": { "board": 0 },
+        "parts": { "opening": 0, "headline": 8, "install": 12, "nothing": 16, "admin": 18, "systems": 24, "end": 26 },
         "crtOn": 0,
-        "build": [1.0, 2.0],
-        "whooshes": [2.0, 2.5],
+        "dial": { "word": "PREVIOUSLY", "from": 1.0, "to": 2.0 },
         "press": 4.0,
         "meet": 4.55,
+        "flips": {
+          "wake": [0.3, 0.75, "board"],
+          "pi": [2.0, 2.45, "block"],
+          "next": [2.5, 2.95, "block"],
+          "merge": [4.0, 4.55, "board"],
+          "name": [5.55, 5.9, "word"],
+          "clearMerge": [7.4, 7.7, "board"],
+          "raspberryPi": [8.0, 8.3333, "word"],
+          "boosts": [9.0, 9.18, "word"],
+          "nextstep": [10.25, 10.52, "word"],
+          "clearHeadline": [11.4, 11.7, "row"],
+          "title": [12.0, 12.3, "word"],
+          "clearStabs": [17.6, 17.8, "row"],
+          "admin": [18.0, 18.4, "block"],
+          "adminTitle": [18.05, 18.55, "row"],
+          "clearAdmin": [23.35, 23.7, "board"],
+          "departures": [23.95, 24.15, "word"],
+          "end": [25.55, 26.0, "board"],
+          "endName": [26.2, 26.5, "word"],
+          "endUrl": [26.5, 26.8, "word"],
+          "endClaim": [26.6, 26.95, "row"]
+        },
         "strike": 9.5,
         "keys": [12.3, 12.3333, 12.3666, 12.4, 12.4333, 12.5, 12.5333, 12.5666, 12.6, 12.6333, 12.6666, 12.7333, 12.7666, 12.8, 12.8333, 12.8666, 12.9, 12.9666, 13.0333, 13.1, 13.1333, 13.1666, 13.2, 13.2333, 13.2666, 13.3, 13.3333, 13.3666, 13.4333, 13.4666, 13.5, 13.5666, 13.6, 13.6333, 13.6666, 13.7, 13.7333, 13.7666, 13.8, 13.8666, 13.9, 13.9333, 14, 14.0333, 14.1, 14.1333, 14.1666, 14.2],
         "enter": 14.3333,
@@ -46,6 +76,7 @@
     </script>
     <script src="assets/film.js"></script>
     <script src="assets/parts.js"></script>
+    <script src="assets/board.js"></script>
 
     <style>
       html,
@@ -79,29 +110,6 @@
         inset: 0;
       }
 
-      #ground,
-      #horizon,
-      #lift {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-      }
-
-      #ground {
-        background: var(--next-desktop);
-      }
-
-      /* The page's opening, which starts a shade lighter and sinks into the
-         page. Shown on the dark scenes only. */
-      #horizon {
-        background: linear-gradient(180deg, var(--paper-raised), transparent 75%);
-        opacity: 0;
-      }
-
-      #lift {
-        background: radial-gradient(ellipse 70% 60% at 50% 38%, rgb(255 255 255 / 7%), transparent 70%);
-      }
-
       #beam,
       #dot {
         position: absolute;
@@ -128,35 +136,6 @@
         box-shadow: 0 0 30px 10px rgb(200 200 255 / 85%);
       }
 
-      /* What more than one scene uses. */
-      .center {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-      }
-
-      .fill {
-        position: absolute;
-        inset: 0;
-      }
-
-      .name {
-        margin: 0;
-        font-size: 156px;
-        font-weight: 700;
-        letter-spacing: -0.03em;
-        line-height: 1;
-        color: var(--next-white);
-      }
-
-      .letter {
-        display: inline-block;
-      }
-
       .flash {
         position: absolute;
         inset: 0;
@@ -169,17 +148,7 @@
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="32" data-width="1440" data-height="1080">
       <div id="tube">
-        <div id="ground"></div>
-        <div id="horizon"></div>
-        <div id="lift"></div>
-
-        <div id="slot-opening" data-composition-id="opening" data-composition-src="compositions/opening.html" data-start="0" data-duration="8" data-track-index="1" data-width="1440" data-height="1080"></div>
-        <div id="slot-headline" data-composition-id="headline" data-composition-src="compositions/headline.html" data-start="8" data-duration="4" data-track-index="1" data-width="1440" data-height="1080"></div>
-        <div id="slot-install" data-composition-id="install" data-composition-src="compositions/install.html" data-start="12" data-duration="4" data-track-index="1" data-width="1440" data-height="1080"></div>
-        <div id="slot-nothing" data-composition-id="nothing" data-composition-src="compositions/nothing.html" data-start="16" data-duration="2" data-track-index="1" data-width="1440" data-height="1080"></div>
-        <div id="slot-admin" data-composition-id="admin" data-composition-src="compositions/admin.html" data-start="18" data-duration="6" data-track-index="1" data-width="1440" data-height="1080"></div>
-        <div id="slot-systems" data-composition-id="systems" data-composition-src="compositions/systems.html" data-start="24" data-duration="2" data-track-index="1" data-width="1440" data-height="1080"></div>
-        <div id="slot-end" data-composition-id="end" data-composition-src="compositions/end.html" data-start="26" data-duration="6" data-track-index="1" data-width="1440" data-height="1080"></div>
+        <div id="slot-board" data-composition-id="board" data-composition-src="compositions/board.html" data-start="0" data-duration="32" data-track-index="1" data-width="1440" data-height="1080"></div>
       </div>
 
       <div id="beam"></div>
@@ -192,27 +161,15 @@
     <script>
       (() => {
         const tl = gsap.timeline({ paused: true });
-        const scenes = window.CUES.scenes;
-        const paper = window.FILM.token("--paper");
-        const workspace = window.FILM.token("--next-desktop");
-        const black = window.FILM.token("--next-black");
 
-        // The soundtrack is laid out from the cue sheet, so a slot that starts
-        // anywhere else plays against the wrong sound. check reports the error.
-        for (const [id, start] of Object.entries(scenes)) {
-          const slot = document.getElementById(`slot-${id}`);
-          if (!slot || Number(slot.dataset.start) !== start) {
-            console.error(`Scene ${id} starts at ${slot && slot.dataset.start} in the markup and at ${start} on the cue sheet.`);
-          }
-        }
-
-        // The film, its two sound tracks and its last scene end where the cue
-        // sheet says, which is also how long soundtrack.py makes the stems.
+        // The board starts where the cue sheet places it, and the film and its
+        // two sound tracks end where it says, which is also how long
+        // soundtrack.py makes the stems. check reports any that do not.
+        window.FILM.checkSlots(document.getElementById("tube"));
         const ends = {
           "The film": Number(document.getElementById("root").dataset.duration),
           "The music track": Number(document.getElementById("music").dataset.duration),
           "The effects track": Number(document.getElementById("effects").dataset.duration),
-          "The last scene": Number(document.getElementById("slot-end").dataset.start) + Number(document.getElementById("slot-end").dataset.duration),
         };
         for (const [part, end] of Object.entries(ends)) {
           if (end !== window.CUES.length) {
@@ -236,18 +193,6 @@
         // element under it for whether it paints, at every moment it samples,
         // and never gets through a scene of thousands of elements.
         tl.set("#tube", { clipPath: "none" }, on + 0.18 + 0.34);
-
-        // The ground each scene stands on: the workspace a NeXTSTEP window
-        // lies on, or the page's own dark.
-        tl.to("#ground", { backgroundColor: paper, duration: 0.35, ease: "power1.inOut" }, scenes.headline - 0.35);
-        tl.to("#horizon", { opacity: 1, duration: 0.35 }, scenes.headline - 0.35);
-        tl.set("#ground", { backgroundColor: black }, scenes.nothing);
-        tl.set("#horizon", { opacity: 0 }, scenes.nothing);
-        tl.set("#ground", { backgroundColor: workspace }, window.CUES.stabs[2]);
-        tl.to("#ground", { backgroundColor: paper, duration: 0.35 }, scenes.systems - 0.35);
-        tl.to("#horizon", { opacity: 1, duration: 0.35 }, scenes.systems - 0.35);
-        tl.set("#ground", { backgroundColor: workspace }, window.CUES.finale);
-        tl.set("#horizon", { opacity: 0 }, window.CUES.finale);
 
         // The power going off: the picture flares, folds to a line, the line
         // to a point, and the point fades.
