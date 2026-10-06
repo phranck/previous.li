@@ -23,6 +23,25 @@ The render runs in two stages. The first, `npm --prefix promo run film`, renders
 
 `npm --prefix promo run dev` opens the film in the HyperFrames Studio, where it plays and every part of it can be edited. `npm --prefix promo run dev:tv` opens the television, which shows whatever the last render put into `promo/tv/film.mp4`.
 
+## Taking the admin's windows
+
+The admin scene is made of windows taken out of a running admin, one at a time, and of its desk with no window on it. `site/shot.py` opens its own Chrome on the admin and takes them. It needs websocket-client:
+
+```bash
+.venv/bin/pip install websocket-client
+.venv/bin/python site/shot.py open http://next.local:8810/
+```
+
+In that Chrome, open the File Viewer's Apps folder. Then take the three windows and the desk:
+
+```bash
+for name in files info pi; do .venv/bin/python site/shot.py window "$name" "promo/assets/admin/$name.png"; done
+.venv/bin/python site/shot.py desk promo/assets/admin/desk.png
+oxipng -o 4 --strip safe promo/assets/admin/*.png
+```
+
+A window comes out with four image pixels to each of NeXTSTEP's, which is what lets the film go close enough to show them. The scene places each window by its size in NeXTSTEP pixels, and the check reports a picture whose size no longer matches.
+
 ## How it is put together
 
 - `index.html` is the film. It holds the cue sheet, the ground every scene stands on, the screen switching on and off, and the two sound tracks.
@@ -32,13 +51,15 @@ The render runs in two stages. The first, `npm --prefix promo run film`, renders
 - The cue sheet in `index.html` is the one place where a moment that a picture and a sound share is written down. The scenes read it through `assets/film.js`, and `soundtrack.py` reads it out of `index.html`.
 - `parts.py` draws the Merge button, the cursor and the two smeared logos with the code in `site/hero.py`, so the film and the page draw them the same way.
 - `soundtrack.py` synthesizes all of the music and mixes it with the effects into `assets/music.flac` and `assets/effects.flac`.
-- `site` links to `../site`, because HyperFrames serves only the project's own folder, and the film uses the page's stylesheet, type, mark, icons and screenshot.
+- `assets/admin/` holds the admin's windows and its desk, as `site/shot.py` takes them.
+- `site` links to `../site`, because HyperFrames serves only the project's own folder, and the film uses the page's stylesheet, type, mark and icons.
 
 ## What belongs to somebody else
 
 - Inconsolata in `assets/fonts/` is under the SIL Open Font License, which `OFL.txt` beside it carries.
 - The four recorded effects in `assets/sfx/` are under the Pixabay Content License, as `CREDITS.md` there says.
 - The two window buttons in `assets/next/` are cut out of a screenshot of NeXTSTEP 3.3 by the admin's `design/extract.py`, and are not covered by this repository's license.
+- The windows in `assets/admin/` show the admin's icons, which are the original files out of a NeXTSTEP 3.3 disk image, and are not covered by this repository's license.
 - GSAP is loaded from jsDelivr when the film plays or renders, and comes under [GSAP's standard license](https://gsap.com/standard-license).
 
 NeXT, NeXTSTEP, OPENSTEP and the NeXT cube logo are registered trademarks of Apple Computer, Inc. Raspberry Pi is a trademark of Raspberry Pi Ltd.

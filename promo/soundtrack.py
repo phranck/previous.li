@@ -485,7 +485,7 @@ def scratch():
 
 
 def swish(seconds=0.35):
-    """Air moving as a caption slides in."""
+    """Air moving, as a caption slides in or a window opens."""
     time = clock(seconds)
     shape = numpy.sin(numpy.pi * time / seconds) ** 2
     return swept_band(noise(seconds), 900 * 4 ** (time / seconds), width=1.2) * shape
@@ -759,6 +759,8 @@ def write_effects(cues, reverb_room):
 
     for at in cues["captions"]:
         bus.add(swish(), at - 0.15, gain=0.5, pan=-0.4)
+    for index, at in enumerate(cues["windows"]):
+        bus.add(swish(0.25), at, gain=0.3, pan=0.35 if index % 2 else -0.15)
 
     for index, at in enumerate(cues["systems"]):
         bus.add(flap(), at, gain=1.0, pan=0.1 * (index % 3 - 1))
