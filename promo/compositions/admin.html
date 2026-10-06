@@ -14,75 +14,80 @@
           color: var(--next-white);
         }
 
+        /* The words above the picture, centered: the kicker, the title on
+           one line, and one caption at a time under it. */
         #admin-copy {
           position: absolute;
-          left: 110px;
-          top: 0;
-          bottom: 0;
-          width: 520px;
+          left: 0;
+          right: 0;
+          top: 120px;
           display: flex;
           flex-direction: column;
-          justify-content: center;
-          gap: 28px;
+          align-items: center;
+          gap: 10px;
+          text-align: center;
         }
 
         #admin-kicker {
-          font-size: 24px;
+          font-size: 22px;
           color: var(--on-workspace-soft);
         }
 
         #admin-title {
           margin: 0;
-          font-size: 64px;
+          font-size: 46px;
           font-weight: 650;
           letter-spacing: -0.02em;
           line-height: 1.08;
         }
 
         #admin .captions {
-          display: flex;
-          flex-direction: column;
-          gap: 18px;
-          margin: 20px 0 0;
+          position: relative;
+          width: 100%;
+          height: 44px;
+          margin: 4px 0 0;
           padding: 0;
           list-style: none;
         }
 
         #admin .caption {
+          position: absolute;
+          inset: 0;
           display: flex;
           align-items: center;
-          gap: 16px;
-          font-size: 30px;
+          justify-content: center;
+          gap: 14px;
+          font-size: 28px;
           line-height: 1.2;
           opacity: 0;
         }
 
         #admin .caption .icon {
-          width: 46px;
-          height: 46px;
-          padding: 8px;
-          border-radius: 12px;
+          width: 40px;
+          height: 40px;
+          padding: 7px;
+          border-radius: 10px;
           background: rgb(255 255 255 / 14%);
         }
 
-        /* The picture is the NeXT MegaPixel Display's 1120 by 832, which is
-           what the page shows it at too. */
+        /* The screenshot at three eighths of its 2240 by 1664, so every pixel
+           of the picture lands on a whole number of the film's. */
         #admin-shot {
           position: absolute;
-          left: 700px;
-          top: 104px;
-          width: 1120px;
+          left: 300px;
+          top: 300px;
+          width: 840px;
           opacity: 0;
         }
 
         #admin-shot .browser {
-          width: 1120px;
+          width: 840px;
         }
 
         #admin .viewport {
           position: relative;
-          width: 1120px;
-          height: 832px;
+          width: 840px;
+          height: 624px;
           overflow: hidden;
           background: var(--next-desktop);
         }
@@ -91,13 +96,13 @@
           position: absolute;
           left: 0;
           top: 0;
-          width: 1120px;
-          height: 832px;
+          width: 840px;
+          height: 624px;
           transform-origin: 0 0;
         }
       </style>
 
-      <div id="admin" data-composition-id="admin" data-width="1920" data-height="1080">
+      <div id="admin" data-composition-id="admin" data-width="1440" data-height="1080">
         <div id="admin-inner" class="fill">
           <div id="admin-copy">
             <p id="admin-kicker" class="section__kicker">
@@ -136,7 +141,7 @@
           // picture: the File Viewer's icons, then the title bars where the
           // Info window's close button meets the next window's miniaturize
           // button, then the whole of it again.
-          const VIEWPORT = { width: 1120, height: 832 };
+          const VIEWPORT = { width: 840, height: 624 };
           const STOPS = [
             { zoom: 2.0, x: 0.25, y: 0.66 },
             { zoom: 3.4, x: 0.47, y: 0.02 },
@@ -163,13 +168,13 @@
           rise("#admin-kicker", start + 0.1, 30);
           rise("#admin-title", start + 0.25, 30);
 
-          // Each caption arrives as the camera reaches what it says, and the
-          // one before it steps back.
+          // Each caption arrives as the camera reaches what it says, in the
+          // place of the one before it.
           const captions = document.querySelectorAll("#admin .caption");
           cues.captions.forEach((filmTime, index) => {
             tl.to("#camera", { ...cameraAt(STOPS[index]), duration: 0.9, ease: "power3.inOut" }, at(filmTime - 0.2));
-            tl.fromTo(captions[index], { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.4, ease: "expo.out" }, at(filmTime));
-            if (index > 0) tl.to(captions[index - 1], { opacity: 0.55, duration: 0.3 }, at(filmTime));
+            tl.fromTo(captions[index], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, at(filmTime));
+            if (index > 0) tl.to(captions[index - 1], { opacity: 0, y: -16, duration: 0.25, ease: "power2.in" }, at(filmTime - 0.1));
           });
 
           tl.to("#admin-inner", { opacity: 0, filter: "blur(12px)", duration: 0.35, ease: "power2.in" }, at(cues.scenes.systems - 0.4));

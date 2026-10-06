@@ -26,7 +26,8 @@ The render runs in two stages. The first, `npm --prefix promo run film`, renders
 ## How it is put together
 
 - `index.html` is the film. It holds the cue sheet, the ground every scene stands on, the screen switching on and off, and the two sound tracks.
-- `tv/` is a second HyperFrames project, the television. It plays the rendered film with the HyperFrames CRT treatment on it: curvature, scanlines, a slight channel separation, bloom, vignette and grain, set in `data-color-grading` on its video. Over that it draws what the treatment has no control for, which is the phosphor stripes, the light on the glass and the hum bar rolling through the picture. The film's sound plays from the video, so it is defined only in the film.
+- `tv/` is a second HyperFrames project, the television. It plays the rendered film with the HyperFrames CRT treatment on it: curvature, scanlines, a slight channel separation, bloom, vignette and grain, set in `data-color-grading` on its video. Over that it draws what the treatment has no control for, which is the phosphor stripes, the light on the glass, the hum bar rolling through the picture, and the set's bezel, whose opening gives the glass its round corners. The film's sound plays from the video, so it is defined only in the film.
+- Both are 4:3, at 1440 by 1080, as a television of the time was. Every scene keeps its content inside the part of the glass the curve does not bend, about 150 pixels in from the sides and 120 from the top and the bottom.
 - `compositions/` holds one file per scene, in the order they play.
 - The cue sheet in `index.html` is the one place where a moment that a picture and a sound share is written down. The scenes read it through `assets/film.js`, and `soundtrack.py` reads it out of `index.html`.
 - `parts.py` draws the Merge button, the cursor and the two smeared logos with the code in `site/hero.py`, so the film and the page draw them the same way.
