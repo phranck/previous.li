@@ -1,6 +1,8 @@
 renders/
 snapshots/
 .hyperframes/
+# The film rendered for the television to play, which npm run render writes.
+tv/film.mp4
 # HyperFrames writes these agent guides on init. They stay local.
 CLAUDE.md
 AGENTS.md
