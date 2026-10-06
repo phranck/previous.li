@@ -19,7 +19,7 @@ npm --prefix promo run check
 npm --prefix promo run render
 ```
 
-The render runs in two stages. The first renders the film itself into `promo/tv/film.mp4`. The second plays that on a CRT television and writes the result to `promo/renders/previously.mp4`, which is the film as it goes out.
+The render runs in two stages. The first, `npm --prefix promo run film`, renders the film itself into `promo/tv/film.mp4`. The second plays that on a CRT television and writes the result to `promo/renders/previously.mp4`, which is the film as it goes out. The check runs the first stage too, between checking the film and checking the television, because the television can only be checked with the film it plays.
 
 `npm --prefix promo run dev` opens the film in the HyperFrames Studio, where it plays and every part of it can be edited. `npm --prefix promo run dev:tv` opens the television, which shows whatever the last render put into `promo/tv/film.mp4`.
 
