@@ -32,17 +32,17 @@
   <!-- One machine turning into another, which is the whole of what this
        project does. The Pi is on the left because that is what somebody starts
        with. -->
-  <image x="130" y="75.0259"
-         width="940" height="291.663" xlink:href="hero.svg"/>
+  <image x="130" y="88.001"
+         width="940" height="263.021" xlink:href="hero.svg"/>
 
-  <text x="600" y="413.2" filter="url(#lift)"
+  <text x="600" y="400.225" filter="url(#lift)"
         font-family="Helvetica, Arial, sans-serif" font-weight="bold" font-size="78"
         letter-spacing="-2.3" fill="#ffffff" text-anchor="middle">Previously</text>
 
-  <text x="600" y="495.46" filter="url(#lift-soft)"
+  <text x="600" y="482.485" filter="url(#lift-soft)"
         font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="500" font-size="42"
         fill="#d3d3e2" text-anchor="middle">A Raspberry Pi that <tspan font-style="italic" fill="#b0b0c6" text-decoration="line-through">boosts</tspan>… </text>
-  <text x="600" y="546.28" filter="url(#lift-soft)"
+  <text x="600" y="533.305" filter="url(#lift-soft)"
         font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="500" font-size="42"
         fill="#d3d3e2" text-anchor="middle">boots directly into NeXTSTEP</text>
 </svg>

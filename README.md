@@ -7,7 +7,7 @@
 [![code size](https://img.shields.io/github/languages/code-size/phranck/previous.li?style=flat&color=1e88e5&label=code%20size)](https://github.com/phranck/previous.li)
 [![stars](https://img.shields.io/github/stars/phranck/previous.li?style=flat&color=8e24aa)](https://github.com/phranck/previous.li)
 
-<img src="site/shots/readme-hero.png" alt="The Raspberry Pi logo and the NeXT cube rushing at each other, each trailing a smear, with a pressed Merge button and the cursor that pressed it between them, over the name Previously and the line about a Raspberry Pi that boots directly into NeXTSTEP." width="860">
+<img src="site/shots/readme-hero.png" alt="A π with a green roof and red legs and the NeXT cube rushing at each other, each trailing a smear, with a pressed Merge button and the cursor that pressed it between them, over the name Previously and the line about a Raspberry Pi that boots directly into NeXTSTEP." width="860">
 
 </div>
 

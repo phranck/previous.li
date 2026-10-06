@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Builds the Previously mark and every icon the page links to.
 
-The mark is the NeXT cube with the raspberry standing where the N of its
-wordmark stood. The berry lies in the plane of the face the wordmark sits on,
-so it leans with the remaining letters instead of floating in front of them,
-and it keeps only its crimson and its green, because the letters beside it are
-saturated colour on black and nothing else.
+The mark is the NeXT cube with the π standing where the N of its wordmark
+stood. It is the π that pi.py draws for the hero, without the outer outline,
+because the black face is that outline already. It lies in the plane of the
+face the wordmark sits on, so it leans with the remaining letters instead of
+floating in front of them.
 
     python3 logo.py
 
@@ -13,11 +13,10 @@ It writes logo.svg, logo.png, logo-mark.png, favicon.ico, apple-touch-icon.png,
 icon-192.png, icon-512.png and site.webmanifest beside itself. Nothing here is
 edited by hand: change a number in this file and run it.
 
-Both sources are read as pictures rather than as geometry. next-cube.png holds
-its three faces as three separate shapes with transparent gaps between them,
-and raspberry-pi.png holds the berry beside the registered mark, so each part
-this needs is found by walking the file rather than by being measured once and
-written down.
+The cube is read as a picture rather than as geometry. next-cube.png holds its
+three faces as three separate shapes with transparent gaps between them, so the
+face this needs is found by walking the file rather than by being measured once
+and written down.
 """
 
 import base64
@@ -26,6 +25,8 @@ import math
 import pathlib
 
 import numpy
+from pi import aspect as pi_aspect
+from pi import draw as draw_pi
 from PIL import Image
 
 HERE = pathlib.Path(__file__).parent
@@ -37,17 +38,12 @@ SCALE = 8
 # The N, read off next-cube.png. It is the one letter that goes.
 LETTER_N = (250, 21, 22)
 
-# The berry alone. The registered mark stands beside it in the file and has no
-# place on a logo that is not the Raspberry Pi Foundation's.
-BERRY = (3, 0, 209, 264)
-
-# Where the N stood on its face, in that face's own coordinates, and how much
-# larger than that slot the berry is drawn. It hangs from the slot's upper left
-# corner, so the margins it shares with the cube's edge are the ones the other
-# letters keep and the growth is spent towards the middle of the face.
+# Where the N stood on its face, in that face's own coordinates. The π fills
+# the slot as far as its proportions let it and hangs from the slot's upper
+# left corner, so it keeps the margins the N kept to the cube's edge and to
+# the e beside it.
 SLOT_U = (0.073, 0.460)
 SLOT_V = (0.063, 0.464)
-GROWTH = 1.25
 
 # The workspace colour NeXTSTEP drew behind its windows, which is what every
 # picture of this project lies on. An icon that a system puts on a ground of
@@ -63,7 +59,7 @@ MASTER_HEIGHT = 1024
 # The mark beside the wordmark in the bar stands about 24 pixels tall, so this
 # covers it on a display with four device pixels to the point. It is a picture
 # of its own rather than logo.svg, which carries both sources embedded and
-# would put 66kB on the first paint for a mark this size.
+# would put about 48kB on the first paint for a mark this size.
 BAR_HEIGHT = 96
 FAVICON_SIZES = (16, 32, 48, 64)
 TOUCH_SIZE = 180
@@ -200,33 +196,30 @@ def letter_to_black(image, colour):
     return Image.fromarray(values.astype("uint8"))
 
 
-def drop_outline(image, threshold=40):
-    """Removes the berry's black, leaving the crimson and the green."""
-    values = numpy.array(image)
-    black = ((values[:, :, 0] < threshold) & (values[:, :, 1] < threshold)
-             & (values[:, :, 2] < threshold))
-    values[black, 3] = 0
-    return Image.fromarray(values)
-
-
 # --- putting the mark together ----------------------------------------------
 
-def berry_placement(berry_size, origin, across, down):
-    """Where the berry's own pixel grid lands on the face.
+def slot_fit(aspect):
+    """How much of the N's slot a shape of the given proportions fills.
+
+    As much as it can without leaving the slot, in the face's own units, as a
+    pair of its extent across and down the face.
+    """
+    room_u, room_v = SLOT_U[1] - SLOT_U[0], SLOT_V[1] - SLOT_V[0]
+    if aspect >= room_u / room_v:
+        return room_u, room_u / aspect
+    return room_v * aspect, room_v
+
+
+def glyph_placement(size, origin, across, down):
+    """Where the π's own pixel grid lands on the face.
 
     Returns the point its first pixel sits at and one step along each of its
     axes, all in the cube picture's coordinates. The face is a square in space,
-    so the berry's own proportions apply to it directly rather than to the
+    so the π's own proportions apply to it directly rather than to the
     foreshortened shape on screen.
     """
-    width, height = berry_size
-    room_u, room_v = SLOT_U[1] - SLOT_U[0], SLOT_V[1] - SLOT_V[0]
-    if width / height >= room_u / room_v:
-        used = (room_u, room_u * height / width)
-    else:
-        used = (room_v * width / height, room_v)
-    used = (used[0] * GROWTH, used[1] * GROWTH)
-
+    width, height = size
+    used = slot_fit(width / height)
     at = origin + SLOT_U[0] * across + SLOT_V[0] * down
     return at, used[0] / width * across, used[1] / height * down
 
@@ -234,29 +227,27 @@ def berry_placement(berry_size, origin, across, down):
 def build():
     """Returns the finished mark at SCALE times its own size, and its box."""
     cube = Image.open(HERE / "next-cube.png").convert("RGBA")
-    berry = drop_outline(Image.open(HERE / "raspberry-pi.png").convert("RGBA").crop(BERRY))
-    # Trimmed to what is left after the outline goes, because that is what the
-    # eye measures against the letters beside it.
-    berry = berry.crop(berry.getbbox())
-
     origin, across, down = face_frame(shapes(cube)[0])
-    at, step_x, step_y = berry_placement(berry.size, origin, across, down)
 
-    big = berry.resize((berry.size[0] * SCALE, berry.size[1] * SCALE), Image.LANCZOS)
-    forward = numpy.array([[step_x[0], step_y[0], at[0] * SCALE],
-                           [step_x[1], step_y[1], at[1] * SCALE],
+    # Drawn at about the size it lands at on the composed canvas, so the warp
+    # below moves its pixels rather than enlarging them.
+    _, used_v = slot_fit(pi_aspect())
+    glyph = draw_pi(round(used_v * numpy.linalg.norm(down) * SCALE), outlined=False)
+    at, step_x, step_y = glyph_placement(glyph.size, origin, across, down)
+
+    forward = numpy.array([[step_x[0] * SCALE, step_y[0] * SCALE, at[0] * SCALE],
+                           [step_x[1] * SCALE, step_y[1] * SCALE, at[1] * SCALE],
                            [0.0, 0.0, 1.0]])
     # PIL's affine maps output coordinates back to input ones.
     inverse = numpy.linalg.inv(forward)
-    warped = big.transform((cube.size[0] * SCALE, cube.size[1] * SCALE), Image.AFFINE,
-                           tuple(inverse[0]) + tuple(inverse[1]), resample=Image.BICUBIC)
-
     plate = letter_to_black(cube, LETTER_N)
     canvas = plate.resize((cube.size[0] * SCALE, cube.size[1] * SCALE), Image.LANCZOS)
-    canvas.alpha_composite(warped)
+    canvas.alpha_composite(glyph.transform(canvas.size, Image.AFFINE,
+                                           tuple(inverse[0]) + tuple(inverse[1]),
+                                           resample=Image.BICUBIC))
 
     box = tuple(value / SCALE for value in canvas.getbbox())
-    return canvas, box, plate, berry, (at, step_x, step_y)
+    return canvas, box, plate, glyph, (at, step_x, step_y)
 
 
 # --- what comes out of it ---------------------------------------------------
@@ -282,11 +273,11 @@ def embedded(image):
     return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode("ascii")
 
 
-def write_svg(box, plate, berry, placement):
+def write_svg(box, plate, glyph, placement):
     """Writes the mark as the two pictures it is made of, and the map between.
 
-    The berry's matrix is the same one the raster build uses, so the file and
-    the icons cannot drift apart: both come out of this script in one run.
+    The π's matrix is the same one the raster build uses, so the file and the
+    icons cannot drift apart: both come out of this script in one run.
     """
     at, step_x, step_y = placement
     left, top, right, bottom = box
@@ -295,15 +286,16 @@ def write_svg(box, plate, berry, placement):
 
     document = f"""<?xml version="1.0" encoding="UTF-8"?>
 <!--
-  The Previously mark: the NeXT cube with the raspberry standing where the N of
-  its wordmark stood.
+  The Previously mark: the NeXT cube with the π standing where the N of its
+  wordmark stood.
 
   Generated by logo.py. Do not edit: change a number there and run it, which
   writes this file and every icon beside it in the same pass.
 
-  The cube below is next-cube.png with its N taken back to black, and the berry
-  is raspberry-pi.png with its outline removed, laid into the plane of the face
-  the wordmark sits on. Both are embedded, so this file stands on its own.
+  The cube below is next-cube.png with its N taken back to black, and the π is
+  the one pi.py draws for the hero, without its outer outline, laid into the
+  plane of the face the wordmark sits on. Both are embedded, so this file
+  stands on its own.
 -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
      width="{right - left:.0f}" height="{bottom - top:.0f}"
@@ -313,8 +305,8 @@ def write_svg(box, plate, berry, placement):
          xlink:href="{embedded(plate)}"/>
 
   <g transform="matrix({matrix})">
-    <image x="0" y="0" width="{berry.size[0]}" height="{berry.size[1]}"
-           xlink:href="{embedded(berry)}"/>
+    <image x="0" y="0" width="{glyph.size[0]}" height="{glyph.size[1]}"
+           xlink:href="{embedded(glyph)}"/>
   </g>
 </svg>
 """
@@ -348,7 +340,7 @@ def write_manifest():
 
 
 def main():
-    canvas, box, plate, berry, placement = build()
+    canvas, box, plate, glyph, placement = build()
 
     mark = canvas.crop(canvas.getbbox())
     width = round(mark.size[0] * MASTER_HEIGHT / mark.size[1])
@@ -372,7 +364,7 @@ def main():
             .save(HERE / f"icon-{size}.png", optimize=True)
 
     write_manifest()
-    characters = write_svg(box, plate, berry, placement)
+    characters = write_svg(box, plate, glyph, placement)
     print(f"logo.png {mark.size[0]}x{mark.size[1]}, logo-mark.png {bar.size[0]}x{bar.size[1]}, "
           f"favicon.ico {FAVICON_SIZES}, "
           f"apple-touch-icon.png {TOUCH_SIZE}, icons {MANIFEST_SIZES}, "

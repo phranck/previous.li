@@ -464,16 +464,17 @@ kbd {
 
 /* One machine turning into another, which is what a link to this page already
    unfolds into elsewhere. The width is what sizes it, and the button's label
-   is what sets the width: at 760 a drawn pixel of that label comes out at
+   is what sets the width: at 843 a drawn pixel of that label comes out at
    three screen pixels, which is where the word stops being a texture and
-   starts being readable.
+   starts being readable. The picture's own width is part of that sum, so a
+   wider or narrower hero.svg needs this changed by the same factor.
 
    It casts no shadow from here. Everything in the picture that throws one
    throws its own, and a shadow around the whole picture would sit under two
    trails that fade into nothing. */
 .hero__mark {
   display: block;
-  width: 760px;
+  width: 843px;
   max-width: 100%;
   height: auto;
 }
