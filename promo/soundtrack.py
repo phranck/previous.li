@@ -43,11 +43,11 @@ SEED = 1993
 
 #: How loud the two stems are together, as integrated loudness in LUFS, and
 #: the highest true peak they may reach, in dBTP. The film's AAC encode
-#: overshoots this by over a decibel, and HyperFrames lowers the whole track
-#: once the encoded peak passes -1 dBTP, so the ceiling sits low enough that
-#: it never has to.
+#: overshoots this by up to two decibels on the drums' transients, and
+#: HyperFrames lowers the whole track once the encoded peak passes -1 dBTP,
+#: so the ceiling sits low enough that it never has to.
 LOUDNESS_TARGET = -14.0
-PEAK_CEILING = -3.0
+PEAK_CEILING = -3.5
 
 #: What a television of the PAL era hums and whines at: the mains, and the
 #: line transformer running at 625 lines 25 times a second.
@@ -85,11 +85,19 @@ GROOVE = (
     {"kicks": (0, 8, 10), "snares": (4, 12)},
 )
 
-#: How loud the hi-hat and how hard the bass are on the eighths of a beat:
-#: on the beat, and on the half beat between. Even eighths, a little more on
-#: the beat, rather than the accented off-beat of disco.
-HAT_ACCENTS = (0.24, 0.2)
+#: How loud the hi-hat is on the sixteenths of a beat: quiet, in the
+#: background, a little more on the beat than between, rather than the
+#: accented off-beat of disco.
+HAT_ACCENTS = (0.22, 0.12, 0.17, 0.12)
+
+#: How hard the bass plays the eighths of a beat: on the beat, and on the
+#: half beat between.
 BASS_ACCENTS = (1.0, 0.7)
+
+#: How loud the kick and the gated snare are in the grooves and the build,
+#: so the beat stands out of the pad, the bells and the arpeggio.
+KICK_GAIN = 1.15
+SNARE_GAIN = 1.05
 
 #: The sixteenths of a bar the bells over the first groove fall on, a dotted
 #: eighth apart.
@@ -730,11 +738,11 @@ def write_music(cues, reverb_room):
         drums.add(hat(), moment, gain=0.45, pan=0.3)
 
     for at in groove_hits(cues, "kicks"):
-        drums.add(kick(), at, gain=0.75)
+        drums.add(kick(), at, gain=KICK_GAIN)
     for at in groove_hits(cues, "snares"):
-        drums.add(gated_snare(), at, gain=0.65, reverb=0.15)
+        drums.add(gated_snare(), at, gain=SNARE_GAIN, reverb=0.15)
     for start, end in drum_grooves(scenes):
-        for step, moment in enumerate(numpy.arange(start, end - 1e-6, eighth)):
+        for step, moment in enumerate(numpy.arange(start, end - 1e-6, sixteenth)):
             drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)], pan=0.3)
         drums.add(crash(), start, gain=0.7, pan=-0.2, reverb=0.2)
 
@@ -750,7 +758,7 @@ def write_music(cues, reverb_room):
 
     systems = scenes["systems"]
     for at in build_kicks(cues):
-        drums.add(kick(), at, gain=0.7)
+        drums.add(kick(), at, gain=KICK_GAIN)
     roll = [systems + step * beat / 2 for step in range(4)]
     roll += [systems + 2 * beat + step * beat / 4 for step in range(4)]
     roll += [systems + 3 * beat + step * beat / 8 for step in range(8)]
