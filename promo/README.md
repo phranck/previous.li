@@ -37,7 +37,7 @@ The render runs in two stages. The first, `npm --prefix promo run film`, renders
 ## What belongs to somebody else
 
 - Inconsolata in `assets/fonts/` is under the SIL Open Font License, which `OFL.txt` beside it carries.
-- The five recorded effects in `assets/sfx/` are under the Pixabay Content License, as `CREDITS.md` there says.
+- The four recorded effects in `assets/sfx/` are under the Pixabay Content License, as `CREDITS.md` there says.
 - The two window buttons in `assets/next/` are cut out of a screenshot of NeXTSTEP 3.3 by the admin's `design/extract.py`, and are not covered by this repository's license.
 - GSAP is loaded from jsDelivr when the film plays or renders, and comes under [GSAP's standard license](https://gsap.com/standard-license).
 
