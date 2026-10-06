@@ -5,7 +5,7 @@ effects, each exactly as long as the film.
     .venv/bin/python promo/soundtrack.py
 
 Nothing in the music is a recording. Every instrument is synthesized here, so
-the film carries no music anybody else holds a license to. The five effects
+the film carries no music anybody else holds a license to. The four effects
 that are recordings come from assets/sfx/, and CREDITS.md there states their
 license.
 
@@ -77,6 +77,19 @@ BELL_FIGURES = {
 #: The pixels of the Merge button arriving, as rising notes of the A minor
 #: pentatonic scale.
 BLIP_NOTES = [81, 84, 86, 88, 91, 93, 96, 98]
+
+#: One key of the install line. Its length is how much of the key-press
+#: recording it uses, in seconds: the press has died away by then, and the
+#: keys are a frame apart, so none runs into the next. Its gain keeps the keys
+#: clear of the music, which dips under them. Its variation is how widely pitch
+#: and level spread from one key to the next, as a fraction, half of it to
+#: either side.
+KEY_LENGTH = 0.03
+KEY_GAIN = 2.6
+KEY_VARIATION = 0.15
+
+#: Return, the whole key-press recording, a firmer stroke than the keys.
+RETURN_GAIN = 3.0
 
 generator = numpy.random.default_rng(SEED)
 
@@ -683,7 +696,7 @@ def write_music(cues, reverb_room):
     music = highpassed(drums.mix(reverb_room) + tonal.mix(reverb_room) + pumped, 28)
 
     # The music steps back while the line is typed, so the keys are heard.
-    music *= dip(length, cues["typing"][0] - 0.1, cues["enter"] + 0.15, 0.5)
+    music *= dip(length, cues["keys"][0] - 0.1, cues["enter"] + 0.15, 0.5)
 
     # The set goes off with the picture: the music stops as the picture folds
     # to a line, and only the tube's own sound is left.
@@ -728,10 +741,17 @@ def write_effects(cues, reverb_room):
 
     bus.add(scratch(), cues["strike"], gain=1.0)
 
-    typing_start, typing_end = cues["typing"]
-    typing = ramp_out(recording("typing")[:samples(typing_end - typing_start)], 0.05)
-    bus.add(typing, typing_start, gain=4.0)
-    bus.add(recording("key-press"), cues["enter"], gain=1.8)
+    # One key on each character's time in the cue sheet, which is the frame
+    # that character appears on. Each one strays a little in pitch and level,
+    # so a run of them sounds like a hand rather than one sample repeated.
+    key_press = recording("key-press")
+    key = ramp_out(key_press[:samples(KEY_LENGTH)].copy())
+    for at in cues["keys"]:
+        speed = 1 + KEY_VARIATION * (generator.random() - 0.5)
+        varied = numpy.interp(numpy.arange(0, len(key) - 1, speed), numpy.arange(len(key)), key)
+        level = KEY_GAIN * (1 + KEY_VARIATION * (generator.random() - 0.5))
+        bus.add(varied, at, gain=level, pan=0.3 * (generator.random() - 0.5))
+    bus.add(key_press, cues["enter"], gain=RETURN_GAIN)
     bus.add(tick(84), cues["banner"], gain=0.5)
     for index, at in enumerate(cues["steps"]):
         bus.add(tick(88 + (index % 2) * 3), at, gain=0.6, pan=0.2)

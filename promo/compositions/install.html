@@ -164,13 +164,23 @@
           rise("#install-title", start, 40);
           tl.fromTo("#terminal", { opacity: 0, y: 60, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "expo.out" }, at(start + 0.05));
 
-          // The line, typed one cell at a time, with the caret ahead of it.
-          const [typingStart, typingEnd] = cues.typing;
+          // The line, typed one character per keystroke, with the caret ahead
+          // of it. The cue sheet holds one time per character, and
+          // soundtrack.py lays a keystroke on each, so a letter and its key
+          // land on the same frame. Each letter is set half a frame early, so
+          // a time that rounds a hair past its frame still shows on it.
+          const HALF_FRAME = 1 / 60;
           const characters = document.getElementById("typed").textContent.length;
-          tl.set("#caret", { opacity: 1, x: CELL * PROMPT_CELLS }, at(typingStart - 0.15));
-          tl.to("#typed", { clipPath: "inset(0% 0% 0% 0%)", duration: typingEnd - typingStart, ease: `steps(${characters})` }, at(typingStart));
-          tl.to("#caret", { x: CELL * (PROMPT_CELLS + characters), duration: typingEnd - typingStart, ease: `steps(${characters})` }, at(typingStart));
-          tl.set("#caret", { opacity: 0 }, at(cues.enter));
+          if (cues.keys.length !== characters) {
+            console.error(`The cue sheet has ${cues.keys.length} keystrokes for a line of ${characters} characters.`);
+          }
+          tl.set("#caret", { opacity: 1, x: CELL * PROMPT_CELLS }, at(cues.keys[0] - 0.15));
+          cues.keys.forEach((filmTime, index) => {
+            const typed = index + 1;
+            tl.set("#typed", { clipPath: `inset(0 ${CELL * (characters - typed)}px 0 0)` }, at(filmTime - HALF_FRAME));
+            tl.set("#caret", { x: CELL * (PROMPT_CELLS + typed) }, at(filmTime - HALF_FRAME));
+          });
+          tl.set("#caret", { opacity: 0 }, at(cues.enter - HALF_FRAME));
 
           // What the installer prints, as it prints it.
           const appear = (targets, filmTime) => tl.to(targets, { opacity: 1, duration: 0.08 }, at(filmTime));
