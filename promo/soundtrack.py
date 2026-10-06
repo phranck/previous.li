@@ -75,19 +75,21 @@ BELL_FIGURES = {
 }
 
 #: The grooves, as two bars that take turns, in sixteenths of a bar. They are
-#: half time: the snare on beat three, the kick on one and on the half beat
-#: after three, and in the second bar on the half beat after two as well,
-#: with a soft snare at its end. Half time keeps the grooves away from
-#: disco, which is a kick on every beat and a hi-hat on every off-beat.
+#: the backbeat of eighties pop: the kick on beats one and three, the snare on
+#: two and four, and in the second bar a kick on the half beat after three
+#: that pushes into the next bar. That keeps the beat plain to hear without
+#: the kick on every beat that, with a hi-hat on every off-beat, is disco.
 SIXTEENTHS = 16
 GROOVE = (
-    {"kicks": (0, 10), "snares": (8,), "ghosts": ()},
-    {"kicks": (0, 6, 10), "snares": (8,), "ghosts": (14,)},
+    {"kicks": (0, 8), "snares": (4, 12)},
+    {"kicks": (0, 8, 10), "snares": (4, 12)},
 )
 
-#: How loud the hi-hat is on each sixteenth of a beat: the beat itself, the
-#: sixteenth after it, the half beat and the last. Loudest on the beat.
-HAT_ACCENTS = (0.3, 0.12, 0.2, 0.12)
+#: How loud the hi-hat and how hard the bass are on the eighths of a beat:
+#: on the beat, and on the half beat between. Even eighths, a little more on
+#: the beat, rather than the accented off-beat of disco.
+HAT_ACCENTS = (0.24, 0.2)
+BASS_ACCENTS = (1.0, 0.7)
 
 #: The sixteenths of a bar the bells over the first groove fall on, a dotted
 #: eighth apart.
@@ -416,6 +418,19 @@ def snare():
     return ramp_in((tone + rattle * 0.6 + clap * 0.7 + tail) * 0.5)
 
 
+def gated_snare():
+    """The snare of the eighties: the snare with a burst of room behind it
+    that stops dead instead of dying away."""
+    seconds = 0.3
+    time = clock(seconds)
+    hit = numpy.zeros_like(time)
+    played = snare()[:len(time)]
+    hit[:len(played)] = played
+    room = filtered(noise(seconds), "bandpass", (700, 6000)) * numpy.exp(-time / 0.5) * 0.3
+    gate = numpy.clip((0.24 - time) / 0.012, 0, 1)
+    return (hit + room) * gate
+
+
 def hat():
     """A closed hi-hat, made of bright noise."""
     seconds = 0.06
@@ -560,7 +575,7 @@ def groove_hits(cues, kind):
 
     Args:
         cues: The cue sheet.
-        kind: "kicks", "snares" or "ghosts", as GROOVE names them.
+        kind: "kicks" or "snares", as GROOVE names them.
     """
     bar = 4 * 60 / cues["bpm"]
     sixteenth = bar / SIXTEENTHS
@@ -633,6 +648,7 @@ def write_music(cues, reverb_room):
     beat = 60 / cues["bpm"]
     bar = 4 * beat
     sixteenth = bar / SIXTEENTHS
+    eighth = 2 * sixteenth
     scenes = cues["scenes"]
     drums = Bus(length)
     tonal = Bus(length)
@@ -690,22 +706,19 @@ def write_music(cues, reverb_room):
         sound = square(hertz(note), 0.12, 3200) * numpy.exp(-clock(0.12) / 0.05)
         tonal.add(ramp_out(ramp_in(sound)), moment, gain=0.11, pan=0.35 * numpy.sin(step * 0.4), reverb=0.25)
 
-    # The bass: long notes through the merge, a note on each of the groove's
-    # kicks that lasts until the next, through the build as well, and one
-    # held note under the end card.
+    # The bass: long notes through the merge, even eighths on the root in the
+    # grooves and the build, and one held note under the end card.
     for moment in (cues["press"], cues["press"] + bar):
         bass.add(pluck(CHORDS[chord_at(moment)]["root"], bar, 0.6), moment, gain=0.4)
     for start, end in ((scenes["headline"], scenes["nothing"]), (scenes["admin"], cues["finale"])):
-        for _, moment, pattern in bars(start, end, bar):
-            kicks = pattern["kicks"] + (SIXTEENTHS,)
+        for step, moment in enumerate(numpy.arange(start, end - 1e-6, eighth)):
             root = CHORDS[chord_at(moment)]["root"]
-            for here, after in zip(kicks, kicks[1:]):
-                accent = 1.0 if here == 0 else 0.7
-                bass.add(pluck(root, (after - here) * sixteenth, accent), moment + here * sixteenth, gain=0.4)
+            bass.add(pluck(root, eighth, BASS_ACCENTS[step % len(BASS_ACCENTS)]), moment, gain=0.38)
     bass.add(pluck(CHORDS[chord_at(cues["finale"])]["root"], cues["crtOff"] - cues["finale"], 0.8), cues["finale"], gain=0.4)
 
     # The drums. Half time through the merge, a roll into the first groove,
-    # half time in both grooves, and a roll that speeds up into the end card.
+    # the backbeat in both grooves, and a roll that speeds up into the end
+    # card.
     merge = cues["press"]
     for at in merge_kicks(cues):
         drums.add(kick(), at, gain=0.7)
@@ -719,11 +732,9 @@ def write_music(cues, reverb_room):
     for at in groove_hits(cues, "kicks"):
         drums.add(kick(), at, gain=0.75)
     for at in groove_hits(cues, "snares"):
-        drums.add(snare(), at, gain=0.7, reverb=0.3)
-    for at in groove_hits(cues, "ghosts"):
-        drums.add(snare(), at, gain=0.2, reverb=0.2)
+        drums.add(gated_snare(), at, gain=0.65, reverb=0.15)
     for start, end in drum_grooves(scenes):
-        for step, moment in enumerate(numpy.arange(start, end - 1e-6, sixteenth)):
+        for step, moment in enumerate(numpy.arange(start, end - 1e-6, eighth)):
             drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)], pan=0.3)
         drums.add(crash(), start, gain=0.7, pan=-0.2, reverb=0.2)
 
