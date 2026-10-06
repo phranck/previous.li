@@ -29,22 +29,6 @@
           opacity: 0;
         }
 
-        /* The page's install window, drawn at 1.3 times its size.
-           The holder is what the timeline moves, so the scale on the window
-           itself never meets a tween. */
-        #end-window {
-          margin-top: 48px;
-          width: 988px;
-          height: 140px;
-          opacity: 0;
-        }
-
-        #end-window .window {
-          width: 760px;
-          transform: scale(1.3);
-          transform-origin: 0 0;
-        }
-
         #trademarks {
           position: absolute;
           left: 0;
@@ -64,24 +48,6 @@
           <img id="end-mark" src="site/logo.png" alt="" />
           <p id="end-name" class="name">Previously</p>
           <p id="end-url">previous.li</p>
-          <div id="end-window">
-            <div class="window">
-              <div class="window__title">
-                <svg class="icon" aria-hidden="true"><use href="site/icons.svg#terminal-window"></use></svg>
-                Terminal
-              </div>
-              <div class="window__body">
-                <div class="command">
-                  <span class="command__prompt" aria-hidden="true">$</span>
-                  <span>curl -fsSL https://previous.li/install.sh | bash</span>
-                </div>
-                <span class="button">
-                  <svg class="icon" aria-hidden="true"><use href="site/icons.svg#copy"></use></svg>
-                  <span>Copy</span>
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
         <p id="trademarks">NeXT, NeXTSTEP, OPENSTEP and the NeXT cube logo are registered trademarks of Apple Computer, Inc. Raspberry Pi is a trademark of Raspberry Pi Ltd.</p>
         <div id="end-flash" class="flash"></div>
@@ -97,7 +63,6 @@
           tl.fromTo("#end-mark", { opacity: 0, scale: 1.3, filter: "blur(16px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, at(start));
           rise(window.FILM.splitLetters(document.getElementById("end-name")), start + 0.2, 70);
           rise("#end-url", start + 0.6, 30);
-          rise("#end-window", start + 0.9, 40);
           tl.to("#trademarks", { opacity: 1, duration: 0.6 }, at(start + 1.4));
 
           window.__timelines["end"] = tl;
