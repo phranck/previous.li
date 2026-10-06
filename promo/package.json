@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "npx --yes hyperframes@0.8.134 preview",
     "dev:tv": "npx --yes hyperframes@0.8.134 preview tv",
-    "film": "npx --yes hyperframes@0.8.134 render --quality delivery --output tv/film.mp4",
+    "film": "npx --yes hyperframes@0.8.134 render --crf 4 --output tv/film.mp4",
     "check": "npx --yes hyperframes@0.8.134 check && npm run film && npx --yes hyperframes@0.8.134 check tv",
-    "render": "npm run film && npx --yes hyperframes@0.8.134 render tv --quality delivery --output renders/previously.mp4",
+    "render": "npm run film && npx --yes hyperframes@0.8.134 render tv --crf 12 --video-frame-format png --output renders/previously.mp4",
     "publish": "npx --yes hyperframes@0.8.134 publish"
   }
 }
