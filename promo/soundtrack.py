@@ -43,11 +43,11 @@ SEED = 1993
 
 #: How loud the two stems are together, as integrated loudness in LUFS, and
 #: the highest true peak they may reach, in dBTP. The film's AAC encode
-#: overshoots this by up to two decibels on the drums' transients, and
-#: HyperFrames lowers the whole track once the encoded peak passes -1 dBTP,
-#: so the ceiling sits low enough that it never has to.
+#: overshoots this by up to two and a half decibels on the drums'
+#: transients, and HyperFrames lowers the whole track once the encoded peak
+#: passes -1 dBTP, so the ceiling sits low enough that it never has to.
 LOUDNESS_TARGET = -14.0
-PEAK_CEILING = -3.5
+PEAK_CEILING = -4.0
 
 #: What a television of the PAL era hums and whines at: the mains, and the
 #: line transformer running at 625 lines 25 times a second.
@@ -63,9 +63,9 @@ CHORDS = {
     "G": {"pad": [55, 59, 62, 67], "root": 43},
 }
 
-#: One chord per bar, for the fifteen bars of the film: the opening, the
+#: One chord per bar, for the sixteen bars of the film: the opening, the
 #: merge, the two grooves either side of the stabs, the build and the end.
-PROGRESSION = ["Am", "F", "Am", "G", "Am", "F", "C", "G", "Am", "Am", "F", "C", "G", "Am", "Am"]
+PROGRESSION = ["Am", "F", "Am", "G", "Am", "F", "C", "G", "Am", "Am", "F", "C", "G", "Am", "Am", "Am"]
 
 #: The bell figure the film opens on and closes with, as beats into a bar and
 #: MIDI notes, one figure for each of the first two chords.

@@ -22,7 +22,7 @@
     <script id="cues" type="application/json">
       {
         "bpm": 120,
-        "length": 30,
+        "length": 32,
         "scenes": { "opening": 0, "headline": 8, "install": 12, "nothing": 16, "admin": 18, "systems": 24, "end": 26 },
         "crtOn": 0,
         "build": [1.0, 2.0],
@@ -41,7 +41,7 @@
         "systems": [24.0, 24.25, 24.5, 24.625, 24.75, 24.875],
         "facts": [25.0],
         "finale": 26.0,
-        "crtOff": 29.45
+        "crtOff": 31.45
       }
     </script>
     <script src="assets/film.js"></script>
@@ -167,7 +167,7 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1440" data-height="1080">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="32" data-width="1440" data-height="1080">
       <div id="tube">
         <div id="ground"></div>
         <div id="horizon"></div>
@@ -179,14 +179,14 @@
         <div id="slot-nothing" data-composition-id="nothing" data-composition-src="compositions/nothing.html" data-start="16" data-duration="2" data-track-index="1" data-width="1440" data-height="1080"></div>
         <div id="slot-admin" data-composition-id="admin" data-composition-src="compositions/admin.html" data-start="18" data-duration="6" data-track-index="1" data-width="1440" data-height="1080"></div>
         <div id="slot-systems" data-composition-id="systems" data-composition-src="compositions/systems.html" data-start="24" data-duration="2" data-track-index="1" data-width="1440" data-height="1080"></div>
-        <div id="slot-end" data-composition-id="end" data-composition-src="compositions/end.html" data-start="26" data-duration="4" data-track-index="1" data-width="1440" data-height="1080"></div>
+        <div id="slot-end" data-composition-id="end" data-composition-src="compositions/end.html" data-start="26" data-duration="6" data-track-index="1" data-width="1440" data-height="1080"></div>
       </div>
 
       <div id="beam"></div>
       <div id="dot"></div>
 
-      <audio id="music" src="assets/music.flac" data-start="0" data-duration="30" data-track-index="10" data-volume="1"></audio>
-      <audio id="effects" src="assets/effects.flac" data-start="0" data-duration="30" data-track-index="11" data-volume="1"></audio>
+      <audio id="music" src="assets/music.flac" data-start="0" data-duration="32" data-track-index="10" data-volume="1"></audio>
+      <audio id="effects" src="assets/effects.flac" data-start="0" data-duration="32" data-track-index="11" data-volume="1"></audio>
     </div>
 
     <script>
@@ -203,6 +203,20 @@
           const slot = document.getElementById(`slot-${id}`);
           if (!slot || Number(slot.dataset.start) !== start) {
             console.error(`Scene ${id} starts at ${slot && slot.dataset.start} in the markup and at ${start} on the cue sheet.`);
+          }
+        }
+
+        // The film, its two sound tracks and its last scene end where the cue
+        // sheet says, which is also how long soundtrack.py makes the stems.
+        const ends = {
+          "The film": Number(document.getElementById("root").dataset.duration),
+          "The music track": Number(document.getElementById("music").dataset.duration),
+          "The effects track": Number(document.getElementById("effects").dataset.duration),
+          "The last scene": Number(document.getElementById("slot-end").dataset.start) + Number(document.getElementById("slot-end").dataset.duration),
+        };
+        for (const [part, end] of Object.entries(ends)) {
+          if (end !== window.CUES.length) {
+            console.error(`${part} ends at ${end} s in the markup, and the cue sheet says ${window.CUES.length} s.`);
           }
         }
 
