@@ -836,9 +836,16 @@ def write_music(cues, reverb_room):
     # The music steps back while the line is typed, so the keys are heard.
     music *= dip(length, cues["keys"][0] - 0.1, cues["enter"] + 0.15, 0.5)
 
+    # The music comes up with the picture, from the moment the set is
+    # switched on until the picture stands. A tone at full level on the very
+    # first sample is what an AAC encoder overshoots on, and the television's
+    # second encode would then lower the whole track to keep that one peak
+    # under -1 dBTP.
+    time = clock(length)
+    music *= numpy.clip((time - cues["crtOn"]) / (picture_up - cues["crtOn"]), 0, 1)
+
     # The music fades away over the end card along a quarter of a cosine:
     # three decibels down halfway, and gone as the set switches off.
-    time = clock(length)
     fade_start = finale + FADE_AFTER_FINALE
     music *= numpy.cos(numpy.pi / 2 * numpy.clip((time - fade_start) / (off - fade_start), 0, 1))
 
