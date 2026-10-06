@@ -9,6 +9,13 @@ chat window actually shows:
     cd site && rsvg-convert -w 1200 og-image.svg -o shots/og.png && \\
         oxipng -o 4 --strip safe shots/og.png
 
+The README opens on the same picture with its corners cut, which
+site/readme-hero.py makes from shots/og.png. Run it from the repository root
+whenever og.png changes:
+
+    .venv/bin/python site/readme-hero.py && \\
+        oxipng -o 4 --strip safe site/shots/readme-hero.png
+
 og.html beside it holds the same thing at that size in a browser, for looking
 at rather than for rendering.
 
