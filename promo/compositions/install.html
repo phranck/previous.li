@@ -86,26 +86,28 @@
           box-shadow: inset 2px 2px 0 var(--next-black);
           color: var(--next-black);
           font-family: "Inconsolata", var(--mono);
-          font-size: 24px;
-          line-height: 30px;
+          font-size: 34px;
+          line-height: 42px;
           white-space: pre;
         }
 
         #terminal .tty-row {
           position: relative;
-          height: 30px;
+          height: 42px;
         }
 
         #terminal .tty-out {
           opacity: 0;
         }
 
-        #terminal .tty-bold {
+        /* The steps in bold too, so they read at a glance through the
+           television's scanlines. */
+        #terminal .tty-step {
           font-weight: 700;
         }
 
-        #terminal .tty-dim {
-          color: var(--next-dark);
+        #terminal .tty-bold {
+          font-weight: 700;
         }
 
         #terminal .tty-check {
@@ -123,7 +125,7 @@
           left: 0;
           top: 3px;
           width: 1ch;
-          height: 24px;
+          height: 34px;
           background: var(--next-black);
           opacity: 0;
         }
@@ -139,9 +141,10 @@
               <img class="nx-button" src="assets/next/wbtn-close.png" alt="" />
             </div>
             <div class="nx-face">
-              <!-- What install.sh prints, line for line: its banner, a done
-                   line for five of its steps, and its closing line. -->
-              <div class="nx-text"><div class="tty-row">$ <span id="typed">curl -fsSL https://previous.li/install.sh | bash</span><span id="caret"></span></div><div class="tty-row tty-out tty-banner"> </div><div class="tty-row tty-out tty-banner tty-bold">  Previously</div><div class="tty-row tty-out tty-banner tty-dim">  Your fastest way to get NeXTSTEP on your Raspberry Pi up and running.</div><div class="tty-row tty-out tty-banner"> </div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> The Previous emulator</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> The system's disk</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> The emulator's configuration</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> Starting on the first console</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> Starting the machine</div><div class="tty-row tty-out tty-done"> </div><div class="tty-row tty-out tty-done tty-bold">  NeXTSTEP is starting on the Pi's screen.</div></div>
+              <!-- What install.sh prints, cut down to what can be read at a
+                   glance: its name, three of its steps in the order it takes
+                   them, and that NeXTSTEP starts. -->
+              <div class="nx-text"><div class="tty-row">$ <span id="typed">curl -fsSL https://previous.li/install.sh | bash</span><span id="caret"></span></div><div class="tty-row tty-out tty-banner"> </div><div class="tty-row tty-out tty-banner tty-bold">  Previously</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> Admin</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> Emulator</div><div class="tty-row tty-out tty-step">  <span class="tty-check">✓</span> NeXTSTEP</div><div class="tty-row tty-out tty-done"> </div><div class="tty-row tty-out tty-done tty-bold">  NeXTSTEP starts.</div></div>
             </div>
           </div>
         </div>
@@ -154,8 +157,8 @@
           const start = cues.scenes.install;
 
           // A cell of Inconsolata is half an em, so at the Terminal's size of
-          // 24 pixels a character is 12 wide, and the prompt is two of them.
-          const CELL = 12;
+          // 34 pixels a character is 17 wide, and the prompt is two of them.
+          const CELL = 17;
           const PROMPT_CELLS = 2;
 
           rise("#install-title", start, 40);
