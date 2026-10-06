@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>The admin</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #admin {
+          position: absolute;
+          inset: 0;
+          font-family: var(--font);
+          color: var(--next-white);
+        }
+
+        #admin-copy {
+          position: absolute;
+          left: 110px;
+          top: 0;
+          bottom: 0;
+          width: 520px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 28px;
+        }
+
+        #admin-kicker {
+          font-size: 24px;
+          color: var(--on-workspace-soft);
+        }
+
+        #admin-title {
+          margin: 0;
+          font-size: 64px;
+          font-weight: 650;
+          letter-spacing: -0.02em;
+          line-height: 1.08;
+        }
+
+        #admin .captions {
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          margin: 20px 0 0;
+          padding: 0;
+          list-style: none;
+        }
+
+        #admin .caption {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          font-size: 30px;
+          line-height: 1.2;
+          opacity: 0;
+        }
+
+        #admin .caption .icon {
+          width: 46px;
+          height: 46px;
+          padding: 8px;
+          border-radius: 12px;
+          background: rgb(255 255 255 / 14%);
+        }
+
+        /* The picture is the NeXT MegaPixel Display's 1120 by 832, which is
+           what the page shows it at too. */
+        #admin-shot {
+          position: absolute;
+          left: 700px;
+          top: 104px;
+          width: 1120px;
+          opacity: 0;
+        }
+
+        #admin-shot .browser {
+          width: 1120px;
+        }
+
+        #admin .viewport {
+          position: relative;
+          width: 1120px;
+          height: 832px;
+          overflow: hidden;
+          background: var(--next-desktop);
+        }
+
+        #camera {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 1120px;
+          height: 832px;
+          transform-origin: 0 0;
+        }
+      </style>
+
+      <div id="admin" data-composition-id="admin" data-width="1920" data-height="1080">
+        <div id="admin-inner" class="fill">
+          <div id="admin-copy">
+            <p id="admin-kicker" class="section__kicker">
+              <svg class="icon" aria-hidden="true"><use href="site/icons.svg#sliders-horizontal"></use></svg>
+              The admin
+            </p>
+            <p id="admin-title">It looks like the machine it configures</p>
+            <ul class="captions">
+              <li class="caption"><svg class="icon" aria-hidden="true"><use href="site/icons.svg#check"></use></svg>The original NeXTSTEP 3.3 icons</li>
+              <li class="caption"><svg class="icon" aria-hidden="true"><use href="site/icons.svg#check"></use></svg>Window buttons cut pixel for pixel</li>
+              <li class="caption"><svg class="icon" aria-hidden="true"><use href="site/icons.svg#check"></use></svg>In a browser on another computer</li>
+            </ul>
+          </div>
+          <div id="admin-shot">
+            <div class="browser">
+              <div class="browser__bar">
+                <div class="browser__lights" aria-hidden="true"><span></span><span></span><span></span></div>
+                <div class="browser__address">cube.local:8810</div>
+              </div>
+              <div class="viewport">
+                <img id="camera" src="site/shots/workspace.png" alt="" data-layout-allow-overflow />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        (() => {
+          const { tl, at, rise } = window.FILM.scene("admin");
+          const cues = window.CUES;
+          const start = cues.scenes.admin;
+
+          // Where the camera stops over the screenshot, as a zoom and the
+          // point of the picture it puts in the middle, in fractions of the
+          // picture: the File Viewer's icons, then the title bars where the
+          // Info window's close button meets the next window's miniaturize
+          // button, then the whole of it again.
+          const VIEWPORT = { width: 1120, height: 832 };
+          const STOPS = [
+            { zoom: 2.0, x: 0.25, y: 0.66 },
+            { zoom: 3.4, x: 0.47, y: 0.02 },
+            { zoom: 1.0, x: 0.5, y: 0.5 },
+          ];
+
+          // The camera position that puts a point of the picture in the
+          // middle, held inside the picture so none of its edges ever shows.
+          const cameraAt = ({ zoom, x, y }) => {
+            const hold = (value, low) => Math.min(0, Math.max(low, value));
+            return {
+              scale: zoom,
+              x: hold(VIEWPORT.width / 2 - zoom * x * VIEWPORT.width, VIEWPORT.width * (1 - zoom)),
+              y: hold(VIEWPORT.height / 2 - zoom * y * VIEWPORT.height, VIEWPORT.height * (1 - zoom)),
+            };
+          };
+
+          tl.fromTo(
+            "#admin-shot",
+            { opacity: 0, x: 160, rotationY: -24, rotationX: 10, transformPerspective: 1800 },
+            { opacity: 1, x: 0, rotationY: 0, rotationX: 0, duration: 1.0, ease: "power3.out" },
+            at(start),
+          );
+          rise("#admin-kicker", start + 0.1, 30);
+          rise("#admin-title", start + 0.25, 30);
+
+          // Each caption arrives as the camera reaches what it says, and the
+          // one before it steps back.
+          const captions = document.querySelectorAll("#admin .caption");
+          cues.captions.forEach((filmTime, index) => {
+            tl.to("#camera", { ...cameraAt(STOPS[index]), duration: 0.9, ease: "power3.inOut" }, at(filmTime - 0.2));
+            tl.fromTo(captions[index], { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.4, ease: "expo.out" }, at(filmTime));
+            if (index > 0) tl.to(captions[index - 1], { opacity: 0.55, duration: 0.3 }, at(filmTime));
+          });
+
+          tl.to("#admin-inner", { opacity: 0, filter: "blur(12px)", duration: 0.35, ease: "power2.in" }, at(cues.scenes.systems - 0.4));
+
+          window.__timelines["admin"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

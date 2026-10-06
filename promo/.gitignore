@@ -1,0 +1,6 @@
+renders/
+snapshots/
+.hyperframes/
+# HyperFrames writes these agent guides on init. They stay local.
+CLAUDE.md
+AGENTS.md

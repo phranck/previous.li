@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>End card</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #end {
+          position: absolute;
+          inset: 0;
+          font-family: var(--font);
+          color: var(--next-white);
+        }
+
+        #end-mark {
+          width: 188px;
+          height: 230px;
+          margin-bottom: 28px;
+          opacity: 0;
+        }
+
+        #end-url {
+          margin: 18px 0 0;
+          font-size: 44px;
+          font-weight: 600;
+          color: var(--on-workspace-soft);
+          opacity: 0;
+        }
+
+        /* The page's install window, drawn at one and a half times its size.
+           The holder is what the timeline moves, so the scale on the window
+           itself never meets a tween. */
+        #end-window {
+          margin-top: 56px;
+          width: 1140px;
+          height: 162px;
+          opacity: 0;
+        }
+
+        #end-window .window {
+          width: 760px;
+          transform: scale(1.5);
+          transform-origin: 0 0;
+        }
+
+        #trademarks {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 44px;
+          margin: 0;
+          font-size: 18px;
+          color: var(--on-workspace-soft);
+          text-align: center;
+          opacity: 0;
+        }
+      </style>
+
+      <div id="end" data-composition-id="end" data-width="1920" data-height="1080">
+        <div class="center">
+          <img id="end-mark" src="site/logo.png" alt="" />
+          <p id="end-name" class="name">Previously</p>
+          <p id="end-url">previous.li</p>
+          <div id="end-window">
+            <div class="window">
+              <div class="window__title">
+                <svg class="icon" aria-hidden="true"><use href="site/icons.svg#terminal-window"></use></svg>
+                Terminal
+              </div>
+              <div class="window__body">
+                <div class="command">
+                  <span class="command__prompt" aria-hidden="true">$</span>
+                  <span>curl -fsSL https://previous.li/install.sh | bash</span>
+                </div>
+                <span class="button">
+                  <svg class="icon" aria-hidden="true"><use href="site/icons.svg#copy"></use></svg>
+                  <span>Copy</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p id="trademarks">NeXT, NeXTSTEP, OPENSTEP and the NeXT cube logo are registered trademarks of Apple Computer, Inc. The Raspberry Pi mark belongs to Raspberry Pi Ltd.</p>
+        <div id="end-flash" class="flash"></div>
+      </div>
+
+      <script>
+        (() => {
+          const { tl, at, rise } = window.FILM.scene("end");
+          const start = window.CUES.finale;
+
+          tl.set("#end-flash", { opacity: 0.55 }, at(start));
+          tl.to("#end-flash", { opacity: 0, duration: 0.6, ease: "power2.out" }, at(start));
+          tl.fromTo("#end-mark", { opacity: 0, scale: 1.3, filter: "blur(16px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, at(start));
+          rise(window.FILM.splitLetters(document.getElementById("end-name")), start + 0.2, 70);
+          rise("#end-url", start + 0.6, 30);
+          rise("#end-window", start + 0.9, 40);
+          tl.to("#trademarks", { opacity: 1, duration: 0.6 }, at(start + 1.4));
+
+          window.__timelines["end"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

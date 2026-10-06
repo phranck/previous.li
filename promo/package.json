@@ -1,0 +1,11 @@
+{
+  "name": "previously-film",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.8.134 preview",
+    "check": "npx --yes hyperframes@0.8.134 check",
+    "render": "npx --yes hyperframes@0.8.134 render --quality delivery --output renders/previously.mp4",
+    "publish": "npx --yes hyperframes@0.8.134 publish"
+  }
+}

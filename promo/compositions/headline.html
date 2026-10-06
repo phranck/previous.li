@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Headline: boosts, boots</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #headline {
+          position: absolute;
+          inset: 0;
+          font-family: var(--font);
+          color: var(--ink);
+        }
+
+        #headline .claim {
+          margin: 0;
+          max-width: 1640px;
+          font-size: 108px;
+          font-weight: 700;
+          letter-spacing: -0.03em;
+          line-height: 1.14;
+        }
+
+        #headline .line {
+          display: block;
+        }
+
+        #headline .word {
+          display: inline-block;
+          position: relative;
+          opacity: 0;
+        }
+
+        /* The word the sentence nearly said, as the page sets it. */
+        #struck {
+          font-style: italic;
+        }
+
+        #strike {
+          position: absolute;
+          left: -4px;
+          right: -4px;
+          top: 56%;
+          height: 9px;
+          border-radius: 5px;
+          background: var(--ink);
+          transform-origin: left center;
+        }
+
+        #accent {
+          color: var(--next-white);
+          text-shadow: 0 0 40px rgb(143 143 196 / 70%);
+        }
+      </style>
+
+      <div id="headline" data-composition-id="headline" data-width="1920" data-height="1080">
+        <div id="headline-inner" class="center">
+          <p class="claim">
+            <span class="line"><span class="word">A</span> <span class="word">Raspberry</span> <span class="word">Pi</span> <span class="word">that</span> <span id="struck" class="word">boosts<span id="strike"></span></span><span id="ellipsis" class="word">…</span></span>
+            <span class="line"><span class="word">boots</span> <span class="word">directly</span> <span class="word">into</span> <span id="accent" class="word">NeXTSTEP</span></span>
+          </p>
+        </div>
+      </div>
+
+      <script>
+        (() => {
+          const { tl, at, rise } = window.FILM.scene("headline");
+          const cues = window.CUES;
+          const start = cues.scenes.headline;
+          const BEAT = 60 / cues.bpm;
+
+          // The first line word by word on the eighths of the first bar, the
+          // ellipsis once the word before it is struck, and the second line on
+          // the eighths of the second bar.
+          document.querySelectorAll("#headline .line").forEach((line, lineIndex) => {
+            const words = [...line.querySelectorAll(".word")].filter((word) => word.id !== "ellipsis");
+            words.forEach((word, index) => rise(word, start + lineIndex * 4 * BEAT + (index * BEAT) / 2));
+          });
+
+          tl.fromTo("#strike", { scaleX: 0 }, { scaleX: 1, duration: 0.2, ease: "power2.out" }, at(cues.strike));
+          tl.to("#struck", { color: window.FILM.token("--ink-soft"), duration: 0.3 }, at(cues.strike));
+          rise("#ellipsis", cues.strike + BEAT / 2);
+          tl.fromTo("#accent", { scale: 1.25 }, { scale: 1, duration: 0.5, ease: "expo.out" }, at(start + 4 * BEAT + 1.5 * BEAT));
+
+          tl.to("#headline-inner", { y: -70, opacity: 0, filter: "blur(10px)", duration: 0.35, ease: "power2.in" }, at(cues.scenes.install - 0.4));
+
+          window.__timelines["headline"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

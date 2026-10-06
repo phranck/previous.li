@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Opening: the merge</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #opening {
+          position: absolute;
+          inset: 0;
+        }
+
+        #opening .logo,
+        #button,
+        #pulse,
+        #cursor,
+        #mark,
+        #mark-glow {
+          position: absolute;
+        }
+
+        #opening .logo img {
+          position: absolute;
+          top: 0;
+          height: 100%;
+        }
+
+        /* The shadow the button throws on the page, at the film's scale. */
+        #button {
+          filter: drop-shadow(9px 11px 6px rgb(0 0 0 / 55%));
+        }
+
+        #button img {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+        }
+
+        #button-pressed {
+          opacity: 0;
+        }
+
+        #pulse {
+          border: 3px solid rgb(255 255 255 / 85%);
+          border-radius: 6px;
+          box-shadow: 0 0 24px rgb(222 220 107 / 60%);
+          opacity: 0;
+        }
+
+        /* The cursor's shadow, thrown further than the button's, as the
+           page's hero throws it. */
+        #cursor {
+          filter: drop-shadow(20px 23px 11px rgb(0 0 0 / 50%));
+          opacity: 0;
+        }
+
+        #mark-glow {
+          border-radius: 50%;
+          background: radial-gradient(circle, rgb(143 143 196 / 55%), transparent 62%);
+          opacity: 0;
+        }
+
+        #mark {
+          opacity: 0;
+        }
+
+        #opening-name {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 610px;
+          text-align: center;
+        }
+      </style>
+
+      <div id="opening" data-composition-id="opening" data-width="1920" data-height="1080">
+        <div id="opening-inner" class="fill">
+          <div id="berry" class="logo">
+            <img id="berry-trail" src="assets/berry-trail.png" alt="" />
+            <img id="berry-sharp" src="assets/berry.png" alt="" />
+          </div>
+          <div id="cube" class="logo">
+            <img id="cube-trail" src="assets/cube-trail.png" alt="" />
+            <img id="cube-sharp" src="assets/cube.png" alt="" />
+          </div>
+          <div id="button">
+            <img id="button-raised" src="assets/merge-raised.svg" alt="" />
+            <img id="button-pressed" src="assets/merge-pressed.svg" alt="" />
+          </div>
+          <div id="pulse"></div>
+          <img id="cursor" src="assets/cursor.svg" alt="" />
+          <div id="mark-glow"></div>
+          <img id="mark" src="site/logo.png" alt="" />
+          <p id="opening-name" class="name">Previously</p>
+        </div>
+        <div id="opening-flash" class="flash"></div>
+      </div>
+
+      <script>
+        (() => {
+          const { tl, at, rise } = window.FILM.scene("opening");
+          const cues = window.CUES;
+          const parts = window.PARTS;
+
+          // The film's scale against the page's hero: a drawn pixel of the
+          // button and of the cursor, the height of each logo, and what each
+          // logo leaves between itself and the button. Each is the hero's own
+          // value times about one and a half.
+          const BUTTON_UNIT = 8;
+          const CURSOR_UNIT = 13;
+          const BERRY_HEIGHT = 440;
+          const CUBE_HEIGHT = 455;
+          const LOGO_GAP = 58;
+
+          // The mark the two become, and the light behind it, both standing
+          // where the button stood.
+          const MARK_HEIGHT = 380;
+          const GLOW_SIZE = 1000;
+
+          // Where the button's middle stands, and the logos' middles a little
+          // above it, as the hero has them.
+          const BUTTON_CENTER = { x: 960, y: 470 };
+          const LOGO_MIDDLE_Y = 430;
+
+          const px = (box) => Object.fromEntries(Object.entries(box).map(([key, value]) => [key, `${value}px`]));
+          const place = (id, box) => Object.assign(document.getElementById(id).style, px(box));
+
+          // Placed once, the way site/hero.py places them, so no tween ever
+          // measures anything: the button in the middle, each logo standing
+          // off it by the gap, each trail running one reach past its logo away
+          // from the button, and the cursor with its tip under the r of the
+          // label.
+          const button = { width: parts.button.columns * BUTTON_UNIT, height: parts.button.rows * BUTTON_UNIT };
+          button.left = BUTTON_CENTER.x - button.width / 2;
+          button.top = BUTTON_CENTER.y - button.height / 2;
+          place("button", button);
+          place("pulse", button);
+
+          const reach = parts.streak.reach;
+          const berryWidth = (parts.berry.width / parts.berry.height) * BERRY_HEIGHT;
+          const cubeWidth = (parts.cube.width / parts.cube.height) * CUBE_HEIGHT;
+          const berry = { left: button.left - LOGO_GAP - berryWidth, top: LOGO_MIDDLE_Y - BERRY_HEIGHT / 2, width: berryWidth, height: BERRY_HEIGHT };
+          const cube = { left: button.left + button.width + LOGO_GAP, top: LOGO_MIDDLE_Y - CUBE_HEIGHT / 2, width: cubeWidth, height: CUBE_HEIGHT };
+          place("berry", berry);
+          place("cube", cube);
+          place("berry-trail", { left: -berryWidth * reach, width: berryWidth * (1 + reach) });
+          place("berry-sharp", { left: 0, width: berryWidth });
+          place("cube-trail", { left: 0, width: cubeWidth * (1 + reach) });
+          place("cube-sharp", { left: 0, width: cubeWidth });
+          document.getElementById("berry-trail").style.opacity = parts.streak.opacity;
+          document.getElementById("cube-trail").style.opacity = parts.streak.opacity;
+
+          const tip = {
+            x: button.left + parts.button.pressColumn * BUTTON_UNIT,
+            y: button.top + button.height - parts.button.tipRise * CURSOR_UNIT,
+          };
+          place("cursor", {
+            left: tip.x - parts.cursor.tip[0] * CURSOR_UNIT,
+            top: tip.y - parts.cursor.tip[1] * CURSOR_UNIT,
+            width: parts.cursor.columns * CURSOR_UNIT,
+            height: parts.cursor.rows * CURSOR_UNIT,
+          });
+
+          const markWidth = (parts.mark.width / parts.mark.height) * MARK_HEIGHT;
+          place("mark", { left: BUTTON_CENTER.x - markWidth / 2, top: BUTTON_CENTER.y - MARK_HEIGHT / 2, width: markWidth, height: MARK_HEIGHT });
+          place("mark-glow", { left: BUTTON_CENTER.x - GLOW_SIZE / 2, top: BUTTON_CENTER.y - GLOW_SIZE / 2, width: GLOW_SIZE, height: GLOW_SIZE });
+
+          // The cursor wanders in from the lower right, then makes for the
+          // button and arrives just before the beat it presses on.
+          tl.fromTo("#cursor", { opacity: 0, x: 520, y: 300 }, { opacity: 1, duration: 0.15 }, at(0.6));
+          tl.to("#cursor", { x: 440, y: 230, duration: 2.4, ease: "sine.inOut" }, at(0.6));
+          tl.to("#cursor", { x: 0, y: 0, duration: 0.85, ease: "power3.inOut" }, at(cues.press - 1.0));
+
+          // The button draws itself one row of its raster at a time.
+          const [buildStart, buildEnd] = cues.build;
+          tl.fromTo(
+            "#button",
+            { clipPath: "inset(0% 0% 100% 0%)" },
+            { clipPath: "inset(0% 0% 0% 0%)", duration: buildEnd - buildStart, ease: `steps(${parts.button.rows})` },
+            at(buildStart),
+          );
+
+          // The two machines arrive, each from its own side.
+          const [berryArrives, cubeArrives] = cues.whooshes;
+          tl.fromTo("#berry", { x: -1000 }, { x: 0, duration: 0.45, ease: "expo.out" }, at(berryArrives));
+          tl.fromTo("#berry-trail", { scaleX: 2.2, transformOrigin: "100% 50%" }, { scaleX: 1, duration: 0.6, ease: "expo.out" }, at(berryArrives));
+          tl.fromTo("#cube", { x: 1000 }, { x: 0, duration: 0.45, ease: "expo.out" }, at(cubeArrives));
+          tl.fromTo("#cube-trail", { scaleX: 2.2, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.6, ease: "expo.out" }, at(cubeArrives));
+
+          // The press. Each flash is set where it starts rather than tweened
+          // from there, so seeking to any moment before it shows nothing.
+          tl.set("#button-raised", { opacity: 0 }, at(cues.press));
+          tl.set("#button-pressed", { opacity: 1 }, at(cues.press));
+          tl.to("#cursor", { y: 6, duration: 0.06, yoyo: true, repeat: 1, ease: "power1.inOut" }, at(cues.press));
+          tl.set("#pulse", { opacity: 0.9, scale: 1 }, at(cues.press));
+          tl.to("#pulse", { opacity: 0, scale: 1.9, duration: 0.55, ease: "expo.out" }, at(cues.press));
+
+          // They rush together, and the button and the cursor make way.
+          const rush = cues.meet - cues.press - 0.08;
+          const travel = {
+            berry: BUTTON_CENTER.x - (berry.left + berry.width / 2),
+            cube: BUTTON_CENTER.x - (cube.left + cube.width / 2),
+          };
+          tl.to(["#button", "#cursor"], { opacity: 0, scale: 0.6, duration: 0.25, ease: "power2.in" }, at(cues.press + 0.1));
+          tl.to("#berry", { x: travel.berry, duration: rush, ease: "power3.in" }, at(cues.press + 0.08));
+          tl.to("#cube", { x: travel.cube, duration: rush, ease: "power3.in" }, at(cues.press + 0.08));
+          tl.to(["#berry-trail", "#cube-trail"], { scaleX: 1.8, duration: rush, ease: "power2.in" }, at(cues.press + 0.08));
+          tl.set(["#berry", "#cube"], { opacity: 0 }, at(cues.meet));
+
+          // One machine, and its name.
+          tl.set("#opening-flash", { opacity: 0.85 }, at(cues.meet));
+          tl.to("#opening-flash", { opacity: 0, duration: 0.5, ease: "power2.out" }, at(cues.meet));
+          tl.fromTo("#mark-glow", { opacity: 0, scale: 0.5 }, { opacity: 0.9, scale: 1.15, duration: 0.9, ease: "power2.out" }, at(cues.meet));
+          tl.fromTo("#mark", { opacity: 0, scale: 0.3, rotation: -12 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.65, ease: "back.out(1.7)" }, at(cues.meet));
+          tl.to(["#mark", "#mark-glow"], { y: -120, duration: 0.7, ease: "power3.inOut" }, at(cues.meet + 0.8));
+          tl.to("#mark", { scale: 0.8, duration: 0.7, ease: "power3.inOut" }, at(cues.meet + 0.8));
+          rise(window.FILM.splitLetters(document.getElementById("opening-name")), cues.meet + 1.0, 90);
+          tl.to("#mark", { y: -128, duration: 1.4, ease: "sine.inOut" }, at(cues.meet + 1.6));
+
+          // Out, as the ground beneath darkens.
+          tl.to("#opening-inner", { opacity: 0, scale: 0.94, filter: "blur(14px)", duration: 0.4, ease: "power2.in" }, at(cues.scenes.headline - 0.45));
+
+          window.__timelines["opening"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>
