@@ -1,6 +1,6 @@
 # The film
 
-A 30 second promo film for Previously, with sound. It is a [HyperFrames](https://github.com/heygen-com/hyperframes) project: the film is written as HTML, and HyperFrames renders it to MP4 in headless Chrome.
+A 32 second promo film for Previously, with sound. It is a [HyperFrames](https://github.com/heygen-com/hyperframes) project: the film is written as HTML, and HyperFrames renders it to MP4 in headless Chrome.
 
 ## Making it
 
