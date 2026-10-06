@@ -113,6 +113,30 @@ window.FILM = {
   },
 
   /**
+   * The shadow the cube casts on the workspace, in shares of the cube's edge,
+   * so it grows and shrinks with the cube: how far below the cube it falls,
+   * how soft it is as the standard deviation of its blur, and how dark it is.
+   * The cube casts it from a black copy of itself, and the mark's picture
+   * casts the same one wherever it stands in for the cube.
+   */
+  SHADOW: { drop: 0.1, blur: 0.05, opacity: 0.55 },
+
+  /**
+   * The shadow the mark's picture casts in one of its boxes, the same one the
+   * cube casts as the mark in that box. In Chromium a drop shadow's length
+   * is the standard deviation of its blur, as blur() takes it.
+   *
+   * @param {{height: number}} box The box the picture fills, as `markBox`
+   *   gives it.
+   * @returns {string} The CSS filter that casts it.
+   */
+  markShadow(box) {
+    const edge = (2 * window.PARTS.markPose.halfEdge * box.height) / window.PARTS.mark.height;
+    const { drop, blur, opacity } = this.SHADOW;
+    return `drop-shadow(0 ${drop * edge}px ${blur * edge}px rgb(0 0 0 / ${opacity}))`;
+  },
+
+  /**
    * The admin's windows and its desk, as site/shot.py takes them: each
    * window's size in NeXTSTEP pixels, and how many image pixels a side each
    * NeXTSTEP pixel is drawn with, in a window's picture and in the desk's.

@@ -17,8 +17,10 @@
         /* The place is a point at the cube's middle that holds the camera: its
            perspective, where the cube stands and how large it looks. The three
            wrappers inside turn the cube about z, x and y, in that order from
-           the outside in, which is how parts.py states the mark's pose. */
-        #cube-place {
+           the outside in, which is how parts.py states the mark's pose. The
+           shadow's place and wrappers are the same, and move with the cube's. */
+        #cube-place,
+        #shadow-place {
           position: absolute;
           left: 0;
           top: 0;
@@ -28,11 +30,18 @@
           opacity: 0;
         }
 
-        #cube-place .spatial {
+        #cube .spatial {
           position: absolute;
           left: 0;
           top: 0;
           transform-style: preserve-3d;
+        }
+
+        /* The cube's shadow on the workspace: a black copy of the cube behind
+           it, dropped below it and softened, as film.js's SHADOW says. */
+        #cube-shadow {
+          position: absolute;
+          inset: 0;
         }
 
         /* A face, set back from the cube's edges on every side, so the faces
@@ -48,12 +57,12 @@
           backface-visibility: hidden;
         }
 
-        #face-front { transform: translateZ(var(--half)); }
-        #face-right { transform: rotateY(90deg) translateZ(var(--half)); }
-        #face-back { transform: rotateY(180deg) translateZ(var(--half)); }
-        #face-left { transform: rotateY(-90deg) translateZ(var(--half)); }
-        #face-top { transform: rotateX(90deg) translateZ(var(--half)); }
-        #face-bottom { transform: rotateX(-90deg) translateZ(var(--half)); }
+        #cube .front { transform: translateZ(var(--half)); }
+        #cube .right { transform: rotateY(90deg) translateZ(var(--half)); }
+        #cube .back { transform: rotateY(180deg) translateZ(var(--half)); }
+        #cube .left { transform: rotateY(-90deg) translateZ(var(--half)); }
+        #cube .top { transform: rotateX(90deg) translateZ(var(--half)); }
+        #cube .bottom { transform: rotateX(-90deg) translateZ(var(--half)); }
 
         /* The mark's top face, with its letters, which arrive as the two
            machines become one. */
@@ -148,37 +157,40 @@
       </style>
 
       <div id="cube" data-composition-id="cube" data-width="1440" data-height="1080">
+        <div id="cube-shadow"><div id="shadow-place" data-layout-allow-overflow><div id="shadow-drop" class="spatial"><div id="shadow-z" class="spatial"><div id="shadow-x" class="spatial"><div id="shadow-y" class="spatial">
+          <div class="face front"></div><div class="face right"></div><div class="face back"></div><div class="face left"></div><div class="face top"></div><div class="face bottom"></div>
+        </div></div></div></div></div></div>
         <div id="cube-place" data-layout-allow-overflow>
           <div id="cube-z" class="spatial">
             <div id="cube-x" class="spatial">
               <div id="cube-y" class="spatial">
-                <div id="face-front" class="face">
+                <div id="face-front" class="face front">
                   <div id="decal-pi" class="decal"><img id="pi-trail" src="assets/pi-trail.png" alt="" /><img id="pi-sharp" src="assets/pi.png" alt="" /></div>
                   <div id="panel-headline" class="panel"><div id="slot-headline" data-composition-id="headline" data-composition-src="compositions/faces/headline.html" data-start="0" data-duration="32" data-width="546" data-height="546"></div></div>
                   <div id="panel-nextstep" class="panel"><p class="slam">Just<br />NeXTSTEP.</p></div>
                   <div id="panel-browser" class="panel"><div id="slot-browser" data-composition-id="browser" data-composition-src="compositions/faces/browser.html" data-start="0" data-duration="32" data-width="546" data-height="546"></div></div>
                   <div id="panel-system-3" class="panel"><p class="system">NeXTSTEP</p><p class="version">3.3</p></div>
                 </div>
-                <div id="face-right" class="face">
+                <div id="face-right" class="face right">
                   <div id="decal-cube" class="decal"><img id="cube-trail" src="assets/cube-trail.png" alt="" /><img id="cube-sharp" src="assets/cube.png" alt="" /></div>
                   <div id="panel-install" class="panel"><div id="slot-terminal" data-composition-id="terminal" data-composition-src="compositions/faces/terminal.html" data-start="0" data-duration="32" data-width="546" data-height="546"></div></div>
                   <div id="panel-workspace" class="panel"><div id="slot-workspace" data-composition-id="workspace" data-composition-src="compositions/faces/workspace.html" data-start="0" data-duration="32" data-width="546" data-height="546"></div></div>
                   <div id="panel-system-0" class="panel"><p class="system">NeXTSTEP</p><p class="version">2.2</p></div>
                   <div id="panel-system-4" class="panel"><p class="system">OPENSTEP</p><p class="version">4.0</p></div>
                 </div>
-                <div id="face-back" class="face">
+                <div id="face-back" class="face back">
                   <div id="panel-desktop" class="panel"><p class="slam">No<br />desktop.</p></div>
                   <div id="panel-icons" class="panel"><div id="icons"></div></div>
                   <div id="panel-system-1" class="panel"><p class="system">NeXTSTEP</p><p class="version">3.0</p></div>
                   <div id="panel-system-5" class="panel"><p class="system">OPENSTEP</p><p class="version">4.2</p></div>
                 </div>
-                <div id="face-left" class="face">
+                <div id="face-left" class="face left">
                   <div id="panel-login" class="panel"><p class="slam">No<br />login.</p></div>
                   <div id="panel-pixels" class="panel"><div id="pixels"></div></div>
                   <div id="panel-system-2" class="panel"><p class="system">NeXTSTEP</p><p class="version">3.2</p></div>
                 </div>
-                <div id="face-top" class="face"><img id="top-letters" src="assets/cube-top.png" alt="" /></div>
-                <div id="face-bottom" class="face"></div>
+                <div id="face-top" class="face top"><img id="top-letters" src="assets/cube-top.png" alt="" /></div>
+                <div id="face-bottom" class="face bottom"></div>
               </div>
             </div>
           </div>
@@ -202,6 +214,13 @@
           const root = document.getElementById("cube");
           root.style.setProperty("--half", `${HALF}px`);
           root.style.setProperty("--face", `${FACE}px`);
+
+          // The shadow drops and softens inside its place, so it scales with
+          // the cube as the camera moves in and out.
+          const { SHADOW } = window.FILM;
+          document.getElementById("cube-shadow").style.opacity = SHADOW.opacity;
+          document.getElementById("shadow-place").style.filter = `blur(${SHADOW.blur * EDGE}px)`;
+          document.getElementById("shadow-drop").style.transform = `translateY(${SHADOW.drop * EDGE}px)`;
 
           // How far the camera stands from the cube's middle while the cube
           // shows its faces, and while it stands as the mark, which is the
@@ -238,16 +257,18 @@
             };
           };
 
-          // Moves the cube: where it stands, how large, how far the camera is,
-          // and its three angles, each on its own wrapper. A move of no length
-          // is set rather than tweened, so seeking past it shows it.
+          // Moves the cube and its shadow: where they stand, how large, how far
+          // the camera is, and the three angles, each on its own wrapper. A
+          // move of no length is set rather than tweened, so seeking past it
+          // shows it.
+          const both = (part) => `#cube-${part}, #shadow-${part}`;
           const move = (state, filmTime, duration = 0, ease = "none") => {
             const pick = (...keys) => Object.fromEntries(keys.filter((key) => state[key] !== undefined).map((key) => [key, state[key]]));
             const targets = {
-              "#cube-place": pick("x", "y", "scale", "perspective"),
-              "#cube-z": pick("rotation"),
-              "#cube-x": pick("rotationX"),
-              "#cube-y": pick("rotationY"),
+              [both("place")]: pick("x", "y", "scale", "perspective"),
+              [both("z")]: pick("rotation"),
+              [both("x")]: pick("rotationX"),
+              [both("y")]: pick("rotationY"),
             };
             for (const [target, vars] of Object.entries(targets)) {
               if (!Object.keys(vars).length) continue;
@@ -289,7 +310,7 @@
           const { from: dialFrom, to: dialTo, word } = cues.dial;
           const NOTCH = 90 / word.length;
           move({ ...PLACES.opening, scale: 0, perspective: PERSPECTIVE, rotation: 0, rotationX: -20, rotationY: 45 + 180 }, 0);
-          tl.set("#cube-place", { opacity: 1 }, at(cues.crtOn));
+          tl.set(both("place"), { opacity: 1 }, at(cues.crtOn));
           move({ scale: PLACES.opening.scale, rotationY: 45 }, cues.crtOn + 0.45, dialFrom - cues.crtOn - 0.45, "expo.out");
           for (let index = 0; index < word.length; index++) {
             move({ rotationY: 45 - NOTCH * (index + 1) }, dialFrom + ((dialTo - dialFrom) * index) / word.length, 0.07, "power2.out");
@@ -330,8 +351,8 @@
 
           // The mark's own picture stands in for the cube from the flash until
           // the cube turns away to the headline.
-          tl.set("#cube-place", { opacity: 0 }, at(cues.meet));
-          tl.set("#cube-place", { opacity: 1 }, at(turns[0][0]));
+          tl.set(both("place"), { opacity: 0 }, at(cues.meet));
+          tl.set(both("place"), { opacity: 1 }, at(turns[0][0]));
 
           // --- the faces ---------------------------------------------------
 
@@ -369,7 +390,7 @@
 
           // The stabs land a little larger and settle, each on its face.
           cues.stabs.forEach((filmTime) => {
-            tl.fromTo("#cube-place", { scale: PLACES.faces.scale * 1.06 }, { scale: PLACES.faces.scale, duration: 0.35, ease: "expo.out", immediateRender: false }, at(filmTime));
+            tl.fromTo(both("place"), { scale: PLACES.faces.scale * 1.06 }, { scale: PLACES.faces.scale, duration: 0.35, ease: "expo.out", immediateRender: false }, at(filmTime));
           });
 
           // The icons and the pixels: a part of each window's picture, enlarged.
@@ -392,7 +413,7 @@
           // the flash.
           const [spinStart, spinEnd] = cues.spin;
           move(asMark(window.FILM.markBox("end"), turnedTo(turns.length - 1) - 540), spinStart, spinEnd - spinStart, "power2.in");
-          tl.set("#cube-place", { opacity: 0 }, at(cues.finale));
+          tl.set(both("place"), { opacity: 0 }, at(cues.finale));
 
           /**
            * Where a point on one of the cube's side faces lands in the film,

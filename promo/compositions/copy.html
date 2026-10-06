@@ -210,10 +210,12 @@
           tl.to(letters, { opacity: 0, y: -10, duration: 0.3, stagger: 0.02, ease: "power2.in" }, at(cues.press - 0.45));
 
           // The merge ends on a flash, under which the cube gives way to the
-          // mark's own picture, which no cube matches exactly. The name rises
-          // under it, and both go as the cube turns away to the headline.
+          // mark's own picture, which no cube matches exactly. The picture casts
+          // the cube's shadow, so the shadow stays as it takes over. The name
+          // rises under it, and both go as the cube turns away to the headline.
           const merge = window.FILM.markBox("merge");
           place("copy-mark", merge);
+          document.getElementById("copy-mark").style.filter = window.FILM.markShadow(merge);
           const GLOW = 1000;
           place("copy-glow", { left: 720 - GLOW / 2, top: merge.top + merge.height / 2 - GLOW / 2, width: GLOW, height: GLOW });
           tl.set("#copy-flash", { opacity: 0.85 }, at(cues.meet));
@@ -247,7 +249,7 @@
           // mark's picture takes over, and its name, what it is and where to
           // find it rise under it.
           const end = window.FILM.markBox("end");
-          tl.set("#copy-mark", { left: end.left, top: end.top, width: end.width, height: end.height, opacity: 1 }, at(cues.finale));
+          tl.set("#copy-mark", { left: end.left, top: end.top, width: end.width, height: end.height, filter: window.FILM.markShadow(end), opacity: 1 }, at(cues.finale));
           tl.set("#copy-flash", { opacity: 0.55 }, at(cues.finale));
           tl.to("#copy-flash", { opacity: 0, duration: 0.6, ease: "power2.out" }, at(cues.finale));
           // Each line of the end card stands a gap below the one before it:
