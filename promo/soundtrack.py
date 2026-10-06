@@ -16,8 +16,10 @@ that file, so moving a cue there moves the picture and its sound together.
 The music is in A minor, at the cue sheet's tempo, with one chord to a bar. It
 is electro in the manner of Kraftwerk: a syncopated electronic beat with claps
 and claves, a sequencer running through the chords with an echo, a staccato
-bass riff in the manner of a Minimoog, and a bright lead. Its melody, riff and
-rhythm are its own, and none of it is taken from one of their recordings.
+bass riff, and a lead like brass. Its melody, riff and rhythm are its own,
+and none of it is taken from one of their recordings. Its timbres are
+modeled on measurements of their album Electric Cafe: synthesizers rich in
+upper harmonics, short and crisp drums, and a wide stereo field.
 
 It needs numpy and scipy, and ffmpeg for reading the MP3s and writing FLAC:
 
@@ -87,6 +89,10 @@ GROOVE = (
 #: sixteenth after it, the half beat and the last. Loud enough to come through
 #: the riff and the bleeps.
 HAT_ACCENTS = (0.44, 0.24, 0.34, 0.24)
+
+#: The metal in the hi-hat: six square waves at frequencies that share no
+#: harmonics, in Hz.
+HAT_PARTIALS = (205.3, 304.4, 369.6, 522.7, 540.0, 800.0)
 
 #: The bass riff of a bar: the sixteenth a note starts on, how many semitones
 #: it lies over the chord's root, and how many sixteenths it lasts. The notes
@@ -368,139 +374,189 @@ def midi(name):
     return NOTE_NAMES[name[:-1]] + 12 * (int(name[-1]) + 1)
 
 
-def oscillator(note, seconds, shape="saw", cutoff=4000.0, resonance=0.7071, glide_from=None, glide=0.04, vibrato=0.0):
-    """An oscillator built from its harmonics, each one already filtered.
+def sawtooth(note, seconds, cutoff, resonance=0.7071, glide_from=None, glide=0.04, vibrato=0.0, detune=0.0):
+    """A sawtooth built from its harmonics, each one already filtered.
 
     Building it from harmonics keeps it free of aliasing, and filtering each
     harmonic by its own frequency lets the cutoff move over time without a
     filter that runs sample by sample. The filter is a two-pole lowpass: at
     the default resonance it has no peak, and above it the harmonics near the
-    cutoff stand out, as on an analog synthesizer.
+    cutoff stand out, as on an analog synthesizer. Harmonics past six times
+    the cutoff are left out, because the filter has taken them down by more
+    than 30 dB.
 
     Args:
         note: A MIDI note, which may lie between two semitones.
         seconds: Its length.
-        shape: "saw" for every harmonic, "square" for the odd ones.
         cutoff: The lowpass cutoff in Hz, as one number or one per sample.
         resonance: The filter's Q.
         glide_from: A MIDI note the pitch slides up or down from, or None.
         glide: How long the slide takes, in seconds.
         vibrato: How far the pitch swings in cents once the note is held.
+        detune: How far the whole sawtooth lies off the note, in cents.
     """
     time = clock(seconds)
-    target = hertz(note)
+    shift = 2 ** (detune / 1200)
+    target = hertz(note) * shift
     frequency = numpy.full(len(time), target)
     if glide_from is not None:
-        start = hertz(glide_from)
+        start = hertz(glide_from) * shift
         frequency = start * (target / start) ** numpy.clip(time / glide, 0, 1)
     if vibrato:
         cents = vibrato * numpy.clip((time - 0.2) / 0.3, 0, 1) * numpy.sin(2 * numpy.pi * 5.2 * time)
         frequency = frequency * 2 ** (cents / 1200)
     turns = numpy.cumsum(frequency) / RATE
     cutoff = numpy.broadcast_to(numpy.asarray(cutoff, dtype=float), time.shape)
-    highest = int(min(RATE * 0.45, cutoff.max() * 4) // frequency.max())
+    highest = int(min(RATE * 0.45, cutoff.max() * 6) // frequency.max())
     sound = numpy.zeros_like(time)
     for harmonic in range(1, max(highest, 1) + 1):
-        if shape == "square" and harmonic % 2 == 0:
-            continue
         ratio = harmonic * frequency / cutoff
         response = 1 / numpy.sqrt((1 - ratio ** 2) ** 2 + (ratio / resonance) ** 2)
         sound += response / harmonic * numpy.sin(2 * numpy.pi * harmonic * turns)
     return sound
 
 
+def spread(voice, cents, crossfeed):
+    """A voice played twice, detuned apart and leaning one to each side, so
+    it sounds wide and beats slowly against itself, as two oscillators of an
+    analog synthesizer do.
+
+    Args:
+        voice: Makes one voice as mono samples, given how far it lies off the
+            note in cents.
+        cents: How far each of the two lies off the note, one below it and
+            one above.
+        crossfeed: How much of each also sounds on the other side, as a
+            factor.
+
+    Returns:
+        Stereo samples, as two rows.
+    """
+    left, right = voice(-cents), voice(cents)
+    return numpy.stack([left + crossfeed * right, right + crossfeed * left])
+
+
 def lead(note, seconds, glide_from=None):
-    """The lead: a bright sawtooth like brass, sliding in from the note before
-    when the two touch, with a little vibrato on long notes.
+    """The lead: two sawtooths a few cents apart, one to each side, like
+    brass. On each note its filter swells open over the first 50 ms, to
+    twelve times the note's frequency, and settles at eight times it. It
+    slides in from the note before when the two touch, and long notes get a
+    little vibrato.
 
     Args:
         note: A MIDI note.
         seconds: How long it sounds.
         glide_from: The note it slides in from, or None.
+
+    Returns:
+        Stereo samples, as two rows.
     """
     time = clock(seconds)
-    sound = oscillator(note, seconds, "saw", hertz(note) * 3.5, resonance=1.4, glide_from=glide_from, glide=0.03, vibrato=8)
-    level = numpy.where(time < 0.01, time / 0.01, 0.7 + 0.3 * numpy.exp(-(time - 0.01) / 0.15))
-    return ramp_out(ramp_in(sound * level), 0.04)
+    swell = numpy.clip(time / 0.05, 0, 1) * (0.6 + 0.4 * numpy.exp(-numpy.maximum(time - 0.05, 0) / 0.25))
+    cutoff = hertz(note) * (2 + 10 * swell)
+    level = numpy.where(time < 0.008, time / 0.008, 0.75 + 0.25 * numpy.exp(-(time - 0.008) / 0.12)) * 0.99
+
+    def voice(cents):
+        sound = sawtooth(note, seconds, cutoff, resonance=1.3, glide_from=glide_from, glide=0.03, vibrato=8, detune=cents)
+        return ramp_out(ramp_in(sound * level), 0.04)
+    return spread(voice, 7, 0.45)
 
 
 def bleep(note, accent=1.0):
-    """One step of the sequencer: a square through a filter that snaps shut.
+    """One step of the sequencer: a sawtooth through a resonant filter that
+    snaps shut.
 
     Args:
         note: A MIDI note.
         accent: How hard it is played, which opens the filter further.
     """
     time = clock(0.18)
-    cutoff = 700 + 5000 * accent * numpy.exp(-time / 0.035)
-    return ramp_out(ramp_in(oscillator(note, 0.18, "square", cutoff, resonance=2.0) * numpy.exp(-time / 0.08)))
+    cutoff = 1500 + 8000 * accent * numpy.exp(-time / 0.06)
+    return ramp_out(ramp_in(sawtooth(note, 0.18, cutoff, resonance=3.0) * numpy.exp(-time / 0.08) * 0.88))
 
 
 def bass_note(note, seconds, accent=1.0, gate=0.6):
-    """One note of the bass, as a Minimoog plays it: a sawtooth through a
-    resonant filter that snaps shut, with a little sine under it for weight,
-    held for a share of its length and then let go.
+    """One note of the bass: two sawtooths a few cents apart, one to each
+    side, each driven a little and through a resonant filter that snaps
+    shut, over a sine in the middle for weight. It is held for a share of its
+    length and then let go.
 
     Args:
         note: A MIDI note.
         seconds: Its length.
         accent: How hard it is played, which opens the filter further.
         gate: The share of its length it is held for.
+
+    Returns:
+        Stereo samples, as two rows.
     """
     time = clock(seconds)
-    cutoff = 220 + 2600 * accent * numpy.exp(-time / 0.07)
-    body = oscillator(note, seconds, "saw", cutoff, resonance=3.0)
-    sub = numpy.sin(2 * numpy.pi * hertz(note) * time) * 0.15
+    cutoff = 400 + 3200 * accent * numpy.exp(-time / 0.1)
+
+    def voice(cents):
+        sound = sawtooth(note, seconds, cutoff, resonance=4.0, detune=cents)
+        return ramp_out(ramp_in(numpy.tanh(sound * 1.5) / numpy.tanh(1.5)))
+    sub = ramp_out(ramp_in(numpy.sin(2 * numpy.pi * hertz(note) * time) * 0.15))
     held = seconds * gate
     level = numpy.where(time < held, 1.0, numpy.exp(-(time - held) / 0.02))
-    return ramp_out(ramp_in(body + sub)) * level * accent
+    return (spread(voice, 4, 0.5) * 0.6 + sub) * level * accent
 
 
 def kick():
-    """An electronic kick: a sine falling from about 125 Hz to 50 Hz, with a
-    short click on top."""
-    time = clock(0.35)
-    pitch = 50 + 75 * numpy.exp(-time / 0.025)
-    body = numpy.sin(2 * numpy.pi * numpy.cumsum(pitch) / RATE) * numpy.exp(-time / 0.09)
-    click = filtered(noise(0.35), "bandpass", (1500, 5000)) * numpy.exp(-time / 0.002) * 0.2
-    return ramp_out(ramp_in(numpy.tanh((body + click) * 1.4)))
+    """A short electronic kick: a sine falling from about 134 Hz to 54 Hz
+    within about 30 ms and down 20 dB within about 70 ms, with a click on
+    top, driven until it clips a little."""
+    time = clock(0.3)
+    pitch = 54 + 80 * numpy.exp(-time / 0.01)
+    body = numpy.sin(2 * numpy.pi * numpy.cumsum(pitch) / RATE) * numpy.exp(-time / 0.03)
+    click = filtered(noise(0.3), "highpass", 2000) * numpy.exp(-time / 0.002) * 0.35
+    return ramp_out(ramp_in(numpy.tanh((body + click) * 1.8) * 1.39))
 
 
 def clap():
-    """An electronic clap: four bursts of noise a few milliseconds apart, as
-    hands that do not quite meet, and a short tail."""
+    """An electronic clap and snare in one: four bursts of noise a few
+    milliseconds apart, as hands that do not quite meet, with a short tail,
+    and under them a burst of white noise and a low knock."""
     time = clock(0.25)
     sound = numpy.zeros_like(time)
     for offset in (0.0, 0.008, 0.016, 0.026):
         start = samples(offset)
-        burst = filtered(noise(0.25 - offset), "bandpass", (900, 3500)) * numpy.exp(-clock(0.25 - offset) / 0.006)
+        burst = filtered(noise(0.25 - offset), "bandpass", (1000, 7000)) * numpy.exp(-clock(0.25 - offset) / 0.006)
         sound[start:] += burst[:len(sound) - start]
-    sound += filtered(noise(0.25), "bandpass", (900, 3500)) * numpy.exp(-time / 0.06) * 0.6
-    return ramp_out(ramp_in(sound * 0.6))
+    sound += filtered(noise(0.25), "bandpass", (1000, 7000)) * numpy.exp(-time / 0.05) * 0.5
+    sound += filtered(noise(0.25), "highpass", 1800) * numpy.exp(-time / 0.045) * 0.6
+    sound += numpy.sin(2 * numpy.pi * 190 * time) * numpy.exp(-time / 0.03) * 0.5
+    return ramp_out(ramp_in(sound * 0.31))
 
 
 def hat():
-    """A closed electronic hi-hat: a tick of noise between 4 and 12 kHz."""
-    time = clock(0.05)
-    return ramp_out(ramp_in(filtered(noise(0.05), "bandpass", (4000, 12000)) * numpy.exp(-time / 0.008) * 0.7))
+    """A closed electronic hi-hat: metal and noise between 4.5 and 12 kHz,
+    down 20 dB within about 50 ms."""
+    time = clock(0.15)
+    metal = sum(numpy.sign(numpy.sin(2 * numpy.pi * frequency * time)) for frequency in HAT_PARTIALS)
+    sound = filtered(metal * 0.25 + noise(0.15), "bandpass", (4500, 12000))
+    return ramp_out(ramp_in(sound * numpy.exp(-time / 0.02) * 1.37))
 
 
 def clave():
-    """An electronic clave: two high sines that stop at once."""
+    """An electronic clave: two high tones driven until they are nearly
+    square, stopping at once."""
     time = clock(0.06)
-    tone = numpy.sin(2 * numpy.pi * 2500 * time) + 0.5 * numpy.sin(2 * numpy.pi * 1700 * time)
-    return ramp_out(ramp_in(tone * numpy.exp(-time / 0.012)))
+    tone = numpy.tanh(2.5 * (numpy.sin(2 * numpy.pi * 2400 * time) + 0.6 * numpy.sin(2 * numpy.pi * 3620 * time)))
+    return ramp_out(ramp_in(tone * numpy.exp(-time / 0.012) * 0.95))
 
 
 def zap(start):
-    """The tom of electro: a sine swept down fast from a high start.
+    """The tom of electro: a tone driven nearly square, swept down fast from
+    a high start.
 
     Args:
         start: The frequency the sweep starts from, in Hz.
     """
-    time = clock(0.18)
-    pitch = 120 + (start - 120) * numpy.exp(-time / 0.03)
-    return ramp_out(ramp_in(numpy.sin(2 * numpy.pi * numpy.cumsum(pitch) / RATE) * numpy.exp(-time / 0.06)))
+    time = clock(0.2)
+    pitch = 110 + (start - 110) * numpy.exp(-time / 0.03)
+    tone = numpy.tanh(3 * numpy.sin(2 * numpy.pi * numpy.cumsum(pitch) / RATE)) * numpy.exp(-time / 0.07)
+    return ramp_out(ramp_in(filtered(tone, "lowpass", 7000) * 0.78))
 
 
 def crash():
@@ -731,12 +787,12 @@ def write_music(cues, reverb_room):
             at = start + offset * bar + beat_in_bar * beat
             note = midi(name)
             glide_from = previous[1] if previous and abs(previous[0] - at) < 1e-6 else None
-            leads.add(lead(note, beats * beat + 0.05, glide_from), at, gain=gain, pan=0.1)
+            leads.add(lead(note, beats * beat + 0.05, glide_from), at, gain=gain)
             previous = (at + beats * beat, note)
 
     def fill(bar_start):
         for step, start in ZAP_FILL:
-            drums.add(zap(start), bar_start + step * sixteenth, gain=0.55, pan=-0.3)
+            drums.add(zap(start), bar_start + step * sixteenth, gain=0.55, pan=-0.54)
 
     # The sequencer: sixteenths through the chord, an octave and more above
     # it. It opens up from the moment the picture is up to the merge, rests
@@ -749,7 +805,7 @@ def write_music(cues, reverb_room):
             opening = min(1.0, 0.3 + 0.7 * (moment - picture_up) / (press - picture_up))
             accent = (1.0 if step in RIFF_STRONG else 0.55) * opening
             note = tones[BLEEP_ORDER[step % len(BLEEP_ORDER)]] + 24
-            sequencer.add(bleep(note, accent), moment, gain=0.09 * min(opening + 0.3, 1.0), pan=0.4 if step % 2 else -0.4)
+            sequencer.add(bleep(note, accent), moment, gain=0.09 * min(opening + 0.3, 1.0), pan=0.72 if step % 2 else -0.72)
 
     # The bass riff, quiet and closed from the second bar of the opening,
     # through the merge and the first groove, then from the admin on until
@@ -767,7 +823,7 @@ def write_music(cues, reverb_room):
     phrase(LEAD_CALL, press)
     phrase(LEAD_THEME, scenes["headline"])
     for at, name in zip(cues["stabs"], LEAD_STABS, strict=True):
-        leads.add(lead(midi(name), 0.45), at, gain=0.32, pan=0.1)
+        leads.add(lead(midi(name), 0.45), at, gain=0.32)
     phrase(LEAD_THEME, scenes["admin"])
     phrase(LEAD_RESOLUTION, finale)
     phrase(THEME_OPENING, finale + bar)
@@ -777,9 +833,9 @@ def write_music(cues, reverb_room):
     for at in merge_kicks(cues):
         drums.add(kick(), at, gain=1.0)
     for at in (press + 2 * beat, press + 6 * beat):
-        drums.add(clap(), at, gain=0.8, pan=0.05)
+        drums.add(clap(), at, gain=0.8, pan=0.09)
     for step, moment in enumerate(numpy.arange(press + bar, scenes["headline"] - 1e-6, sixteenth)):
-        drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)] * 0.7, pan=0.3)
+        drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)] * 0.7, pan=0.54)
     fill(scenes["headline"] - bar)
 
     # The grooves. The two that end on a scene close on a fill; the one under
@@ -787,13 +843,13 @@ def write_music(cues, reverb_room):
     for at in groove_hits(cues, "kicks"):
         drums.add(kick(), at, gain=1.0)
     for at in groove_hits(cues, "claps"):
-        drums.add(clap(), at, gain=0.8, pan=0.05)
+        drums.add(clap(), at, gain=0.8, pan=0.09)
     for at in groove_hits(cues, "claves"):
-        drums.add(clave(), at, gain=0.12, pan=0.55)
+        drums.add(clave(), at, gain=0.12, pan=1.0)
     grooves = drum_grooves(cues)
     for start, end in grooves:
         for step, moment in enumerate(numpy.arange(start, end - 1e-6, sixteenth)):
-            drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)], pan=0.3)
+            drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)], pan=0.54)
     for _, end in grooves[:-1]:
         fill(end - bar)
 
@@ -811,7 +867,7 @@ def write_music(cues, reverb_room):
     for at in build_kicks(cues):
         drums.add(kick(), at, gain=1.0)
     for step, moment in enumerate(numpy.arange(systems, finale - 1e-6, sixteenth)):
-        drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)], pan=0.3)
+        drums.add(hat(), moment, gain=HAT_ACCENTS[step % len(HAT_ACCENTS)], pan=0.54)
     roll = [systems + step * beat / 2 for step in range(4)]
     roll += [systems + 2 * beat + step * beat / 4 for step in range(4)]
     roll += [systems + 3 * beat + step * beat / 8 for step in range(8)]
@@ -874,13 +930,13 @@ def write_effects(cues, reverb_room):
     build_start, build_end = cues["build"]
     keys = dialed(DIALED)
     for index, at in enumerate(numpy.linspace(build_start, build_end, len(keys), endpoint=False)):
-        bus.add(dtmf(keys[index]), at, gain=0.3, pan=-0.3 + 0.6 * index / len(keys), reverb=0.05)
+        bus.add(dtmf(keys[index]), at, gain=0.3, pan=-0.54 + 1.08 * index / len(keys), reverb=0.05)
 
     # Each logo lands at the loudest moment of its whoosh, a little after the
     # move begins, because the move eases out and covers most of its way at
     # once.
     whoosh = recording("whoosh-short")
-    for at, pan in zip(cues["whooshes"], (-0.5, 0.5), strict=True):
+    for at, pan in zip(cues["whooshes"], (-0.9, 0.9), strict=True):
         bus.add(whoosh, at + 0.08 - loudest_moment(whoosh), gain=1.4, pan=pan)
 
     bus.add(recording("click"), cues["press"], gain=1.8)
@@ -904,23 +960,23 @@ def write_effects(cues, reverb_room):
         speed = 1 + KEY_VARIATION * (generator.random() - 0.5)
         varied = numpy.interp(numpy.arange(0, len(key) - 1, speed), numpy.arange(len(key)), key)
         level = KEY_GAIN * (1 + KEY_VARIATION * (generator.random() - 0.5))
-        bus.add(varied, at, gain=level, pan=0.3 * (generator.random() - 0.5))
+        bus.add(varied, at, gain=level, pan=0.54 * (generator.random() - 0.5))
     bus.add(key_press, cues["enter"], gain=RETURN_GAIN)
     bus.add(tick(84), cues["banner"], gain=0.5)
     for index, at in enumerate(cues["steps"]):
-        bus.add(tick(88 + (index % 2) * 3), at, gain=0.6, pan=0.2)
+        bus.add(tick(88 + (index % 2) * 3), at, gain=0.6, pan=0.36)
     bus.add(tick(93, 0.2), cues["done"], gain=0.7, reverb=0.3)
 
     for at in cues["captions"]:
-        bus.add(swish(), at - 0.15, gain=0.5, pan=-0.4)
+        bus.add(swish(), at - 0.15, gain=0.5, pan=-0.72)
     for index, at in enumerate(cues["windows"]):
-        bus.add(swish(0.25), at, gain=0.3, pan=0.35 if index % 2 else -0.15)
+        bus.add(swish(0.25), at, gain=0.3, pan=0.63 if index % 2 else -0.27)
 
     for index, at in enumerate(cues["systems"]):
-        bus.add(flap(), at, gain=1.0, pan=0.1 * (index % 3 - 1))
+        bus.add(flap(), at, gain=1.0, pan=0.18 * (index % 3 - 1))
     pop = recording("pop")
     for index, at in enumerate(cues["facts"]):
-        bus.add(pop, at, gain=0.9, pan=-0.4 + 0.4 * index)
+        bus.add(pop, at, gain=0.9, pan=-0.72 + 0.72 * index)
 
     bus.add(power_off(), cues["crtOff"] + 0.17, gain=1.0)
     return bus.mix(reverb_room)
