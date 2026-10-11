@@ -836,7 +836,7 @@ def write_music(cues, reverb_room):
     picture_up = cues["crtOn"] + beat
     for start, end in ((picture_up, parts["nothing"]), (parts["admin"], off)):
         for moment in numpy.arange(start, end - 1e-6, sixteenth):
-            step = int(round((moment % bar) / sixteenth)) % SIXTEENTHS
+            step = round((moment % bar) / sixteenth) % SIXTEENTHS
             tones = CHORDS[chord_at(moment)]["tones"]
             opening = min(1.0, 0.3 + 0.7 * (moment - picture_up) / (press - picture_up))
             accent = (1.0 if step in RIFF_STRONG else 0.55) * opening
