@@ -160,9 +160,6 @@
      because the correction above has to divide by exactly this. */
   --icon-scale: 1.15;
 
-  --duration: 180ms;
-  --ease: cubic-bezier(0.2, 0, 0, 1);
-
   /* Deep, because a shadow on a dark surface is only read where it is nearly
      black. The colours are tokens of their own so the two shorthands below
      state the geometry once each. */
@@ -190,7 +187,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
   /* The bar is sticky, so an anchor would otherwise land underneath it. */
   scroll-padding-top: var(--space-12);
 }
@@ -238,7 +234,6 @@ a {
   color: inherit;
   text-decoration-color: color-mix(in oklab, currentcolor 35%, transparent);
   text-underline-offset: 3px;
-  transition: text-decoration-color var(--duration) var(--ease);
 }
 
 a:hover {
@@ -622,9 +617,6 @@ kbd {
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color var(--duration) var(--ease),
-    border-color var(--duration) var(--ease), color var(--duration) var(--ease),
-    transform var(--duration) var(--ease);
 }
 
 .button:hover {
@@ -646,13 +638,10 @@ kbd {
   border-color: var(--accent);
 }
 
-/* Confirmation arrives at once and drains away afterwards, so the transition
-   sits on the resting state and not on the confirmed one. */
 .button--copied,
 .button--copied:hover {
   background: var(--next-live);
   color: var(--next-white);
-  transition: none;
 }
 
 .button .icon {
@@ -980,20 +969,5 @@ kbd {
 
   .window__body .button {
     width: 100%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    /* Shortened rather than removed, because an instant change of state reads
-       as a glitch rather than as a response. */
-    transition-duration: 60ms !important;
-    animation-duration: 60ms !important;
   }
 }
