@@ -4,11 +4,14 @@ mark the film builds its cube from.
 
     .venv/bin/python promo/parts.py
 
-The two logos and the smear each one leaves belong to site/hero.py. This imports
-its drawings and its smear rather than carrying copies, so a change there
-reaches the page and the film alike once both scripts have run. The film needs
-the logos apart where the page has them as one picture, because each slides
-onto a face of the cube on its own.
+The board and the smear it leaves belong to site/hero.py. This imports its
+drawing and its smear rather than carrying copies, so a change there reaches
+the page and the film alike once both scripts have run. The film needs the
+board apart where the page has it in one picture, because it slides onto a face
+of the cube on its own. The NeXT logo goes onto the face beside it as its
+coloured letters alone, because the cube they are stuck on is black already.
+They come out of the board's drawing through site/board.py and are laid flat
+as they lie on the top of the logo's cube.
 
 The mark in site/logo.png is a cube, which the film builds in 3D. This measures
 the pose that cube takes to look like the mark, and lays the mark's top face,
@@ -21,6 +24,7 @@ rsvg-convert and the network, and SciPy for fitting the cube.
 
 import json
 import pathlib
+import re
 import sys
 
 import numpy
@@ -33,7 +37,9 @@ SITE = HERE.parent / "site"
 ASSETS = HERE / "assets"
 
 sys.path.insert(0, str(SITE))
+import board
 import hero
+import logo
 
 #: The corners of the mark's cube that its picture shows, by where each one
 #: lies on the cube: x to the right, y up and z towards the viewer, with the
@@ -72,6 +78,15 @@ FUGUE_PASSES = 4
 #: How wide the top face's picture is drawn, in pixels.
 TOP_FACE_SIZE = 640
 
+#: How tall the NeXT logo's letters are drawn for their smear, as tall as the
+#: board is drawn for its own.
+LETTERS_HEIGHT = hero.PI_HEIGHT
+
+#: How many units wide the face the letters are laid flat on is, and how many
+#: pixels to each of the logo's units its faces are drawn at to measure them.
+FACE_UNITS = 1000
+FACE_SCALE = 0.25
+
 
 def write_logo(picture, towards, name):
     """The logo as the page draws it, and its smear beside it.
@@ -84,6 +99,81 @@ def write_logo(picture, towards, name):
     picture.save(ASSETS / f"{name}.png", optimize=True)
     trail, _ = hero.smear(picture, towards)
     trail.save(ASSETS / f"{name}-trail.png", optimize=True)
+
+
+def coordinates(data):
+    """Every point an SVG path names, as pairs of x and y.
+
+    For paths whose coordinates are all absolute, as the logo's are.
+    """
+    numbers = [float(value) for value in re.findall(r"-?\d+(?:\.\d+)?", data)]
+    return list(zip(numbers[0::2], numbers[1::2], strict=True))
+
+
+def flat_letters():
+    """The NeXT logo's letters laid flat on the face they stand on.
+
+    The logo draws its cube turned, so its letters lean with its top face. The
+    film sticks them on a face of its own cube, which its own perspective
+    turns, so they go onto that face as they would look on it seen straight
+    on. The top face is whichever of the logo's faces holds the letters'
+    middle, measured as logo.py measures the faces of the cube's picture, and
+    the letters are mapped from it onto a square FACE_UNITS wide. The hole in
+    the e is cut out of them, so the face they are stuck on shows through it.
+
+    Returns:
+        The SVG document, as text.
+    """
+    faces, letters, holes = board.next_logo()
+    points = [point for data in faces for point in coordinates(data)]
+    left, top = min(x for x, _ in points), min(y for _, y in points)
+    right, bottom = max(x for x, _ in points), max(y for _, y in points)
+    view = f'viewBox="{left:g} {top:g} {right - left:g} {bottom - top:g}"'
+    height = round((bottom - top) * FACE_SCALE)
+
+    def pixels_of(data):
+        alone = f'<svg xmlns="http://www.w3.org/2000/svg" {view}><path d="{data}"/></svg>'
+        rows, columns = numpy.nonzero(numpy.asarray(board.render(alone, height).getchannel("A")) >= 128)
+        return list(zip(columns.tolist(), rows.tolist(), strict=True))
+
+    inked = [point for _, data in letters for point in coordinates(data)]
+    middle = (round((sum(x for x, _ in inked) / len(inked) - left) * FACE_SCALE),
+              round((sum(y for _, y in inked) / len(inked) - top) * FACE_SCALE))
+    face = next(pixels for pixels in map(pixels_of, faces) if middle in set(pixels))
+    origin, across, down = logo.face_frame(face)
+    origin = numpy.array([left, top]) + origin / FACE_SCALE
+    forward = numpy.array([[across[0] / FACE_SCALE, down[0] / FACE_SCALE, origin[0]],
+                           [across[1] / FACE_SCALE, down[1] / FACE_SCALE, origin[1]],
+                           [0.0, 0.0, 1.0]])
+    flat = numpy.linalg.inv(forward) * FACE_UNITS
+    matrix = " ".join(f"{value:.6f}" for value in (flat[0, 0], flat[1, 0], flat[0, 1], flat[1, 1], flat[0, 2], flat[1, 2]))
+
+    box = f'x="{left:g}" y="{top:g}" width="{right - left:g}" height="{bottom - top:g}"'
+    cut = "\n".join(f'      <path fill="#000" d="{data}"/>' for data in holes)
+    drawn = "\n".join(f'    <path fill="{fill}" d="{data}"/>' for fill, data in letters)
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{FACE_UNITS}" height="{FACE_UNITS}" '
+            f'viewBox="0 0 {FACE_UNITS} {FACE_UNITS}" shape-rendering="geometricPrecision">\n'
+            f'  <defs>\n    <mask id="holes" maskUnits="userSpaceOnUse" {box}>\n'
+            f'      <rect {box} fill="#fff"/>\n{cut}\n    </mask>\n  </defs>\n'
+            f'  <g transform="matrix({matrix})" mask="url(#holes)">\n{drawn}\n  </g>\n</svg>\n')
+
+
+def write_letters():
+    """The NeXT logo's letters as the film sticks them on the cube.
+
+    The sharp letters go in as their own drawing, cube.svg, so they stay sharp
+    at whatever size the film shows them. Their smear is worked out from a
+    picture of them, as the board's is, and comes back like the board's.
+
+    Returns:
+        The picture's width and height, whose proportion is the drawing's.
+    """
+    letters = flat_letters()
+    (ASSETS / "cube.svg").write_text(letters)
+    picture = board.render(letters, LETTERS_HEIGHT)
+    trail, _ = hero.smear(picture, "right")
+    trail.save(ASSETS / "cube-trail.png", optimize=True)
+    return picture.size
 
 
 def fugue_pixels(opaque):
@@ -240,18 +330,20 @@ def write_top_face(picture, corners):
     face.save(ASSETS / "cube-top.png", optimize=True)
 
 
-def write_geometry(pose):
-    """What the stage needs to know about the drawings: the size of each logo
-    and of the mark, how far a smear reaches, and the mark's pose, in the mark
-    picture's pixels, which the film scales to the size it shows the mark at.
-    The stage reads all of it from here rather than measuring a second time.
+def write_geometry(pose, letters):
+    """What the stage needs to know about the drawings: the size of the board,
+    of the NeXT letters and of the mark, how far a smear reaches, and the
+    mark's pose, in the mark picture's pixels, which the film scales to the
+    size it shows the mark at. The stage reads all of it from here rather than
+    measuring a second time.
 
     Args:
         pose: mark_pose's result, without the misses it reports.
+        letters: write_letters' result.
     """
     geometry = {
         "pi": dict(zip(("width", "height"), Image.open(ASSETS / "pi.png").size, strict=True)),
-        "cube": dict(zip(("width", "height"), Image.open(ASSETS / "cube.png").size, strict=True)),
+        "cube": dict(zip(("width", "height"), letters, strict=True)),
         "streak": {"reach": hero.STREAK["reach"], "opacity": hero.STREAK["opacity"]},
         "mark": dict(zip(("width", "height"), Image.open(SITE / "logo.png").size, strict=True)),
         "markPose": pose,
@@ -265,13 +357,13 @@ def write_geometry(pose):
 def main():
     ASSETS.mkdir(exist_ok=True)
     write_logo(hero.pi_picture(), "left", "pi")
-    write_logo(hero.cube_picture(), "right", "cube")
+    letters = write_letters()
     mark = Image.open(SITE / "logo.png").convert("RGBA")
     corners = mark_corners(mark)
     write_top_face(mark, corners)
     pose = mark_pose(corners)
     print(f"The cube misses the mark's corners by {pose.pop('misses')} pixels.")
-    write_geometry(pose)
+    write_geometry(pose, letters)
 
 
 if __name__ == "__main__":

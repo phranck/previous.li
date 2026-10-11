@@ -172,7 +172,7 @@
                   <div id="panel-system-3" class="panel"><p class="system">NeXTSTEP</p><p class="version">3.3</p></div>
                 </div>
                 <div id="face-right" class="face right">
-                  <div id="decal-cube" class="decal"><img id="cube-trail" src="assets/cube-trail.png" alt="" /><img id="cube-sharp" src="assets/cube.png" alt="" /></div>
+                  <div id="decal-cube" class="decal"><img id="cube-trail" src="assets/cube-trail.png" alt="" /><img id="cube-sharp" src="assets/cube.svg" alt="" /></div>
                   <div id="panel-install" class="panel"><div id="slot-terminal" data-composition-id="terminal" data-composition-src="compositions/faces/terminal.html" data-start="0" data-duration="32" data-width="546" data-height="546"></div></div>
                   <div id="panel-workspace" class="panel"><div id="slot-workspace" data-composition-id="workspace" data-composition-src="compositions/faces/workspace.html" data-start="0" data-duration="32" data-width="546" data-height="546"></div></div>
                   <div id="panel-system-0" class="panel"><p class="system">NeXTSTEP</p><p class="version">2.2</p></div>
@@ -317,10 +317,10 @@
           }
 
           // The two machines slide in along the faces they land on, each from
-          // its own side, with the smear the page's picture gives them. The
-          // NeXT cube is drawn larger than the board, because its own black body
-          // disappears into the face and only its letters show.
-          const DECAL_HEIGHTS = { pi: 264, cube: 430 };
+          // its own side, with a smear like the page's. NeXT's letters cover
+          // the whole face, as they cover the top of NeXT's cube, so the black
+          // face they are stuck on becomes that cube.
+          const DECAL_HEIGHTS = { pi: 264, cube: FACE };
           const placeDecal = (name, towards) => {
             const height = DECAL_HEIGHTS[name];
             const width = (parts[name].width / parts[name].height) * height;
