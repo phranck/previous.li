@@ -35,6 +35,7 @@ It needs websocket-client, which is not in the standard library:
 """
 
 import base64
+import contextlib
 import json
 import pathlib
 import subprocess
@@ -65,13 +66,59 @@ DESTINATION = HERE / "shots" / "workspace.png"
 DEVICE_PIXELS_PER_NEXT_PIXEL = 4
 
 
-def page_target():
-    """The tab this drives, which is the only one in that Chrome."""
+#: How long to wait for Chrome to answer with a tab, as tries half a second
+#: apart.
+WAIT_TRIES = 60
+
+
+def chrome_page():
+    """The tab this drives, which is the only one in that Chrome.
+
+    Returns:
+        The tab, or None while the Chrome on the port answers without one,
+        which it does for a moment after it starts.
+
+    Raises:
+        OSError: while nothing answers on the port.
+    """
     with urllib.request.urlopen(f"http://127.0.0.1:{PORT}/json") as answer:
         for target in json.load(answer):
             if target["type"] == "page":
                 return target
-    raise SystemExit("no page in the Chrome on that port")
+    return None
+
+
+def page_target():
+    """The tab this drives, for a command that cannot go on without it."""
+    target = chrome_page()
+    if target is None:
+        raise SystemExit("no page in the Chrome on that port")
+    return target
+
+
+def answering():
+    """Whether a Chrome answers on the port at all, with a tab or without."""
+    try:
+        chrome_page()
+    except OSError:
+        return False
+    return True
+
+
+def waited_for_page():
+    """Waits until the Chrome on the port answers with a tab.
+
+    Returns:
+        Whether it did within WAIT_TRIES tries. A Chrome that is not listening
+        yet and one that listens before its first tab exists are both waited
+        for, because both are a Chrome still starting.
+    """
+    for _ in range(WAIT_TRIES):
+        with contextlib.suppress(OSError):
+            if chrome_page() is not None:
+                return True
+        time.sleep(0.5)
+    return False
 
 
 def talk(commands):
@@ -231,28 +278,19 @@ def shoot_desk(destination):
 def open_browser(url):
     # A second Chrome on a port one is already listening on starts without a
     # window and exits, which looks from here like the first one having died.
-    try:
-        page_target()
-    except Exception:
-        pass
-    else:
+    already = answering()
+    if not already:
+        subprocess.Popen([CHROME, f"--remote-debugging-port={PORT}",
+                          f"--user-data-dir={PROFILE}", "--no-first-run",
+                          "--no-default-browser-check", "--window-size=1400,1100",
+                          "--window-position=40,40", url],
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if not waited_for_page():
+        raise SystemExit("Chrome did not answer on its debugging port with a page")
+    if already:
         talk([pin()])
         print(f"already open at {WIDTH}x{HEIGHT}, {SCALE} device pixels to the point")
         return
-
-    subprocess.Popen([CHROME, f"--remote-debugging-port={PORT}",
-                      f"--user-data-dir={PROFILE}", "--no-first-run",
-                      "--no-default-browser-check", "--window-size=1400,1100",
-                      "--window-position=40,40", url],
-                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    for _ in range(60):
-        try:
-            page_target()
-            break
-        except Exception:
-            time.sleep(0.5)
-    else:
-        raise SystemExit("Chrome did not answer on its debugging port")
     time.sleep(2)
     talk([pin()])
     print(f"{url} at {WIDTH}x{HEIGHT}, {SCALE} device pixels to the point")
