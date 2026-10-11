@@ -1,0 +1,51 @@
+/* ---------------------------------------------------------------------------
+   previous.li: the page's motion
+
+   What moves on the page because somebody points at it, presses it or scrolls
+   it, and what that comes down to for somebody who asked for less motion. It
+   is a stylesheet of its own because the film links site.css for the page's
+   components, and a film has no pointer and no scrolling. HyperFrames renders
+   it frame by frame, cannot seek a transition, and warns about every one it
+   can read in a stylesheet the film links.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --duration: 180ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a {
+  transition: text-decoration-color var(--duration) var(--ease);
+}
+
+.button {
+  transition: background-color var(--duration) var(--ease),
+    border-color var(--duration) var(--ease), color var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
+}
+
+/* Confirmation arrives at once and drains away afterwards, so the transition
+   sits on the resting state and not on the confirmed one. */
+.button--copied,
+.button--copied:hover {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    /* Shortened rather than removed, because an instant change of state reads
+       as a glitch rather than as a response. */
+    transition-duration: 60ms !important;
+    animation-duration: 60ms !important;
+  }
+}
