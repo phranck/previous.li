@@ -318,9 +318,9 @@
 
           // The two machines slide in along the faces they land on, each from
           // its own side, with the smear the page's picture gives them. The
-          // NeXT cube is drawn larger, because its own black body disappears
-          // into the face and only its letters show.
-          const DECAL_HEIGHTS = { pi: 300, cube: 430 };
+          // NeXT cube is drawn larger than the board, because its own black body
+          // disappears into the face and only its letters show.
+          const DECAL_HEIGHTS = { pi: 264, cube: 430 };
           const placeDecal = (name, towards) => {
             const height = DECAL_HEIGHTS[name];
             const width = (parts[name].width / parts[name].height) * height;
