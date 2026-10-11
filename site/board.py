@@ -15,6 +15,9 @@ processor is a vector, so it is drawn sharp at whatever size the board is
 rendered at. That is why every picture here is rendered from the drawing at
 its own size rather than enlarged from a small one.
 
+The film also takes the NeXT logo out of the drawing, so the letters it sticks
+on a black cube are the same vector the board carries.
+
 It needs rsvg-convert to render the drawing, and the network to fetch it.
 """
 
@@ -27,6 +30,11 @@ import urllib.request
 from PIL import Image
 
 SOURCE = "https://raw.githubusercontent.com/phranck/previously/main/admin/web/parts/board.svg"
+
+#: The NeXT logo inside the drawing, by the id board.svg keeps for it, and the
+#: black of the cube its letters stand on.
+NEXT_LOGO = "next-logo"
+NEXT_BODY = "#000000"
 
 
 @functools.cache
@@ -57,15 +65,42 @@ def inner():
     return re.search(r"<svg\b[^>]*>(.*)</svg>", drawing(), re.DOTALL).group(1)
 
 
-def draw(height):
-    """The board as a picture `height` pixels tall, on nothing.
+def render(document, height):
+    """An SVG document as a picture `height` pixels tall, on nothing.
 
     Args:
+        document: The SVG document, as text.
         height: The picture's height in whole pixels.
 
     Returns:
-        An RGBA picture as wide as the board's own proportions make it.
+        An RGBA picture as wide as the document's own proportions make it.
     """
-    picture = subprocess.run(["rsvg-convert", "--height", str(height), "-"], input=drawing().encode("utf-8"),
+    picture = subprocess.run(["rsvg-convert", "--height", str(height), "-"], input=document.encode("utf-8"),
                              capture_output=True, check=True).stdout
     return Image.open(io.BytesIO(picture)).convert("RGBA")
+
+
+def draw(height):
+    """The board as a picture `height` pixels tall, on nothing."""
+    return render(drawing(), height)
+
+
+def next_logo():
+    """The NeXT logo on the board's processor, as its three kinds of path.
+
+    The logo draws the cube's black faces first and its coloured letters over
+    them, and the black it draws after the letters is the hole in the e. Every
+    coordinate is absolute and in the logo's own units, which are far finer
+    than the board's.
+
+    Returns:
+        The path data of the cube's faces, the letters as pairs of fill and
+        path data, and the path data of the holes in the letters.
+    """
+    logo = re.search(rf'<g id="{NEXT_LOGO}"[^>]*>(.*?)</g>', drawing(), re.DOTALL).group(1)
+    paths = re.findall(r'<path fill="(#[0-9a-fA-F]+)" d="([^"]+)"/>', logo)
+    first = next(index for index, (fill, _) in enumerate(paths) if fill.lower() != NEXT_BODY)
+    faces = [data for _, data in paths[:first]]
+    letters = [(fill, data) for fill, data in paths[first:] if fill.lower() != NEXT_BODY]
+    holes = [data for fill, data in paths[first:] if fill.lower() == NEXT_BODY]
+    return faces, letters, holes
