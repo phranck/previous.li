@@ -34,7 +34,8 @@ import pathlib
 
 import numpy
 from board import draw as draw_board
-from board import pixels as board_pixels
+from board import inner as board_inner
+from board import size as board_size
 from PIL import Image
 
 HERE = pathlib.Path(__file__).parent
@@ -45,7 +46,8 @@ CUBE = {"file": "next-cube.png", "box": (27, 0, 269, 296)}
 #: How tall board.py draws the board for its smear and for the film: ten
 #: pixels to each of its 48 rows, twice what the page shows, so the smear
 #: keeps its edges on a display with two device pixels to the point and the
-#: film can show the board larger than the page does.
+#: film can show the board larger than the page does. The page itself shows
+#: the drawing, which is sharp at any size.
 PI_HEIGHT = 480
 
 #: Where each thing stands, and how tall. A logo's width follows from its picture.
@@ -157,21 +159,6 @@ def cells_of(rows, mark):
     """Every cell of one colour in a drawing."""
     return {(x, y) for y, row in enumerate(rows)
             for x, value in enumerate(row) if value == mark}
-
-
-def cells_by_colour(picture):
-    """Every opaque pixel of a picture as a cell, grouped by its colour.
-
-    For the board, whose pixels are each one colour or nothing, so each colour
-    becomes one path as each colour of the button does.
-    """
-    found = {}
-    for y in range(picture.height):
-        for x in range(picture.width):
-            red, green, blue, alpha = picture.getpixel((x, y))
-            if alpha:
-                found.setdefault(f"#{red:02x}{green:02x}{blue:02x}", set()).add((x, y))
-    return found
 
 
 def tip_of(rows, mark):
@@ -347,13 +334,9 @@ def main():
         + '"/>'
         for mark, colour in BUTTON_INK.items())
 
-    # The board's own pixels, each as large as its height in the hero allows,
-    # which is the width pi_logo_w came to as well.
-    board = board_pixels()
-    board_unit = pi["height"] / board.height
-    board_face = "\n    ".join(
-        f'<path fill="{colour}" d="{shape_of(cells, board_unit, pi["x"], pi["y"])}"/>'
-        for colour, cells in cells_by_colour(board).items())
+    # The board goes in as its own drawing, on its own grid, which the viewBox
+    # scales to the box pi_logo_w and the height describe.
+    board_width, board_height = board_size()
 
     document = f"""<?xml version="1.0" encoding="UTF-8"?>
 <!--
@@ -392,11 +375,12 @@ def main():
          opacity="{STREAK['opacity']}" xlink:href="{inline(cube_trail)}"/>
 
   <!-- and each logo itself, sharp, at the end of its own trail. The board is
-       drawn pixel by pixel, and crispEdges gives every screen pixel to one of
-       its colours, so no seam opens between two of them at any size. -->
-  <g shape-rendering="crispEdges">
-    {board_face}
-  </g>
+       the admin's drawing of it, whose pixel edges stay hard and whose NeXT
+       logo stays smooth at any size this is shown at. -->
+  <svg x="{pi['x']:g}" y="{pi['y']:g}" width="{pi_logo_w:g}" height="{pi['height']}"
+       viewBox="0 0 {board_width} {board_height}" shape-rendering="crispEdges">
+{board_inner()}
+  </svg>
   <image x="{cube['x']:g}" y="{cube['y']:g}"
          width="{cube_logo_w:g}" height="{cube['height']}"
          preserveAspectRatio="none"

@@ -297,9 +297,10 @@ kbd {
 }
 
 .wordmark {
-  /* Stated rather than derived: the bar is 64 high and this is what the mark
-     comes to in it, with room left over above and below. */
-  --mark-height: 42px;
+  /* Stated rather than derived: the board is 48 pixels tall, and at one point
+     to each of them they stay whole on a display with one, two or three device
+     pixels to the point. The bar is 64 high, so room is left above and below. */
+  --mark-height: 48px;
   display: flex;
   align-items: center;
   gap: var(--space-1);
@@ -310,15 +311,14 @@ kbd {
 }
 
 /* No correction: on this face the midline between the baseline and the cap
-   line and the middle of the line box are 0.14px apart at 21px, and the mark
-   is cropped to its own ink. Centring the boxes lands on the typographic line
-   the mark belongs on.
+   line and the middle of the line box are 0.14px apart at 21px, and the board
+   reaches every edge of its picture. Centring the boxes lands on the
+   typographic line the board belongs on.
 
-   Its height is stated and its width follows, because the mark is taller than
-   it is wide and the bar is measured in lines rather than in squares. It does
-   not follow the type: below about forty pixels the wordmark on its face stops
-   being letters and becomes three coloured marks, and that floor has nothing
-   to do with how large the name beside it is set. */
+   Its height is stated and its width follows, because the bar is measured in
+   lines rather than in squares. It does not follow the type: the board's
+   pixels stay whole at one point each, and that has nothing to do with how
+   large the name beside it is set. */
 .wordmark__mark {
   height: var(--mark-height);
   width: auto;

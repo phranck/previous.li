@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-"""Builds the Previously mark and every icon the page links to.
+"""Builds the Previously mark, the board in the page's bar, and every icon the
+page links to.
 
 The mark is the NeXT cube with the circuit board standing where the N of its
 wordmark stood. It is the board that board.py draws for the hero, and its black
 outline runs into the black face. It lies in the plane of the face the wordmark
 sits on, so it leans with the remaining letters instead of floating in front of
-them.
+them. The bar beside the page's name shows the board on its own.
 
     python3 logo.py
 
-It writes logo.svg, logo.png, logo-mark.png, favicon.ico, apple-touch-icon.png,
-icon-192.png, icon-512.png and site.webmanifest beside itself. Nothing here is
+It writes logo.svg, logo.png, logo-mark.png with its @2x and @3x, favicon.ico,
+apple-touch-icon.png, icon-192.png, icon-512.png and site.webmanifest beside
+itself. Nothing here is
 edited by hand: change a number in this file and run it.
 
 The cube is read as a picture rather than as geometry. next-cube.png holds its
@@ -56,11 +58,14 @@ GROUND = (85, 85, 119)
 MARGIN = 0.08
 
 MASTER_HEIGHT = 1024
-# The mark beside the wordmark in the bar stands about 24 pixels tall, so this
-# covers it on a display with four device pixels to the point. It is a picture
-# of its own rather than logo.svg, which carries both sources embedded and
-# would put about 48kB on the first paint for a mark this size.
-BAR_HEIGHT = 96
+# The bar shows the board beside the name rather than the mark, 48 points tall,
+# so one pixel of the board is one point. It is drawn once for each display
+# density the page offers it at, so a browser shows it without scaling it:
+# Safari rings at its hard edges when it scales a picture down. Pictures rather
+# than the board's drawing, whose NeXT logo is a vector and would put about
+# 29kB on the first paint.
+BAR_HEIGHT = 48
+BAR_DENSITIES = (1, 2, 3)
 FAVICON_SIZES = (16, 32, 48, 64)
 TOUCH_SIZE = 180
 MANIFEST_SIZES = (192, 512)
@@ -252,6 +257,15 @@ def build():
 
 # --- what comes out of it ---------------------------------------------------
 
+def bar_name(density):
+    """The file the bar's board is written to for one display density.
+
+    The picture for one device pixel to the point keeps the plain name, which
+    is the one index.html falls back to where srcset is not read.
+    """
+    return "logo-mark.png" if density == 1 else f"logo-mark@{density}x.png"
+
+
 def square(mark, size, ground=None, margin=MARGIN):
     """The mark centred in a square of the given size.
 
@@ -346,8 +360,8 @@ def main():
     mark = mark.resize((width, MASTER_HEIGHT), Image.LANCZOS)
     mark.save(HERE / "logo.png", optimize=True)
 
-    bar = mark.resize((round(mark.size[0] * BAR_HEIGHT / mark.size[1]), BAR_HEIGHT), Image.LANCZOS)
-    bar.save(HERE / "logo-mark.png", optimize=True)
+    for density in BAR_DENSITIES:
+        draw_board(BAR_HEIGHT * density).save(HERE / bar_name(density), optimize=True)
 
     # Transparent, because a browser puts a tab strip of its own colour behind
     # it and the cube's edges are gaps that then take that colour.
@@ -364,7 +378,7 @@ def main():
 
     write_manifest()
     characters = write_svg(box, plate, board, placement)
-    print(f"logo.png {mark.size[0]}x{mark.size[1]}, logo-mark.png {bar.size[0]}x{bar.size[1]}, "
+    print(f"logo.png {mark.size[0]}x{mark.size[1]}, the bar's board at {BAR_DENSITIES}x, "
           f"favicon.ico {FAVICON_SIZES}, "
           f"apple-touch-icon.png {TOUCH_SIZE}, icons {MANIFEST_SIZES}, "
           f"site.webmanifest, logo.svg {characters} bytes")
