@@ -16,7 +16,7 @@ with its letters, flat for the cube to carry. Both come from the picture, so a
 changed mark reaches the cube once this has run.
 
 It writes into promo/assets/ and needs what hero.py needs, numpy, Pillow,
-fontTools and rsvg-convert, and SciPy for fitting the cube.
+rsvg-convert and the network, and SciPy for fitting the cube.
 """
 
 import json

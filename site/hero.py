@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Draws the hero: the π and the NeXT cube smeared towards each other, a
-pressed button between them, and the cursor that pressed it.
+"""Draws the hero: the circuit board and the NeXT cube smeared towards each
+other, a pressed button between them, and the cursor that pressed it.
 
     python3 site/hero.py
 
@@ -20,10 +20,11 @@ is ever averaged. What is wanted is a picture shifted along one axis over and
 over with a falling weight, which is what a moving thing leaves on film, and
 that is done below with arithmetic on the pixels.
 
-It needs numpy, Pillow and fontTools, which are not in the standard library,
-and rsvg-convert, which pi.py draws the π with:
+It needs numpy and Pillow, which are not in the standard library, and
+rsvg-convert and the network, which board.py fetches and renders the board
+with:
 
-    python3 -m venv .venv && .venv/bin/pip install numpy pillow fonttools
+    python3 -m venv .venv && .venv/bin/pip install numpy pillow
     .venv/bin/python site/hero.py
 """
 
@@ -32,7 +33,8 @@ import io
 import pathlib
 
 import numpy
-from pi import draw as draw_pi
+from board import draw as draw_board
+from board import pixels as board_pixels
 from PIL import Image
 
 HERE = pathlib.Path(__file__).parent
@@ -40,18 +42,21 @@ HERE = pathlib.Path(__file__).parent
 #: The cube's picture, and the part of it that is wanted.
 CUBE = {"file": "next-cube.png", "box": (27, 0, 269, 296)}
 
-#: How tall pi.py draws the π, outline included. It is twice what the page
-#: shows, so the π stays sharp on a display with two device pixels to the
-#: point and in the film, which shows it larger than the page does.
-PI_HEIGHT = 544
+#: How tall board.py draws the board for its smear and for the film: ten
+#: pixels to each of its 48 rows, twice what the page shows, so the smear
+#: keeps its edges on a display with two device pixels to the point and the
+#: film can show the board larger than the page does.
+PI_HEIGHT = 480
 
 #: Where each thing stands, and how tall. A logo's width follows from its picture.
 #: The button is placed and the two logos follow from it, so neither of them
 #: carries an x of its own: each stands off the button by GAP, and what moves
 #: the button moves all three. Both the width and the height of the finished
 #: picture follow from what ends up in it, so nothing is ever cut at an edge.
+#: The board is five units to each of its pixels, and its middle is level with
+#: the cube's.
 PLACE = {
-    "pi": {"y": 106, "height": 272},
+    "pi": {"y": 122, "height": 240},
     "cube": {"y": 92, "height": 300},
     "button": {"x": 520, "y": 215},
 }
@@ -154,6 +159,21 @@ def cells_of(rows, mark):
             for x, value in enumerate(row) if value == mark}
 
 
+def cells_by_colour(picture):
+    """Every opaque pixel of a picture as a cell, grouped by its colour.
+
+    For the board, whose pixels are each one colour or nothing, so each colour
+    becomes one path as each colour of the button does.
+    """
+    found = {}
+    for y in range(picture.height):
+        for x in range(picture.width):
+            red, green, blue, alpha = picture.getpixel((x, y))
+            if alpha:
+                found.setdefault(f"#{red:02x}{green:02x}{blue:02x}", set()).add((x, y))
+    return found
+
+
 def tip_of(rows, mark):
     """Where the arrow's point sits in its own grid, so it can be put somewhere
     by its tip rather than by the corner of the sheet."""
@@ -213,8 +233,8 @@ def inline(picture):
 
 
 def pi_picture():
-    """The π as the hero and the film show it: outlined, PI_HEIGHT tall."""
-    return draw_pi(PI_HEIGHT, outlined=True)
+    """The board as its smear and the film are made from: PI_HEIGHT tall."""
+    return draw_board(PI_HEIGHT)
 
 
 def cube_picture():
@@ -327,6 +347,14 @@ def main():
         + '"/>'
         for mark, colour in BUTTON_INK.items())
 
+    # The board's own pixels, each as large as its height in the hero allows,
+    # which is the width pi_logo_w came to as well.
+    board = board_pixels()
+    board_unit = pi["height"] / board.height
+    board_face = "\n    ".join(
+        f'<path fill="{colour}" d="{shape_of(cells, board_unit, pi["x"], pi["y"])}"/>'
+        for colour, cells in cells_by_colour(board).items())
+
     document = f"""<?xml version="1.0" encoding="UTF-8"?>
 <!--
   Written by site/hero.py. Change that and run it again.
@@ -354,8 +382,8 @@ def main():
     </filter>
   </defs>
 
-  <!-- The π, arriving from the left, and the cube from the right, each as the
-       trail it leaves. -->
+  <!-- The board, arriving from the left, and the cube from the right, each as
+       the trail it leaves. -->
   <image x="{pi['x'] - pi_reach * pi_scale:g}" y="{pi['y']:g}"
          width="{pi_trail_w:g}" height="{pi['height']}"
          opacity="{STREAK['opacity']}" xlink:href="{inline(pi_trail)}"/>
@@ -363,11 +391,12 @@ def main():
          width="{cube_trail_w:g}" height="{cube['height']}"
          opacity="{STREAK['opacity']}" xlink:href="{inline(cube_trail)}"/>
 
-  <!-- and each logo itself, sharp, at the end of its own trail -->
-  <image x="{pi['x']:g}" y="{pi['y']:g}"
-         width="{pi_logo_w:g}" height="{pi['height']}"
-         preserveAspectRatio="none"
-         xlink:href="{inline(pi_sharp)}"/>
+  <!-- and each logo itself, sharp, at the end of its own trail. The board is
+       drawn pixel by pixel, and crispEdges gives every screen pixel to one of
+       its colours, so no seam opens between two of them at any size. -->
+  <g shape-rendering="crispEdges">
+    {board_face}
+  </g>
   <image x="{cube['x']:g}" y="{cube['y']:g}"
          width="{cube_logo_w:g}" height="{cube['height']}"
          preserveAspectRatio="none"
