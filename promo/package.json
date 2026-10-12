@@ -3,11 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npx --yes hyperframes@0.8.149 preview",
-    "dev:tv": "npx --yes hyperframes@0.8.149 preview tv",
-    "film": "npx --yes hyperframes@0.8.149 render --crf 4 --output tv/film.mp4",
-    "check": "npx --yes hyperframes@0.8.149 check && npm run film && npx --yes hyperframes@0.8.149 check tv",
-    "render": "npm run film && npx --yes hyperframes@0.8.149 render tv --crf 12 --video-frame-format png --output renders/previously.mp4",
-    "publish": "npx --yes hyperframes@0.8.149 publish"
+    "dev": "npx --yes hyperframes@0.8.150 preview",
+    "dev:tv": "npx --yes hyperframes@0.8.150 preview tv",
+    "film": "npx --yes hyperframes@0.8.150 render --crf 4 --output tv/film.mp4",
+    "check": "npx --yes hyperframes@0.8.150 check && npm run film && npx --yes hyperframes@0.8.150 check tv",
+    "render": "npm run film && npx --yes hyperframes@0.8.150 render tv --crf 12 --video-frame-format png --output renders/previously.mp4",
+    "publish": "npx --yes hyperframes@0.8.150 publish"
   }
 }
