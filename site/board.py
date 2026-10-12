@@ -1,14 +1,14 @@
 """The circuit board that stands for the Raspberry Pi in the hero, in the bar, in the mark and in the film.
 
 Raspberry Pi Ltd allows its logo only beside the sale of its own products, so
-none of these shows it. The board names the Pi instead. It is the one the
-admin's Info window wears, drawn in phranck/previously as
-admin/web/parts/board.svg, and it is fetched from there on every run, the way
-the page's install.sh fetches its one source. The page, the film and the admin
-therefore show one drawing, and a change to it reaches the page once these
-scripts run again.
+none of these shows it. The board names the Pi instead. It is the Raspberry Pi
+5 the admin's Info window wears, drawn in phranck/previously as
+admin/web/parts/board-pi5.svg, and it is fetched from there on every run, the
+way the page's install.sh fetches its one source. The page, the film and the
+admin therefore show one drawing, and a change to it reaches the page once
+these scripts run again.
 
-The board is drawn on a grid of 60 by 48 pixels and every edge but the NeXT
+The board is drawn on a grid of 72 by 48 pixels and every edge but the NeXT
 logo's falls between two of them, so at a height that is a whole multiple of
 48 every pixel of it comes out as a square of one colour. The logo on its
 processor is a vector, so it is drawn sharp at whatever size the board is
@@ -29,9 +29,9 @@ import urllib.request
 
 from PIL import Image
 
-SOURCE = "https://raw.githubusercontent.com/phranck/previously/main/admin/web/parts/board.svg"
+SOURCE = "https://raw.githubusercontent.com/phranck/previously/main/admin/web/parts/board-pi5.svg"
 
-#: The NeXT logo inside the drawing, by the id board.svg keeps for it, and the
+#: The NeXT logo inside the drawing, by the id board-pi5.svg keeps for it, and the
 #: black of the cube its letters stand on.
 NEXT_LOGO = "next-logo"
 NEXT_BODY = "#000000"
