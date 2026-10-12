@@ -292,10 +292,9 @@ kbd {
 }
 
 .wordmark {
-  /* Stated rather than derived: the board is 48 pixels tall, and at one point
-     to each of them they stay whole on a display with one, two or three device
-     pixels to the point. The bar is 64 high, so room is left above and below. */
-  --mark-height: 48px;
+  /* Stated rather than derived: the board stands a third taller than the name
+     set at 27 beside it, well inside the bar's 64. */
+  --mark-height: 36px;
   display: flex;
   align-items: center;
   gap: var(--space-1);
@@ -311,9 +310,8 @@ kbd {
    typographic line the board belongs on.
 
    Its height is stated and its width follows, because the bar is measured in
-   lines rather than in squares. It does not follow the type: the board's
-   pixels stay whole at one point each, and that has nothing to do with how
-   large the name beside it is set. */
+   lines rather than in squares. It is the board's own drawing, so it is drawn
+   sharp at whatever size and on whatever display it lands. */
 .wordmark__mark {
   height: var(--mark-height);
   width: auto;
