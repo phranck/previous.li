@@ -22,7 +22,7 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="A gray circuit board and the NeXT cube rushing at each other, each trailing a smear, with a pressed Merge button and the cursor that pressed it between them, over the name Previously and the line about a Raspberry Pi that boots directly into NeXTSTEP.">
-<meta property="og:locale" content="en_GB">
+<meta property="og:locale" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="A Raspberry Pi that boots into NeXTSTEP">
@@ -100,7 +100,7 @@
 
         <p class="hero__lead">Previously starts straight into a NeXT machine under the
           Previous emulator. There is no desktop behind it, no login to get past, and
-          nothing on the screen but the grey NeXT panel.</p>
+          nothing on the screen but the gray NeXT panel.</p>
         <ul class="hero__facts">
           <li class="hero__fact">Raspberry Pi 4 or 5</li>
           <li class="hero__fact">Raspberry Pi OS Lite, 64 bit</li>
@@ -170,9 +170,10 @@
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg#arrow-counter-clockwise"></use></svg>
           </div>
           <h3>An installation that undoes itself</h3>
-          <p class="card__text">Every step of the install script writes down how to undo
-            what it just did. Press Ctrl+C, or let a step fail, and it walks that record
-            backwards. Whatever was on the machine before is left where it was.</p>
+          <p class="card__text">Every step of the installation writes down how to undo
+            what it just did. When a step fails, it walks that record backwards, and
+            whatever was on the machine before is left where it was. The Installer window
+            in the admin then says what went wrong and can try again.</p>
         </article>
       </div>
     </div>
@@ -186,9 +187,9 @@
           The admin
         </p>
         <h2>It looks like the machine it configures</h2>
-        <p class="section__lead">Nothing here is approximated. The icons are the original
-          files out of a NeXTSTEP 3.3 disk image, the window buttons are cut pixel for
-          pixel out of the running system, and every colour, edge and raster is measured
+        <p class="section__lead">Nothing here is approximated. NeXTSTEP's icons are the
+          original files out of a NeXTSTEP 3.3 disk image, the window buttons are cut pixel
+          for pixel out of the running system, and every color, edge and raster is measured
           off it.</p>
       </div>
 
@@ -198,10 +199,10 @@
       <div class="browser">
         <div class="browser__bar">
           <div class="browser__lights" aria-hidden="true"><span></span><span></span><span></span></div>
-          <div class="browser__address">cube.local:8810</div>
+          <div class="browser__address">next.local:8810</div>
         </div>
         <img src="site/shots/workspace.png" width="2240" height="1664" loading="lazy"
-             alt="The admin tool in a browser: the Workspace menu, a panel of the Raspberry Pi's own readings, an Info panel for the emulated NeXTcube, a File Viewer showing the applications as icons, the Installer offering six systems to fetch, and Preferences behind them.">
+             alt="The admin tool in a browser: the Workspace menu, the Info window with a drawing of the Raspberry Pi 5 above its model and the board's readings, the About window of the emulated NeXTcube, a File Viewer of the Previously folder, the Installer listing the six systems with NeXTSTEP 3.3 checked, and the Localization module of Preferences behind it.">
       </div>
       <figcaption class="shot__caption">This is a recent screenshot of Previously. Not
         only does it look like NeXTSTEP, it feels like it, too. You'll love this admin
@@ -227,18 +228,19 @@
         <li class="step">
           <div class="step__body">
             <h3>Reach the Pi</h3>
-            <p class="step__text">Over SSH is the comfortable way, and it stays the way in
-              afterwards: the emulator owns the screen once this is done.</p>
+            <p class="step__text">Over SSH is the comfortable way. It stays the way in
+              afterwards, because the emulator owns the screen once this is done, and the
+              admin's Terminal window opens the same login in a browser.</p>
           </div>
         </li>
 
         <li class="step">
           <div class="step__body">
             <h3>Paste the line and let it finish</h3>
-            <p class="step__text">It installs the emulator from its own signed archive,
-              fetches a preinstalled disk image, writes the configuration, installs the
-              admin tool and hands the first console over. The image is NeXTSTEP 3.3, and
-              the admin swaps it for any of the six afterwards.</p>
+            <p class="step__text">It installs the admin tool, and then the emulator, a
+              preinstalled NeXTSTEP 3.3 disk, its configuration, the console and the sound,
+              and shows each step as it runs. At the end NeXTSTEP starts on the Pi's screen.
+              The admin swaps the system for any of the six afterwards.</p>
             <code class="snippet">curl -fsSL https://previous.li/install.sh | bash</code>
           </div>
         </li>
@@ -282,19 +284,21 @@
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
           </div>
           <h3>Safe to run again</h3>
-          <p class="card__text">An existing disk image, an existing configuration and a
-            startup entry that is already there are all left alone. Your own NeXTSTEP image
-            in <code>~/nextstep</code> is found and used instead of a download.</p>
+          <p class="card__text">A step that finds its work done skips itself and says so.
+            A system already on the card is not fetched again, and an existing
+            configuration is left exactly as it is, because a machine somebody has built is
+            theirs.</p>
         </article>
 
         <article class="card">
           <div class="card__icon">
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg#arrow-counter-clockwise"></use></svg>
           </div>
-          <h3>Ctrl+C leaves it as it was</h3>
-          <p class="card__text">An interrupt and a failing step both walk the record of
-            changes backwards. Only this run's own changes are reversed, and a step that
-            skipped itself has nothing to take back.</p>
+          <h3>Ctrl+C stops the watching</h3>
+          <p class="card__text">Once the admin tool is installed, the Pi does the rest by
+            itself. Ctrl+C then stops the terminal from following along and nothing else,
+            and the Installer window in the admin shows how far it is. Pressed while the
+            admin tool is still being installed, it takes the tool off again.</p>
         </article>
       </div>
     </div>
