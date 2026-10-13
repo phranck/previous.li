@@ -2,14 +2,16 @@
 """Takes the picture of the admin tool that this page shows.
 
     python3 shot.py open [url]
+    python3 shot.py arrange
     python3 shot.py size
     python3 shot.py shoot [out.png]
     python3 shot.py window name [out.png]
     python3 shot.py desk [out.png]
 
-`open` starts a Chrome of its own, on its own profile, and pins the page at
-1120 by 832 with two device pixels to the point. Arrange the windows in that
-Chrome by hand, then `shoot`, which writes shots/workspace.png at 2240 by 1664.
+`open` starts a Chrome of its own, on its own profile and without a window,
+and pins the page at 1120 by 832 with two device pixels to the point.
+`arrange` lays the desk out the way ARRANGEMENT says, and `shoot` writes
+shots/workspace.png at 2240 by 1664.
 
 `window` takes one window by its name in the admin, such as files or info,
 with nothing of the desk around it and four device pixels to each of
@@ -21,9 +23,8 @@ Three things about it are the whole reason it exists rather than a screen grab:
   The size    1120 by 832 is what a NeXT MegaPixel Display held, and the page
               shows the picture at 1120, so a display with two device pixels to
               the point draws it one for one.
-  The pin     Emulation.setDeviceMetricsOverride holds the page at that size
-              whatever the window is dragged to, so the frame is the same every
-              time and the window can be as large as somebody needs to work in.
+  The pin     Emulation.setDeviceMetricsOverride holds the page at that size,
+              so the frame is the same every time.
   The source  Page.captureScreenshot takes the picture out of the page, so it
               carries no window frame and none of the rounded corners macOS
               gives one. A screen grab of the window carries both.
@@ -56,9 +57,33 @@ CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 WIDTH, HEIGHT, SCALE = 1120, 832, 2
 
 #: Where the admin answers, which is what the page's own address bar shows.
-ADMIN = "http://cube.local:8810/"
+ADMIN = "http://next.local:8810/"
 
 DESTINATION = HERE / "shots" / "workspace.png"
+
+#: Where each window of the page's picture stands, in the desk's own points,
+#: from the back to the front, so the last one is the active window. The
+#: names are the admin's own: `info` is About for the emulated machine, and
+#: `pi` is the window titled Info, which is about the Raspberry Pi.
+ARRANGEMENT = {
+    "info": {"x": 640, "y": 12},
+    "pi": {"x": 164, "y": 8},
+    "preferences": {"x": 497, "y": 488},
+    "installer": {"x": 637, "y": 232},
+    "files": {"x": 22, "y": 296, "w": 469, "h": 458},
+}
+
+#: Where the admin keeps the desk and how large it draws it, in the browser's
+#: localStorage. Both are the admin's own keys, in design/kit/desk.js and
+#: admin/interface/app/size.js of phranck/previously. `arrange` checks that
+#: the windows stand where it put them, so a key the admin has renamed stops
+#: it with a message rather than taking a picture of some other desk.
+DESK_KEY = "nextstep-workspace:v4"
+SIZE_KEY = "previously:size"
+
+#: How long the admin takes after loading to fill its windows with what the
+#: Pi answers, in seconds.
+READINGS_SECONDS = 3
 
 #: Device pixels a side for each of NeXTSTEP's own pixels in a single window.
 #: The film zooms into a window until its pixels show, and a whole number
@@ -213,8 +238,8 @@ def shoot_window(name, destination):
     The window is opened, raised and moved to the top left corner, with the
     desk around it hidden, and then put back where it was, and closed again
     if it was closed. The admin remembers where its windows are, and opening
-    one writes that down before it moves, so the arrangement made by hand for
-    `shoot` survives.
+    one writes that down before it moves, so the arrangement `arrange` made
+    survives.
 
     The admin draws its desk larger with CSS zoom, and keeps its lines one
     CSS pixel wide so they stay sharp on a screen. At any zoom but 1 such a
@@ -275,12 +300,92 @@ def shoot_desk(destination):
         evaluate(SHOWN)
 
 
+#: When the page in the tab began loading, which a page loaded again answers
+#: differently.
+LOADED_AT = "performance.timeOrigin"
+
+
+def reloaded():
+    """Loads the page again and waits until the Pi's answers are in it.
+
+    Page.reload answers before the old page is gone, and the old page reports
+    itself complete, so what is waited for is a page that began loading later
+    than this one did.
+    """
+    before = evaluate(LOADED_AT)
+    talk([pin(), ("Page.reload", {"ignoreCache": True})])
+    waited_for(f"{LOADED_AT} !== {before} && document.readyState === 'complete'",
+               "the admin did not load again")
+    # The Installer asks the Pi for more than the other windows do, and draws
+    # its tabs once the answer is in.
+    waited_for("document.getElementById('installer-tabs')?.children.length > 0",
+               "the Installer never had an answer from the Pi")
+    time.sleep(READINGS_SECONDS)
+
+
+def waited_for(expression, failure):
+    """Waits until an expression in the page comes to true.
+
+    Asked through `talk` rather than `evaluate`, because a page that is
+    loading has no context to run anything in for a moment, and that is an
+    answer to wait out rather than a failure.
+
+    Args:
+        expression: JavaScript whose value is true once the page is ready.
+        failure: What to stop with where it never is, within WAIT_TRIES tries.
+    """
+    for _ in range(WAIT_TRIES):
+        time.sleep(0.5)
+        answer = talk([pin(), ("Runtime.evaluate",
+                               {"expression": expression, "returnByValue": True})])[1]
+        if answer.get("result", {}).get("value") is True:
+            return
+    raise SystemExit(failure)
+
+
+def arrange():
+    """Lays the desk out the way the page's picture has it.
+
+    The admin draws its desk from what the browser remembers, so the
+    arrangement is written there and the page loaded again: every window in
+    ARRANGEMENT open where it says, the desk at 100%, which is NeXTSTEP's own
+    size, and the last window in front. The Installer is shown on its Systems
+    tab, because the six systems are what the page talks about.
+    """
+    desk = {name: {"open": True, **place} for name, place in ARRANGEMENT.items()}
+    desk["desk"] = {"front": list(ARRANGEMENT)[-1]}
+    evaluate(f"""(() => {{
+      localStorage.setItem({json.dumps(SIZE_KEY)}, "1");
+      localStorage.setItem({json.dumps(DESK_KEY)}, {json.dumps(json.dumps(desk))});
+    }})()""")
+    reloaded()
+
+    astray = evaluate(f"""(() => {{
+      const places = {json.dumps(ARRANGEMENT)};
+      [...document.getElementById("installer-tabs").children]
+        .find((tab) => tab.textContent.trim() === "Systems")?.click();
+      for (const name of Object.keys(places)) {{
+        document.querySelector(`nx-window[name="${{name}}"]`)?.raise();
+      }}
+      return Object.entries(places).filter(([name, place]) => {{
+        const target = document.querySelector(`nx-window[name="${{name}}"]`);
+        return !target || target.hidden
+          || target.offsetLeft !== place.x || target.offsetTop !== place.y;
+      }}).map(([name]) => name);
+    }})()""")
+    if astray:
+        raise SystemExit(f"not where ARRANGEMENT puts them: {', '.join(astray)}")
+    print(f"{len(ARRANGEMENT)} windows arranged, {list(ARRANGEMENT)[-1]} in front")
+
+
 def open_browser(url):
     # A second Chrome on a port one is already listening on starts without a
     # window and exits, which looks from here like the first one having died.
+    # Headless, because everything it is asked for comes through the port and
+    # a window would only take the screen of whoever runs it.
     already = answering()
     if not already:
-        subprocess.Popen([CHROME, f"--remote-debugging-port={PORT}",
+        subprocess.Popen([CHROME, "--headless=new", f"--remote-debugging-port={PORT}",
                           f"--user-data-dir={PROFILE}", "--no-first-run",
                           "--no-default-browser-check", "--window-size=1400,1100",
                           "--window-position=40,40", url],
@@ -301,6 +406,9 @@ def main():
 
     if what == "open":
         open_browser(sys.argv[2] if len(sys.argv) > 2 else ADMIN)
+
+    elif what == "arrange":
+        arrange()
 
     elif what == "size":
         print(evaluate("[innerWidth, innerHeight, devicePixelRatio]"))
