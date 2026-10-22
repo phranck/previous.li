@@ -19,7 +19,7 @@
 
    Everything else is ordinary modern layout with a great deal of air in it.
 
-   Four things about the page carry no comment of their own, because the markup
+   Five things about the page carry no comment of their own, because the markup
    is served as it is written and nothing in it should be addressed to a reader
    of the source:
 
@@ -37,6 +37,10 @@
      The picture        Its figure stands outside the measure, because the
                         window around it is wider than the column and the
                         picture inside is shown at its own size.
+     The counting       Umami counts on previous.li alone, as data-domains
+                        on its script says, so a preview or a checkout opened
+                        on another host sends it nothing. The Copy button
+                        names its event in data-umami-event.
    --------------------------------------------------------------------------- */
 
 /* --- the type ------------------------------------------------------------ */
