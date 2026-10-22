@@ -6,7 +6,7 @@
 
 <title>Previously: a Raspberry Pi that boots into NeXTSTEP</title>
 <meta name="description"
-      content="One line turns a Raspberry Pi into a machine that starts straight into NeXTSTEP under the Previous emulator, with a web admin built in the machine's own idiom.">
+      content="Previously turns a Raspberry Pi 4 or 5 into a NeXT. One line over SSH, and it boots straight into NeXTSTEP under the Previous emulator, set up from a web admin that looks like NeXTSTEP.">
 <link rel="canonical" href="https://previous.li/">
 
 <meta name="color-scheme" content="dark">
@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://previous.li/">
 <meta property="og:title" content="A Raspberry Pi that boots into NeXTSTEP">
 <meta property="og:description"
-      content="One line, and the machine starts straight into a NeXT under the Previous emulator. What configures it afterwards is a web admin built to look like the machine it configures.">
+      content="One line over SSH, and a Raspberry Pi 4 or 5 boots straight into NeXTSTEP under the Previous emulator. What sets it up afterwards is a web admin that looks like NeXTSTEP.">
 <meta property="og:image" content="https://previous.li/site/shots/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -27,7 +27,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="A Raspberry Pi that boots into NeXTSTEP">
 <meta name="twitter:description"
-      content="One line, and the machine starts straight into a NeXT under the Previous emulator.">
+      content="One line over SSH, and a Raspberry Pi boots straight into NeXTSTEP under the Previous emulator.">
 <meta name="twitter:image" content="https://previous.li/site/shots/og.png">
 
 <link rel="icon" href="site/favicon.ico" sizes="16x16 32x32 48x48 64x64">
@@ -44,7 +44,7 @@
   "@type": "SoftwareApplication",
   "name": "Previously",
   "url": "https://previous.li/",
-  "description": "Turns a Raspberry Pi into a machine that boots straight into NeXTSTEP under the Previous emulator, with a web admin built in NeXTSTEP's own idiom.",
+  "description": "Turns a Raspberry Pi 4 or 5 into a machine that boots straight into NeXTSTEP under the Previous emulator, set up from a web admin that looks like NeXTSTEP.",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Raspberry Pi OS Lite, 64 bit, Debian 13",
   "image": "https://previous.li/site/shots/og.png",
@@ -78,6 +78,10 @@
         <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
         Install
       </a>
+      <a href="#questions">
+        <svg class="icon" aria-hidden="true"><use href="site/icons.svg#question"></use></svg>
+        Questions
+      </a>
     </nav>
   </div>
 </header>
@@ -98,14 +102,9 @@
         <h1>A Raspberry Pi that <s class="hero__struck">boosts</s>… boots directly
           into NeXTSTEP</h1>
 
-        <p class="hero__lead">Previously starts straight into a NeXT machine under the
-          Previous emulator. There is no desktop behind it, no login to get past, and
-          nothing on the screen but the gray NeXT panel.</p>
-        <ul class="hero__facts">
-          <li class="hero__fact">Raspberry Pi 4 or 5</li>
-          <li class="hero__fact">Raspberry Pi OS Lite, 64 bit</li>
-          <li class="hero__fact">NeXTSTEP 2.2 to OPENSTEP 4.2</li>
-        </ul>
+        <p class="hero__lead">Previously turns a Raspberry Pi 4 or 5 into a NeXT. Turn it
+          on and it boots direct into NeXTSTEP under the Previous emulator, set up from a
+          browser in an admin that looks like NeXTSTEP.</p>
       </div>
 
       <div class="window">
@@ -114,18 +113,16 @@
           Terminal
         </div>
         <div class="window__body">
-          <div class="command">
-            <span class="command__prompt" aria-hidden="true">$</span>
-            <span id="command">curl -fsSL https://previous.li/install.sh | bash</span>
+          <div class="codebox">
+            <code class="codebox__code"><span class="codebox__prompt" aria-hidden="true">$</span> <span id="command">curl -fsSL https://previous.li/install.sh | bash</span></code>
+            <button class="codebox__copy" type="button" aria-label="Copy" data-copy="command" data-umami-event="Copy install line">
+              <svg class="icon" aria-hidden="true"><use href="site/icons.svg#copy"></use></svg>
+            </button>
           </div>
-          <button class="button" id="copy" type="button" data-umami-event="Copy install line">
-            <svg class="icon" id="copy-icon" aria-hidden="true"><use href="site/icons.svg#copy"></use></svg>
-            <span id="copy-label">Copy</span>
-          </button>
         </div>
-        <p class="window__note">Run it as the user the machine will belong to, not under
-          <code>sudo</code>. It asks for your password once and says when it is done where
-          the admin answers.</p>
+        <p class="window__note">Run it on the Pi over SSH as your own user, not as root. It
+          uses <code>sudo</code> where it must, asks for the password once, and ends by
+          showing you the admin's address.</p>
       </div>
     </div>
   </section>
@@ -138,9 +135,9 @@
           What it is
         </p>
         <h2>The fastest way to get NeXTSTEP on your Raspberry Pi up and running</h2>
-        <p class="section__lead">The Pi merges into a NeXT. Everything you would normally
-          do directly in the Previous Settings on the Pi can now be done conveniently in a
-          browser on another computer.</p>
+        <p class="section__lead">Previous is a NeXT emulator developed by Andreas Grabher.
+          Previously makes a Raspberry Pi boot into it, and puts the emulator's settings
+          into a web admin you open from any browser in your home.</p>
       </div>
 
       <figure class="shot film">
@@ -173,31 +170,32 @@
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg#monitor"></use></svg>
           </div>
           <h3>Nothing but NeXTSTEP</h3>
-          <p class="card__text">The emulator takes the first console at boot and keeps it.
-            There is no desktop underneath and no console login to step past, so the
-            machine is the thing it is pretending to be.</p>
+          <p class="card__text">Power the Pi on and it goes straight into NeXTSTEP, with
+            no boot messages, no Linux login and no desktop in between. The screen stays
+            with the NeXT: after a shutdown inside NeXTSTEP the machine simply boots again,
+            and the Pi itself is switched off from the admin.</p>
         </article>
 
         <article class="card">
           <div class="card__icon">
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg#sliders-horizontal"></use></svg>
           </div>
-          <h3>An admin that looks like it</h3>
-          <p class="card__text">You select NeXT machines, drives, and displays instead of
-            entering values manually. You can switch between complete configurations using
-            D&amp;D. Change the values in the system configurations and save them as your
-            own.</p>
+          <h3>An admin that looks like the machine</h3>
+          <p class="card__text">Pick one of eleven NeXT machines, with or without Turbo,
+            Color and NeXTdimension, and set memory, drives and ports with switches and
+            sliders. Drop a saved configuration onto the machine's window and it starts as
+            that machine.</p>
         </article>
 
         <article class="card">
           <div class="card__icon">
-            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#arrow-counter-clockwise"></use></svg>
+            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
           </div>
-          <h3>An installation that undoes itself</h3>
-          <p class="card__text">Every step of the installation writes down how to undo
-            what it just did. When a step fails, it walks that record backwards, and
-            whatever was on the machine before is left where it was. The Installer window
-            in the admin then says what went wrong and can try again.</p>
+          <h3>Six systems on one card</h3>
+          <p class="card__text">NeXTSTEP 3.3 comes with the installation. Afterwards the
+            admin fetches NeXTSTEP 2.2, 3.0 and 3.2 and OPENSTEP 4.0 and 4.2 from
+            archive.org, 23 to 75 MB each, and boots whichever you choose; each is a 2 GB
+            disk that keeps what you did in it.</p>
         </article>
       </div>
     </div>
@@ -211,10 +209,10 @@
           The admin
         </p>
         <h2>It looks like the machine it configures</h2>
-        <p class="section__lead">Nothing here is approximated. NeXTSTEP's icons are the
-          original files out of a NeXTSTEP 3.3 disk image, the window buttons are cut pixel
-          for pixel out of the running system, and every color, edge and raster is measured
-          off it.</p>
+        <p class="section__lead">The admin is built with great care for detail, as close
+          to the original as it gets: the icons, the window buttons, the grays and the
+          rasters are NeXTSTEP's own, down to the pixel. It speaks English, German, French,
+          Italian, Spanish and Swedish, just like the original.</p>
       </div>
 
     </div>
@@ -241,40 +239,37 @@
           <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
           Install
         </p>
-        <h2>Three steps, and the second one is the line</h2>
-        <p class="section__lead">You need a Raspberry Pi 4 or 5 and a card imaged with
-          Raspberry Pi OS Lite, 64 bit, based on Debian 13. The script reads the
-          architecture and the release and refuses an older one, because Previous needs
-          SDL3 and no earlier release carries it.</p>
+        <h2>Three steps, and the second one is a single command</h2>
+        <p class="section__lead">All it takes is a Raspberry Pi 4 or 5 and a card or USB
+          stick with the current Raspberry Pi OS Lite, 64 bit.</p>
       </div>
 
       <ol class="steps">
         <li class="step">
           <div class="step__body">
-            <h3>Reach the Pi</h3>
-            <p class="step__text">Over SSH is the comfortable way. It stays the way in
-              afterwards, because the emulator owns the screen once this is done, and the
-              admin's Terminal window opens the same login in a browser.</p>
+            <h3>Flash the card</h3>
+            <p class="step__text">Write Raspberry Pi OS Lite (64-bit) onto a microSD card
+              or a USB stick with the Raspberry Pi Imager, and let the Imager set your user,
+              Wi-Fi and SSH. That is all the preparation there is.</p>
           </div>
         </li>
 
         <li class="step">
           <div class="step__body">
-            <h3>Paste the line and let it finish</h3>
-            <p class="step__text">It installs the admin tool, and then the emulator, a
-              preinstalled NeXTSTEP 3.3 disk, its configuration, the console and the sound,
-              and shows each step as it runs. At the end NeXTSTEP starts on the Pi's screen.
-              The admin swaps the system for any of the six afterwards.</p>
-            <code class="snippet">curl -fsSL https://previous.li/install.sh | bash</code>
+            <h3>Boot, connect, paste the command</h3>
+            <p class="step__text">Boot the Pi, open an SSH session to it, and paste the
+              install command from the top of this page. It fetches and sets up everything,
+              from the emulator to a ready NeXTSTEP 3.3 disk, and a few minutes later
+              NeXTSTEP is on the Pi's screen.</p>
           </div>
         </li>
 
         <li class="step">
           <div class="step__body">
-            <h3>Open the admin</h3>
-            <p class="step__text">It answers at <code>http://&lt;your-pi&gt;.local:8810</code>
-              and asks you to choose a password the first time you open it. There is
-              nothing to read off the Pi and nothing to copy.</p>
+            <h3>Open Previously in the browser</h3>
+            <p class="step__text">Open <code>http://&lt;name&gt;.local:8810</code> on any
+              computer in your network. From now on the Pi is a NeXT, and the admin is where
+              you change it.</p>
           </div>
         </li>
       </ol>
@@ -288,7 +283,7 @@
           <svg class="icon" aria-hidden="true"><use href="site/icons.svg#shield-check"></use></svg>
           Before you run it
         </p>
-        <h2>What a line off the network is allowed to do</h2>
+        <h2>What the install command does to your Pi, and how it comes off again</h2>
       </div>
 
       <div class="cards">
@@ -297,32 +292,168 @@
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg#shield-check"></use></svg>
           </div>
           <h3>Read it first</h3>
-          <p class="card__text">The line fetches the installer from the repository it
-            belongs to and runs it, so what you read there is what runs. That file reads
-            nothing beside itself, and nothing in it happens until its last line calls
-            <code>main</code>, which means a download cut short runs nothing at all.</p>
+          <p class="card__text">The install command fetches the installer from
+            phranck/previously and runs it. The installer puts the admin tool on the Pi as a
+            Debian package and asks its helper, <code>setup.py</code> in the same
+            repository, for the rest.</p>
         </article>
 
         <article class="card">
           <div class="card__icon">
-            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
+            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#key"></use></svg>
           </div>
-          <h3>Safe to run again</h3>
-          <p class="card__text">A step that finds its work done skips itself and says so.
-            A system already on the card is not fetched again, and an existing
-            configuration is left exactly as it is, because a machine somebody has built is
-            theirs.</p>
+          <h3>What runs as root, and what does not</h3>
+          <p class="card__text">The admin runs as your user on port 8810, plain HTTP, for
+            your home network only; reading is open, every change needs the password. Only
+            the helper runs as root, and all the admin hands it is a short request of names
+            it looks up in its own tables, never a path or a command.</p>
         </article>
 
         <article class="card">
           <div class="card__icon">
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg#arrow-counter-clockwise"></use></svg>
           </div>
-          <h3>Ctrl+C stops the watching</h3>
+          <h3>A step that fails puts itself back</h3>
+          <p class="card__text">Each step records how to undo itself, and a failure
+            reverses what was done. The terminal and the Installer window say which step
+            stopped and why, and Install starts it again.</p>
+        </article>
+
+        <article class="card">
+          <div class="card__icon">
+            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#arrows-clockwise"></use></svg>
+          </div>
+          <h3>Safe to run again</h3>
+          <p class="card__text">A second run skips what is done and replaces only an admin
+            tool older than the newest release. Later updates come from the admin: the Info
+            window updates the tool, the Installer window the emulator.</p>
+        </article>
+
+        <article class="card">
+          <div class="card__icon">
+            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#terminal-window"></use></svg>
+          </div>
+          <h3>Ctrl+C, and the power</h3>
           <p class="card__text">Once the admin tool is installed, the Pi does the rest by
-            itself. Ctrl+C then stops the terminal from following along and nothing else,
-            and the Installer window in the admin shows how far it is. Pressed while the
-            admin tool is still being installed, it takes the tool off again.</p>
+            itself; Ctrl+C or a dropped SSH session only stops you watching. After a power
+            cut during the install, run the install command again.</p>
+        </article>
+
+        <article class="card">
+          <div class="card__icon">
+            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#trash-simple"></use></svg>
+          </div>
+          <h3>Taking it off again</h3>
+          <p class="card__text">Remove in the Installer window gives the console and the
+            boot back and removes the emulator; the disks and your configurations stay.
+            <code>sudo apt purge previously</code> removes the admin tool.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="questions">
+    <div class="measure">
+      <div class="section__head">
+        <p class="section__kicker">
+          <svg class="icon" aria-hidden="true"><use href="site/icons.svg#question"></use></svg>
+          Questions
+        </p>
+        <h2>What people ask before they try it</h2>
+        <p class="section__lead">A few things worth knowing before the card is written.</p>
+      </div>
+
+      <div class="answers">
+        <article class="answer">
+          <h3>Is a Pi 4 enough, or do I need a Pi 5?</h3>
+          <p class="answer__text">Yes. Previously is built and tested on both. The cube it
+            emulates out of the box is a NeXTcube Turbo with a 68040 at 33 MHz and 128 MB
+            of memory. Nothing in the installer turns a Pi 3 or a Pi 400 away, but those are
+            not what it is made on.</p>
+        </article>
+
+        <article class="answer">
+          <h3>What does the Pi's screen show?</h3>
+          <p class="answer__text">NeXTSTEP's own picture, 1120 by 832 pixels in four grays
+            on the default cube, full screen on whatever hangs on the HDMI port, with black
+            at the sides where your monitor is wider. The NeXT lives on that screen; the
+            admin in the browser only sets it up, and Grab in the admin takes a screenshot of
+            it when asked.</p>
+        </article>
+
+        <article class="answer">
+          <h3>Where do keyboard and mouse go?</h3>
+          <p class="answer__text">Into the Pi. The admin passes nothing you type into
+            NeXTSTEP. Inside Previous, F10 is the NeXT's power key, F12 opens the emulator's
+            own settings and F11 leaves full screen.</p>
+        </article>
+
+        <article class="answer">
+          <h3>Is there sound?</h3>
+          <p class="answer__text">Yes. Plug a USB speaker into the Pi and NeXTSTEP plays
+            through it. The Info window in the admin names the sound card it sees.</p>
+        </article>
+
+        <article class="answer">
+          <h3>How do I switch it off?</h3>
+          <p class="answer__text">In the admin's Info window, with Power Off or Restart.
+            Either one shuts NeXTSTEP down through its power key first and waits for it,
+            because cutting the power under a running NeXTSTEP damages its disk the way it
+            damaged a real one. Power Off in the admin's window for the emulated machine
+            stops only the machine, until Power On or the next boot of the Pi.</p>
+        </article>
+
+        <article class="answer">
+          <h3>Does the emulated NeXT see my network?</h3>
+          <p class="answer__text">Its Ethernet is switched on in the configuration the
+            installer writes, and the Config Editor is where you turn it off or change the
+            socket. Previously writes nothing beyond that, so what the NeXT reaches from
+            there is Previous's own default.</p>
+        </article>
+
+        <article class="answer">
+          <h3>Does it need the internet once it runs?</h3>
+          <p class="answer__text">No. It reaches out only when asked: to GitHub when the
+            Info window checks for a newer release, to archive.org when you fetch a system,
+            and to the Window Maker Live archive, or its copy on previous.li, when the
+            emulator is installed or updated.</p>
+        </article>
+
+        <article class="answer">
+          <h3>Can I still get a shell on the Pi?</h3>
+          <p class="answer__text">Yes. SSH stays the way in, exactly as before. The Terminal
+            window in the admin is that same SSH login in a browser: it asks for a Pi user's
+            password, not the admin's, and takes one session at a time.</p>
+        </article>
+
+        <article class="answer">
+          <h3>What if I forget the admin's password?</h3>
+          <p class="answer__text">Remove the password file on the Pi, over SSH. From that
+            moment the admin is unclaimed again, and the next change chooses a new one.</p>
+          <div class="codebox">
+            <code class="codebox__code" id="reset-command">sudo rm /var/lib/previously/password</code>
+            <button class="codebox__copy" type="button" aria-label="Copy" data-copy="reset-command" data-umami-event="Copy reset command">
+              <svg class="icon" aria-hidden="true"><use href="site/icons.svg#copy"></use></svg>
+            </button>
+          </div>
+        </article>
+
+        <article class="answer">
+          <h3>Can it share a Pi with other things?</h3>
+          <p class="answer__text">No, better not. It takes the first console and the screen
+            for itself and silences the boot, so it belongs on a Pi of its own.</p>
+        </article>
+
+        <article class="answer">
+          <h3>What does it cost, and where is the code?</h3>
+          <p class="answer__text">Nothing, and on GitHub: the admin, the installer and the
+            helper in one repository, with the releases beside them. Questions and anything
+            that does not work go into its issues.</p>
+        </article>
+
+        <article class="answer">
+          <h3>Is there a ready made image to write?</h3>
+          <p class="answer__text">No, not yet. But it is in the works.</p>
         </article>
       </div>
     </div>
@@ -340,6 +471,14 @@
       <a href="https://github.com/phranck/previously/blob/main/install.sh" target="_blank" rel="noopener">
         <svg class="icon" aria-hidden="true"><use href="site/icons.svg#terminal-window"></use></svg>
         Read install.sh
+      </a>
+      <a href="https://github.com/phranck/previously/releases" target="_blank" rel="noopener">
+        <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
+        Releases
+      </a>
+      <a href="https://github.com/phranck/previously/issues" target="_blank" rel="noopener">
+        <svg class="icon" aria-hidden="true"><use href="site/icons.svg#question"></use></svg>
+        Issues
       </a>
       <a href="https://previous.nextcommunity.net/" target="_blank" rel="noopener">
         Previous
