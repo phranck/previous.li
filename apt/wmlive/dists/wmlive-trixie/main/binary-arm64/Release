@@ -1,0 +1,5 @@
+Component: main
+Origin: wmlive.rumbero.org
+Label: wmlive
+Architecture: arm64
+Description: Window Maker Live Package Repository

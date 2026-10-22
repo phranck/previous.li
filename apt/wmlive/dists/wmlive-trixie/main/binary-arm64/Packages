@@ -1,0 +1,1359 @@
+Package: 86box
+Version: 6.0-0wmlive1
+Architecture: arm64
+Maintainer: Jasmine Iwanek <jriwanek@gmail.com>
+Installed-Size: 33568
+Depends: libc6 (>= 2.38), libevdev2 (>= 0.9.1), libfluidsynth3 (>= 1:2.5.6), libfreetype6 (>= 2.2.1), libgcc-s1 (>= 3.0), libopenal1 (>= 1.14), libpng16-16t64 (>= 1.6.46), libqt6core6t64 (>= 6.8.2), libqt6gui6 (>= 6.4.0), libqt6network6 (>= 6.3.0), libqt6widgets6 (>= 6.7.2), librtmidi7 (>= 6.0.0), libsdl2-2.0-0 (>= 2.0.12), libslirp0 (>= 4.1.0), libsndfile1 (>= 1.0.20), libstdc++6 (>= 13.1), libx11-6 (>= 2:1.2.99.901), libxi6 (>= 2:1.2.99.4), libxkbcommon-x11-0 (>= 0.5.0), libxkbcommon0 (>= 0.6.1), qt6-base-private-abi (= 6.8.2), zlib1g (>= 1:1.1.4), yad | yad-gtk2 | yad-gtk3
+Recommends: libpcap0.8-dev, libgamemode0
+Homepage: https://86box.net
+Priority: optional
+Section: otherosfs
+Filename: pool/main/8/86box/86box_6.0-0wmlive1_arm64.deb
+Size: 10279936
+SHA512: ad88ee65a9a084f6717ac872acdcc7a572e453672407ade8763fc03be91c0dc89e21fb26682b7aeb02a35f94dbda00892c0df6e46f8377e25386db294f1a24fb
+SHA256: 46160bb9f21152c48380e7aafd0dddf218bfd39a11c3cc0789007c834b5bed31
+SHA1: 69f924054f266b8fce1eff796976885bf2cf1fbe
+MD5sum: c658e735e766503e5f9b417af8f471c5
+Description: An emulator for classic IBM PC clones
+             86Box is a low level x86 emulator that runs older operating systems and software
+             designed for IBM PC systems and compatibles from 1981 through
+             fairly recent system designs based on the PCI bus.
+
+Package: agenda.app
+Version: 0.48-0wmlive4
+Architecture: arm64
+Maintainer: Debian GNUstep maintainers <pkg-gnustep-maintainers@lists.alioth.debian.org>
+Installed-Size: 1170
+Depends: gnustep-back-common (>= 0.31.0-3), gnustep-layout-multiarch, gnustep-back0.32, gnustep-base-runtime (>= 1.31.1), gnustep-gui-runtime (>= 0.32.0), libaddresses0.5.0 (>= 0.5.0), libc6 (>= 2.34), libdbuskit0 (>= 0.1.1), libgcc-s1 (>= 3.0), libgnustep-base1.31 (>= 1.31.1), libgnustep-gui0.32 (>= 0.32.0), libical3t64 (>= 3.0.0), libobjc4 (>= 4.6), libuuid1 (>= 2.16)
+Homepage: https://github.com/poroussel/simpleagenda
+Priority: optional
+Section: gnustep
+Filename: pool/main/a/agenda.app/agenda.app_0.48-0wmlive4_arm64.deb
+Size: 201488
+SHA512: ff9f74e8347f88e6525c0357aff236900f9837f82e31ca093f1f379f944a769427ed1e3c67b03002553e8545176cb018c8ee01e542f6edd10acf8d5461c4a91c
+SHA256: 15c7c033b76cda4bb2f919dabf405c2709d1503065eb07b635d81d4980697af7
+SHA1: d5005311a52b3f63ecbf9f5a8d618e6cc07ad18f
+MD5sum: 77f72acdd7be89a5cfab80d48f955219
+Description: Calendar manager for GNUstep
+ SimpleAgenda is a an application to manage your calendars.  It
+ handles both local and remote (webcal) calendars.  Calendars can be
+ shared with other programs like Evolution, Dates, IceApe Calendar and
+ others.  The following features are available:
+ .
+  * Multiple agendas.
+  * Handle both events and tasks.
+  * Support for local and remote (ftp, http) iCalendar agendas.
+  * Monthly calendar, day view, summary and tasks view.
+  * Create, resize and move appointments easily.
+  * Export individual elements as files and to the pasteboard.
+  * Import .ics files.
+  * Simple text search.
+  * Alarms with multiple backends.
+
+Package: diff-pdf
+Version: 0.5.3-0wmlive0
+Architecture: arm64
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 210
+Depends: libc6 (>= 2.34), libcairo2 (>= 1.2.4), libgcc-s1 (>= 3.0), libglib2.0-0t64 (>= 2.12.0), libpoppler-glib8t64 (>= 0.18.0), libstdc++6 (>= 5.2), libwxbase3.2-1t64 (>= 3.2.8+dfsg), libwxgtk3.2-1t64 (>= 3.2.8+dfsg)
+Homepage: https://vslavik.github.io/diff-pdf/
+Priority: optional
+Section: utils
+Filename: pool/main/d/diff-pdf/diff-pdf_0.5.3-0wmlive0_arm64.deb
+Size: 42564
+SHA512: 0e84351f86dd1967ae46851c9b55a1a7bad661c16fdf270cd377edfa3a49ff310554d182690cc8bc4999e9685a0dc3027db27f01992d66abf26c8d2524042ea9
+SHA256: 2095b7fb4e85e68c4b6689a01fcc3c7d26cba70a9163060c5f093f7c0424b50e
+SHA1: 46b79bd60703c1c5abc6ecb5f024da308717b737
+MD5sum: cf2ba84e542791fc95d8b4794c6cf55f
+Description: Simple tool for visually comparing two PDF files
+ diff-pdf is a tool for visually comparing two PDFs.
+ It takes two PDF files as arguments, and generates an output PDF
+ file that highlights the differences between the two input files.
+ Besides, it can compare the two files visually in a simple GUI.
+
+Package: easydiff
+Version: 0.4.1-20241222wmlive3
+Architecture: arm64
+Maintainer: Window Maker Live <wmlive@rumbero.org>
+Installed-Size: 249
+Depends: gnustep-back0.32, gnustep-base-runtime (>= 1.31.1), gnustep-gui-runtime (>= 0.32.0), libc6 (>= 2.34), libgnustep-base1.31 (>= 1.31.1), libgnustep-gui0.32 (>= 0.32.0), libobjc4 (>= 4.6)
+Homepage: https://mediawiki.gnustep.org/index.php/EasyDiff.app
+Priority: optional
+Section: gnustep
+Filename: pool/main/e/easydiff/easydiff_0.4.1-20241222wmlive3_arm64.deb
+Size: 51716
+SHA256: 9554a407979b988e66249275011bebc301cfb6bb525e15aca7b0b5b2d0f68cdd
+SHA1: c1488e88bdf2e9583ec6107fc077445892c5b603
+MD5sum: 13c98460f8b1806e04f132ed4706d8f9
+Description: File difference and patch creator
+ EasyDiff lets you easily see the differences between two text files.
+ Compare two files and create patches for right and left file.
+
+Package: gemas.app
+Version: 0.4-1wmlive10
+Architecture: arm64
+Maintainer: Window Maker Live <wmlive@rumbero.org>
+Installed-Size: 573
+Depends: dpkg-dev, gnustep-back0.32, gnustep-base-runtime (>= 1.31.1), gnustep-gui-runtime (>= 0.32.0), highlighterkit (>= 0.1.3), libc6 (>= 2.34), libgnustep-base1.31 (>= 1.31.1), libgnustep-gui0.32 (>= 0.32.0), libobjc4 (>= 4.2.1)
+Recommends: hkthemes
+Homepage: https://www.nongnu.org/gnustep-nonfsf/gemas
+Priority: optional
+Section: gnustep
+Filename: pool/main/g/gemas.app/gemas.app_0.4-1wmlive10_arm64.deb
+Size: 118260
+SHA256: d526dd159e45c7bf20c953b7b3f60c441bd7b501cc49aeef5028ef485354682c
+SHA1: de0c0923a24259038cebc4276ec072cf57dfa308
+MD5sum: 59e9a55b2a45fd31fd09b7016b1f7f37
+Description: A Simple Code Editor for GNUsteppers
+ Simple code editor with highlight syntax and auto indentation. Gemas depends on
+ HighlighterKit framework by Saso Kiselkov. On Windows, when you launch Gemas,
+ it open a new document for Objective-C. If you want other type of document,
+ create the appropriate new document from menu. This is because currently you
+ can't change the highlight syntax once you open a document. There are also a
+ couple of themes for the syntax highlighter.
+
+Package: gnustep-theme-heritage
+Version: 1.0-1wmlive4
+Architecture: arm64
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 297
+Depends: systempreferences.app
+Homepage: https://www.nongnu.org/gap/themes/
+Priority: optional
+Section: misc
+Filename: pool/main/g/gnustep-theme-heritage/gnustep-theme-heritage_1.0-1wmlive4_arm64.deb
+Size: 160064
+SHA256: 7e23583f9cee2e75a155b12e5ba2a61d8a22e02fe0fa3d3b64f43937576cff07
+SHA1: 46ef206dd2173409a14bd595fbe2dd38ddb0b4d7
+MD5sum: 43070d9d3c30836804f02ad5c10f31e3
+Description: The ultimate classic, vintage NeXT theme
+ This GNUstep theme tries to carry the heritage to the extreme, with
+ detailed icons, original but enhanced look of icons and quite some
+ skeumorphism. Folder icons used in Workspace are provided for the
+ most classical experience, colors and perspective are a true
+ reinterpretation of the original masterpiece.
+
+Package: gnustep-theme-nesedahrik
+Version: 04ee1ad-1wmlive3
+Architecture: arm64
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 914
+Depends: systempreferences.app
+Homepage: https://github.com/gnustep/plugins-themes-nesedahrik
+Priority: optional
+Section: misc
+Filename: pool/main/g/gnustep-theme-nesedahrik/gnustep-theme-nesedahrik_04ee1ad-1wmlive3_arm64.deb
+Size: 265240
+SHA256: e9eced786d42495ec33ee95398a251d0c7f9b21e0ad2cb825a5747b613323ea7
+SHA1: 7123963007752922308b29dbe65c39063da628c3
+MD5sum: dd93e9fc6ca77d9d19cd533081b3e7e1
+Description: Nesedah Theme with Rik icons
+ Theme engine NesedahRik for GNUstep using the Rik icons rescued from the
+ Etoile project. The theme can be activated via SystemPreferences.
+
+Package: gnustep-theme-rik
+Version: 5b328e5-1wmlive3
+Architecture: arm64
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 1333
+Depends: gnustep-back0.32, gnustep-base-runtime (>= 1.31.1), gnustep-gui-runtime (>= 0.32.0), libgnustep-base1.31 (>= 1.31.1), libgnustep-gui0.32 (>= 0.32.0), libobjc4 (>= 4.6), systempreferences.app
+Homepage: https://github.com/anthonyc-r/rik.theme
+Priority: optional
+Section: gnustep
+Filename: pool/main/g/gnustep-theme-rik/gnustep-theme-rik_5b328e5-1wmlive3_arm64.deb
+Size: 181596
+SHA256: 1eb733459fce0fc04a2a595034250d6cc4c824bdff5f4e35cac9c7d1452e0cb7
+SHA1: 4d21942df8d2b10a50f8706d16ff0a069919bba5
+MD5sum: d5df4b85218eb7909f8dd871ee3961db
+Description: A modern gnustep theme
+ Rik theme engine for GNUstep featuring a more contemporary visual design.
+ The theme can be activated via SystemPreferences.
+
+Package: gnustep-theme-silver
+Version: 3.1-1wmlive4
+Architecture: arm64
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 252
+Depends: gnustep-back0.32, gnustep-base-runtime (>= 1.31.1), gnustep-gui-runtime (>= 0.32.0), libgnustep-base1.31 (>= 1.31.1), libgnustep-gui0.32 (>= 0.32.0), libobjc4 (>= 4.2.1), systempreferences.app
+Homepage: https://mediawiki.gnustep.org/index.php/Silver.theme
+Priority: optional
+Section: misc
+Filename: pool/main/g/gnustep-theme-silver/gnustep-theme-silver_3.1-1wmlive4_arm64.deb
+Size: 27452
+SHA256: 5fc3480c9070b3d4b975c7eb2faf3e81b8ecde94c68acdeb01e357b37f0b21f2
+SHA1: 6917e50e6a880effae509d0f8ab95527aeef18b0
+MD5sum: 5a578da8ff14b463c65f6c0a7dc2281f
+Description: GNUstep theme with silvered controls and right side scrollbars
+ Silver.theme is a theme with menu in-window, silvered controls,
+ scrollbars at right side and arrows at opposite sides. Ideal for
+ people who want use GNUstep apps in desktops like Gnome or KDE.
+
+Package: gnustep-theme-sleek
+Version: 1.0-1wmlive4
+Architecture: arm64
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 377
+Depends: systempreferences.app
+Homepage: https://github.com/gnustep/plugins-themes-Gtk
+Priority: optional
+Section: misc
+Filename: pool/main/g/gnustep-theme-sleek/gnustep-theme-sleek_1.0-1wmlive4_arm64.deb
+Size: 36996
+SHA256: 2ffd182fa8c71c0ea925aa56a9719645e4da37fb2dabec5fbf7f5d7912e9abe3
+SHA1: 65989bc8ef081f402a749125b8a94d45ecacc00b
+MD5sum: 37db1ea2f9594addbfb5563d09fa41c3
+Description: Modern flat, low-contrast and monochrome GNUstep theme
+ Square and gray, but easy to the eye. Completely flat, 3D effects are
+ removed, elements are mostly rendered in dark grey and light grey,
+ without recurring to white and black where possible
+
+Package: gnustep-theme-sombre
+Version: 0.2-1wmlive3
+Architecture: arm64
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 2351
+Depends: gnustep-back0.32, gnustep-base-runtime (>= 1.31.1), gnustep-gui-runtime (>= 0.32.0), libgnustep-base1.31 (>= 1.31.1), libgnustep-gui0.32 (>= 0.32.0), libobjc4 (>= 4.6), systempreferences.app
+Homepage: https://github.com/gnustep/plugins-themes-sombre
+Priority: optional
+Section: misc
+Filename: pool/main/g/gnustep-theme-sombre/gnustep-theme-sombre_0.2-1wmlive3_arm64.deb
+Size: 982240
+SHA256: 504ef1d7ccd51902cbcfc8cef6167cbee1aa9bcaeafde39958bc817751847c28
+SHA1: edfde7068038a6045c346da47a46b7fddcc277fd
+MD5sum: c9f7786483d454268f8acab189b5c61f
+Description: A dark theme for GNUstep, using Rik icons
+ A dark theme for GNUstep. Also includes a matching Window
+ Maker style file for visual consistency.
+
+Package: gnustep-theme-winclassic
+Version: 090914-1wmlive3
+Architecture: arm64
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 101
+Depends: systempreferences.app
+Homepage: https://gap.nongnu.org/themes/index.html
+Priority: optional
+Section: misc
+Filename: pool/main/g/gnustep-theme-winclassic/gnustep-theme-winclassic_090914-1wmlive3_arm64.deb
+Size: 29796
+SHA256: 3f55a9f42cff73ef3c933de8a4c1db555b7bdec93ce43eaf9f6f15b926f74436
+SHA1: 163046b79f6ef2e92d9a4d3ced71a17152d07031
+MD5sum: c7f22256d49844930c0e3d5a495a36d3
+Description: GNUstep theme with Windows design visuals
+ WinClassic.theme  tries to reproduce the Windows look without resorting
+ to native theming, it is thus portable. The theme is a breed of Windows
+ 2000 and WinXP/Vista with the classic look. The icons are custom artwork
+ inspired in colors, but adapted to GNUstep in both function and size.
+
+Package: gpicview
+Version: 0.3.1-1wmlive2
+Architecture: arm64
+Maintainer: Debian LXDE Maintainers <team+lxde@tracker.debian.org>
+Installed-Size: 689
+Depends: libc6 (>= 2.34), libcairo2 (>= 1.2.4), libgdk-pixbuf-2.0-0 (>= 2.22.0), libglib2.0-0t64 (>= 2.80.0), libgtk2.0-0t64 (>= 2.20.0), libjpeg62-turbo (>= 1.3.1), libx11-6
+Recommends: xdg-utils
+Homepage: https://github.com/lxde/gpicview
+Priority: optional
+Section: graphics
+Filename: pool/main/g/gpicview/gpicview_0.3.1-1wmlive2_arm64.deb
+Size: 141200
+SHA256: 3eb64abe90a5add83c1e93370cdcc3bd3654c8b56c23629b757f5910d28c8546
+SHA1: fdf243e79305920e4a407bc3b6765f124e7c9bd4
+MD5sum: ff057e72a78bb5ec840347c198cad745
+Description: lightweight image viewer
+ GPicView is a lightweight GTK+ 2.x based image viewer with following features:
+ .
+  * Extremely lightweight and fast with low memory usage
+  * Very suitable for default image viewer of desktop system
+  * Simple and intuitive interface
+  * Minimal lib dependency: Only pure GTK+ is used
+  * Desktop independent: Doesn't require any specific desktop environment
+
+Package: graphos
+Version: 0.7-1wmlive5
+Architecture: arm64
+Maintainer: Window Maker Live <wmlive@rumbero.org>
+Installed-Size: 569
+Depends: gnustep-back0.32, gnustep-base-runtime (>= 1.31.1), gnustep-gui-runtime (>= 0.32.0), libc6 (>= 2.34), libgnustep-base1.31 (>= 1.31.1), libgnustep-gui0.32 (>= 0.32.0), libobjc4 (>= 4.6)
+Homepage: https://gap.nongnu.org/graphos
+Priority: optional
+Section: gnustep
+Filename: pool/main/g/graphos/graphos_0.7-1wmlive5_arm64.deb
+Size: 104844
+SHA256: f2fc74af421f30e8f920faec2eca6fc09a0ce496e8846bda4313d1bc67ebf7d3
+SHA1: 3c62fcc529566ba771c039f1bbc81e11c657dbe0
+MD5sum: cc0cfeca7ba832c35f8954ff4375b1d5
+Description: Vector drawing application
+ Graphos is a vector drawing application centered around bezier paths.
+ .
+ Graphos roots are directly set in GDraw, written by Enrico Sersale and released
+ in 2000. Version 0.1 of Graphos is a direct descendant of GDraw: the interface
+ is almost unchanged, but the application has been refactored, reorganized,
+ debugged, rewritten and updated.
+ .
+ The main changes were the transition from post-script to NSBezierPath drawing,
+ total rearrangement of the objects into Drawable Objects and their Editors
+ organized hierachically
+
+Package: gspdf
+Version: 0.5-1wmlive4
+Architecture: arm64
+Maintainer: Window Maker Live <wmlive@rumbero.org>
+Installed-Size: 281
+Depends: gnustep-back0.32, gnustep-base-runtime (>= 1.31.1), gnustep-gui-runtime (>= 0.32.0), libc6 (>= 2.34), libgnustep-base1.31 (>= 1.31.1), libgnustep-gui0.32 (>= 0.32.0), libobjc4 (>= 4.2.1)
+Homepage: https://gap.nongnu.org/gspdf
+Priority: optional
+Section: gnustep
+Filename: pool/main/g/gspdf/gspdf_0.5-1wmlive4_arm64.deb
+Size: 51964
+SHA256: 75c44ec11cdbd899d3b163062de6db41e14807ca2bbe4635ee4463093eebe0c7
+SHA1: 2a69a00e7e5b68818e4b73e7ad6bdbb8582c8559
+MD5sum: 61f8213cf77717cc27af0dad8d18bf7e
+Description: PDF, PS and EPS viewer for GNUstep
+ GSPdf is a PDF and PostScript file viewer for GNUstep. It is a frond-end
+ for GhostScript, which is required at runtime to properly render the pages.
+
+Package: highlighterkit
+Version: 0.1.3-0wmlive3
+Architecture: arm64
+Maintainer: Window Maker Live <wmlive@rumbero.org>
+Installed-Size: 217
+Depends: libc6 (>= 2.17)
+Homepage: https://mediawiki.gnustep.org/index.php/HighlighterKit
+Priority: optional
+Section: gnustep
+Filename: pool/main/h/highlighterkit/highlighterkit_0.1.3-0wmlive3_arm64.deb
+Size: 26044
+SHA256: b7fff1a5015be198006244ddc0f3d37318ba96725b31e9d2600d3633a39d1956
+SHA1: 378c396635eca733b9290d56e4a4c3e60ffdada0
+MD5sum: 0dcd313af0d0eac55a665c8603838ed4
+Description: Framework for highlighting and coloring syntax in code editors
+ HighlighterKit provides a framework for highlighting and coloring syntax in
+ code editors. The Project Manager IDE and code editor Gemas.app makes use of
+ it, yet it can be included in other applications.
+
+Package: hkthemes
+Version: 1.0-1wmlive3
+Architecture: arm64
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 200
+Depends: highlighterkit
+Homepage: https://mediawiki.gnustep.org/index.php/Gemas.app
+Priority: optional
+Section: gnustep
+Filename: pool/main/h/hkthemes/hkthemes_1.0-1wmlive3_arm64.deb
+Size: 8664
+SHA256: 432676e963df745ea0295364934aec14fbe89d20ff81809fe8ff334b4886869e
+SHA1: 8efb6b56219b56c0bbf05ddf4263180053004fee
+MD5sum: f84e9338d28db0f14c3874a422642a59
+Description: Themes for HighlighterKit
+ Provides two themes for HighlighterKit, a framework for highlighting and
+ coloring syntax in code editors. The Project Manager IDE and code editor
+ Gemas.app makes use of it, yet it can be included in other applications.
+
+Package: hydrogen
+Version: 1.2.6-1wmlive2
+Architecture: arm64
+Maintainer: Debian Multimedia Maintainers <debian-multimedia@lists.debian.org>
+Installed-Size: 10522
+Depends: libarchive13t64 (>= 3.2.1), libasound2t64 (>= 1.0.16), libc6 (>= 2.38), libgcc-s1 (>= 3.0), libjack-jackd2-0 (>= 1.9.10+20150825) | libjack-0.125, liblo7 (>= 0.27), libportaudio2 (>= 19+svn20101113), libportmidi0, libpulse0 (>= 0.99.1), libqt6core6t64 (>= 6.8.2), libqt6gui6 (>= 6.8.2), libqt6network6 (>= 6.1.2), libqt6svg6 (>= 6.6.0), libqt6widgets6 (>= 6.3.0), libqt6xml6 (>= 6.6.0), librubberband3 (>= 1:4.0.0), libsndfile1 (>= 1.0.20), libstdc++6 (>= 13.1), hydrogen-data (= 1.2.6-1wmlive2)
+Recommends: hydrogen-drumkits, hydrogen-doc, rubberband-cli
+Suggests: ladspa-plugin
+Breaks: hydrogen-data (<< 1.0.1-2)
+Replaces: hydrogen-data (<< 1.0.1-2)
+Homepage: http://www.hydrogen-music.org/
+Priority: optional
+Section: sound
+Filename: pool/main/h/hydrogen/hydrogen_1.2.6-1wmlive2_arm64.deb
+Size: 1786600
+SHA256: 90617106097a89471565097ae5e990a79a43583c8933ff6842ea92b6aa9d46dc
+SHA1: a6e9706a3475f752df0afb9ad2f29506ced9abbc
+MD5sum: 435ae6b8f1910d208d6e0947c2cacc73
+Description: advanced drum machine/step sequencer
+ Hydrogen is an advanced drum machine which provides a professional,
+ yet simple and intuitive, pattern-based drum programming interface.
+ .
+ General features:
+  * Very user-friendly, modular, fast and intuitive graphical interface
+    based on Qt 5.
+  * Sample-based stereo audio engine, with import of sound samples in
+    .wav, .au and .aiff formats.
+  * Support of samples in compressed FLAC file.
+ .
+ Sequencer and mixer features:
+  * Pattern-based sequencer, with unlimited number of patterns and
+    ability to chain patterns into a song.
+  * Up to 64 ticks per pattern with individual level per event and
+    variable pattern length.
+  * 32 instrument tracks with volume, mute, solo, pan capabilities.
+  * Multi layer support for instruments (up to 16 samples for each
+    instrument).
+  * Ability to import/export song files.
+  * Unique human velocity, human time, pitch and swing functions.
+  * Multiple patterns playing at once.
+ .
+ Other features:
+  * JACK, ALSA, PortAudio, OSS and PulseAudio audio drivers.
+  * ALSA MIDI and PortMidi input with assignable midi-in channel (1..16,
+    ALL).
+  * Import/export of drumkits.
+  * Export song to wav file.
+  * Export song to midi file.
+
+Package: hydrogen-data
+Source: hydrogen
+Version: 1.2.6-1wmlive2
+Architecture: all
+Maintainer: Debian Multimedia Maintainers <debian-multimedia@lists.debian.org>
+Installed-Size: 15131
+Recommends: hydrogen
+Breaks: hydrogen (<< 0.9.7-5~)
+Replaces: hydrogen (<< 0.9.7-5~)
+Multi-Arch: foreign
+Homepage: http://www.hydrogen-music.org/
+Priority: optional
+Section: sound
+Filename: pool/main/h/hydrogen/hydrogen-data_1.2.6-1wmlive2_all.deb
+Size: 6782980
+SHA256: 83ab029f8970d338962823545f4e62743774223b0cd979cf0f3b306d2aa11502
+SHA1: a4b62f8f4e23abbbece763a024f6ae95d5a68fd6
+MD5sum: 240fbd079c038bca71d524221986448c
+Description: advanced drum machine/step sequencer (data)
+ Hydrogen is an advanced drum machine which provides a professional,
+ yet simple and intuitive, pattern-based drum programming interface.
+ .
+ This package contains the architecture-independent data files.
+
+Package: hydrogen-doc
+Source: hydrogen
+Version: 1.2.6-1wmlive2
+Architecture: all
+Maintainer: Debian Multimedia Maintainers <debian-multimedia@lists.debian.org>
+Installed-Size: 416
+Breaks: hydrogen (<< 0.9.7-1~)
+Replaces: hydrogen (<< 0.9.7-1~)
+Multi-Arch: foreign
+Homepage: http://www.hydrogen-music.org/
+Priority: optional
+Section: doc
+Filename: pool/main/h/hydrogen/hydrogen-doc_1.2.6-1wmlive2_all.deb
+Size: 339452
+SHA256: 5676c226faf91430a0fa1156ec13357f010595ce9a947dc697bcd0faf5303c0c
+SHA1: 33ceee453c76382721ffd28c79e358d7a2530358
+MD5sum: 41a962eac0c5fb9ebf47ef9da973b0b6
+Description: advanced drum machine/step sequencer (doc)
+ Hydrogen is an advanced drum machine which provides a professional,
+ yet simple and intuitive, pattern-based drum programming interface.
+ .
+ This package contains the architecture-independent documentation.
+
+Package: isomaster
+Version: 1.3.17-0wmlive2
+Architecture: arm64
+Maintainer: David Johnson <dj@david-web.co.uk>
+Installed-Size: 1113
+Depends: libc6 (>= 2.34), libgdk-pixbuf-2.0-0 (>= 2.22.0), libglib2.0-0t64 (>= 2.12.0), libgtk2.0-0t64 (>= 2.8.0)
+Homepage: http://www.littlesvr.ca/isomaster/
+Priority: optional
+Section: otherosfs
+Filename: pool/main/i/isomaster/isomaster_1.3.17-0wmlive2_arm64.deb
+Size: 179876
+SHA256: b7fd45356149cc871a6c8eef502b773d2810b074171cfc4b4682f6075ddd3270
+SHA1: e11696aebb6d0fe67e83ba5f641e3806a9f143f9
+MD5sum: 204db1fa9114bbbce236b19595363ea2
+Description: Graphical CD image editor
+ You can use isomaster to:
+  - add files to an image
+  - extract files from an image
+  - delete files from an image
+
+Package: libpixman-1-0
+Source: pixman
+Version: 0.44.0-3wmlive0
+Architecture: arm64
+Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+Installed-Size: 667
+Depends: libc6 (>= 2.29)
+Multi-Arch: same
+Homepage: http://pixman.org/
+Priority: optional
+Section: libs
+Filename: pool/main/p/pixman/libpixman-1-0_0.44.0-3wmlive0_arm64.deb
+Size: 168504
+SHA256: 875365df4a09619a77a8ab12a3e22656b96bb6720158658f734f25f90b221eab
+SHA1: 0bf7124741baa8be2e1e73de07cc9abb25e7a039
+MD5sum: 7124480eeb004a14cf741ae634622c30
+Description: pixel-manipulation library for X and cairo
+ A library for manipulating pixel regions -- a set of Y-X banded
+ rectangles, image compositing using the Porter/Duff model
+ and implicit mask generation for geometric primitives including
+ trapezoids, triangles, and rectangles.
+
+Package: libpixman-1-0-dbgsym
+Source: pixman
+Version: 0.44.0-3wmlive0
+Auto-Built-Package: debug-symbols
+Architecture: arm64
+Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+Installed-Size: 920
+Depends: libpixman-1-0 (= 0.44.0-3wmlive0)
+Multi-Arch: same
+Priority: optional
+Section: debug
+Filename: pool/main/p/pixman/libpixman-1-0-dbgsym_0.44.0-3wmlive0_arm64.deb
+Size: 870056
+SHA256: 291945a69761674f4b2dee6647b890bfd2695f178e5d7baf5c83f6df59d5048c
+SHA1: 905a1aee83fd06f9e344b77cba07953b559fe200
+MD5sum: b201f7e0644d0a6dbc1c5168bbba3f3e
+Description: debug symbols for libpixman-1-0
+Build-Ids: e5ddd34946a3f2633a617b0260fcac95a8017171
+
+Package: libpixman-1-dev
+Source: pixman
+Version: 0.44.0-3wmlive0
+Architecture: arm64
+Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+Installed-Size: 67
+Depends: libpixman-1-0 (= 0.44.0-3wmlive0)
+Multi-Arch: same
+Homepage: http://pixman.org/
+Priority: optional
+Section: libdevel
+Filename: pool/main/p/pixman/libpixman-1-dev_0.44.0-3wmlive0_arm64.deb
+Size: 11540
+SHA256: e2ca95c639714af6f9cdf0f9214388f26d8de6eaa0dc1bab0eafbdeb3e0bb65e
+SHA1: ea93a6e3ef30936fbfb537f3f5c7a968dca4a567
+MD5sum: 5f021c29459e7439abca0d7e5ea4bef5
+Description: pixel-manipulation library for X and cairo (development files)
+ Development libraries, header files and documentation needed by
+ programs that want to compile with the Cairo/X pixman library.
+
+Package: linux-vulnerability-mitigation
+Version: 20260629-1wmlive1
+Architecture: all
+Maintainer: Daniel Baumann <daniel@debian.org>
+Installed-Size: 76
+Depends: debconf (>= 0.5) | debconf-2.0
+Suggests: bash-completion
+Enhances: linux
+Provides: mitigation-copy-fail, mitigation-dirty-frag, mitigation-fragnesia, mitigation-ssh-keysign-pwn
+Priority: optional
+Section: admin
+Filename: pool/main/l/linux-vulnerability-mitigation/linux-vulnerability-mitigation_20260629-1wmlive1_all.deb
+Size: 14260
+SHA512: 3d7e652e54711318766156b4eb707272af982c0e2d07bb7a5c56cad463bf7ca2077bfcaf305a6228acbeb489778621d46640298e63c75b6801f9b17f04025c84
+SHA256: fb0bd6aa607ec116fa1d042dbd4a46a8cc82bd4be1e2502f3570f463b82c69a7
+SHA1: c1ec23031048d2948ae643ef819714e5a33558c1
+MD5sum: 7d3401ec68a5d2248d87c0f442afa337
+Description: Linux Vulnerability Mitigation
+ This package contains mitigations for the recent Linux kernel security
+ vulnerabilities, such as:
+ .
+   * CVE-2026-31431: Copy Fail
+   * CVE-2026-43284: Dirty Frag (Part 1) / Copy Fail 2
+   * CVE-2026-43494: PinTheft
+   * CVE-2026-43500: Dirty Frag (Part 2)
+   * CVE-2026-46300: Fragnesia
+   * CVE-2026-46331: PACKET_EDIT_MEME.c
+   * CVE-2026-46333: ssh-keysign-pwn
+ .
+ Once the system has been rebooted with a fixed Linux kernel,
+ it is safe to remove this package.
+
+Package: live-build
+Version: 1:20250814+1wmlive2
+Architecture: all
+Maintainer: Debian Live <debian-live@lists.debian.org>
+Installed-Size: 804
+Depends: cpio, debootstrap
+Recommends: apt-utils, bzip2, cryptsetup, file, live-boot-doc, live-config-doc, live-manual-html | live-manual, rsync, systemd-container, wget, xz-utils
+Suggests: e2fsprogs, eatmydata, git, mtd-utils, parted
+Homepage: https://wiki.debian.org/DebianLive
+Priority: optional
+Section: misc
+Filename: pool/main/l/live-build/live-build_20250814+1wmlive2_all.deb
+Size: 206320
+SHA256: 3ab1b2b04526d3a86951f2591c80b67d811b7bdfbd133f0da47ae3bbcbbe3198
+SHA1: 01c75b8066dc1b98309341d12fc6810df3c91a67
+MD5sum: 33fad0eee20b295d32df0d96a2197c45
+Description: Live System Build Components
+ The Debian Live project maintains the components to build Debian based Live
+ systems and the official Debian Live images themselves.
+ .
+ live-build contains the components to build a live system from a configuration
+ directory.
+
+Package: netsurf-common
+Source: netsurf
+Version: 3.11-4wmlive4
+Architecture: all
+Maintainer: Vincent Sanders <vince@debian.org>
+Installed-Size: 1098
+Depends: ca-certificates
+Breaks: netsurf-gtk (<< 2.9-2)
+Replaces: netsurf-gtk (<< 2.9-2)
+Homepage: https://www.netsurf-browser.org
+Priority: optional
+Section: web
+Filename: pool/main/n/netsurf/netsurf-common_3.11-4wmlive4_all.deb
+Size: 170948
+SHA256: d0aa25cb7b1524a4bf023670bcd7358fd5ea1b3c26644b988a6dd468bf7c9c9c
+SHA1: a35d5d38a419387ce7b12ec28635f0c3915c6970
+MD5sum: dfebed0c8e0946fb0c0cd6b40449e5e8
+Description: small web browser with CSS support common files
+ NetSurf is a multi-platform lightweight web browser. It aims to provide
+ comprehensive rendering of HTML 5 with CSS 2 in a small resource footprint
+ without compromising performance.
+ .
+ These are the common resources for all versions.
+
+Package: netsurf-gtk2
+Source: netsurf
+Version: 3.11-4wmlive4
+Architecture: arm64
+Maintainer: Vincent Sanders <vince@debian.org>
+Installed-Size: 5312
+Depends: libc6 (>= 2.38), libcairo2 (>= 1.2.4), libcurl4t64 (>= 7.56.1), libexpat1 (>= 2.0.1), libgdk-pixbuf-2.0-0 (>= 2.25.2), libglib2.0-0t64 (>= 2.32.0), libgtk2.0-0t64 (>= 2.24.0), libjpeg62-turbo (>= 1.3.1), libpango-1.0-0 (>= 1.18.0), libpangocairo-1.0-0 (>= 1.14.0), libpng16-16t64 (>= 1.6.46), librsvg2-2 (>= 2.52.5), libssl3t64 (>= 3.0.0), libwebp7 (>= 1.5.0), zlib1g (>= 1:1.1.4), netsurf-common (= 3.11-4wmlive4)
+Recommends: mime-support
+Provides: www-browser
+Homepage: https://www.netsurf-browser.org
+Priority: optional
+Section: web
+Filename: pool/main/n/netsurf/netsurf-gtk2_3.11-4wmlive4_arm64.deb
+Size: 1369600
+SHA256: 6720e9552942bdbff2c2e3590db6dbae25e571a12e91c073acc36c924bd89fcd
+SHA1: 0f3e752260521af50dd402fc9a7957fc82f12ab6
+MD5sum: 476aef5be8467a9ebf44d9ce008e8f1d
+Description: small web browser with CSS support for GTK
+ NetSurf is a multi-platform lightweight web browser. It aims to provide
+ comprehensive rendering of HTML 5 with CSS 2 in a small resource footprint
+ without compromising performance.
+ .
+ This version uses the GTK+ 2 toolkit.
+
+Package: netsurf.app
+Source: netsurf
+Version: 3.11-4wmlive4
+Architecture: arm64
+Maintainer: Vincent Sanders <vince@debian.org>
+Installed-Size: 3665
+Depends: gnustep-back0.32, gnustep-base-runtime (>= 1.31.1), gnustep-gui-runtime (>= 0.32.0), libc6 (>= 2.38), libcurl4t64 (>= 7.56.1), libexpat1 (>= 2.0.1), libgnustep-base1.31 (>= 1.31.1), libgnustep-gui0.32 (>= 0.32.0), libjpeg62-turbo (>= 1.3.1), libobjc4 (>= 4.2.1), libpng16-16t64 (>= 1.6.46), libssl3t64 (>= 3.0.0), libwebp7 (>= 1.5.0), zlib1g (>= 1:1.1.4)
+Recommends: media-types
+Provides: www-browser
+Homepage: https://www.netsurf-browser.org
+Priority: optional
+Section: web
+Filename: pool/main/n/netsurf/netsurf.app_3.11-4wmlive4_arm64.deb
+Size: 1165044
+SHA256: 90d254886fb4819fd9b6b11df6ea5a640c06f80d9d0a840b5688150236b69f18
+SHA1: a73593cad54a5307a3e3b9d79a241196dca9c925
+MD5sum: c63271e7f5e94861ed85a68a595f598f
+Description: GNUstep web browser based on Netsurf
+ Netsurf.app is a GUI frontend for multi-platform lightweight web browser
+ Netsurf. It aims to provide comprehensive rendering of HTML 5 with
+ CSS 2 in a small resource footprint without compromising performance.
+ .
+ This version uses the GNUstep toolkit.
+
+Package: palemoon
+Version: 35.0.2-0wmlive1
+Architecture: arm64
+Maintainer: Window Maker Live <wmlive@rumbero.org>
+Installed-Size: 112267
+Depends: libavcodec60 | libavcodec-extra60 | libavcodec61 | libavcodec-extra61, libasound2t64 (>= 1.0.16), libatk1.0-0t64 (>= 1.12.4), libc6 (>= 2.38), libcairo2 (>= 1.2.4), libdbus-1-3 (>= 1.10), libfontconfig1 (>= 2.12.6), libfreetype6 (>= 2.2.1), libgcc-s1 (>= 4.2), libgdk-pixbuf-2.0-0 (>= 2.22.0), libglib2.0-0t64 (>= 2.24.0), libgtk2.0-0t64 (>= 2.24.0), libpango-1.0-0 (>= 1.22.0), libpangocairo-1.0-0 (>= 1.14.0), libstdc++6 (>= 12), libx11-6, libx11-xcb1, libxcb-shm0, libxcb1, libxext6, libxrender1 (>= 1:0.9.12), libxt6t64
+Conflicts: palemoon-nonsse2
+Replaces: palemoon-nonsse2
+Provides: gnome-www-browser, www-browser, x-www-browser
+Homepage: http://www.palemoon.org/
+Priority: optional
+Section: web
+Filename: pool/main/p/palemoon/palemoon_35.0.2-0wmlive1_arm64.deb
+Size: 37571876
+SHA512: 40dfdb23922f6f95973bd2259ddc1c5e695d214647bae604cf4b899d42e39c1b6405c5dd27ad998383e89add2225f28da66ea5cec90b72d013db2fcfd9a3af09
+SHA256: 1ddb9ffc4c62367e68f697779cdcd8dbfcf769b5788f80cef8acd67324c36982
+SHA1: ec793fa3539f8b1b5837644df6331a00ea298e96
+MD5sum: 48b591a49f705abbf4cd4f59bad2c8f6
+Description: Goanna-based, efficient and easy to use web browser (gtk2 build)
+ Pale Moon offers you a browsing experience in a browser completely built from
+ its own, independently developed source that has been forked off from
+ Firefox/Mozilla code a number of years ago, with carefully selected features
+ and optimizations to improve the browser's stability and user experience,
+ while offering full customization and a growing collection of extensions and
+ themes to make the browser truly your own.
+ .
+ Pale Moon requires a processor that supports the SSE2 instruction set.
+ Run "/proc/cpuinfo" in a terminal, and look for sse2 in the flags to ensure
+ that your processor supports it.
+ .
+ Though Palemoon has removed support for older non-AVX processors on their
+ official builds as of 33.3.0, this MX version still supports SSE2 for x86.
+Original-Maintainer: Marian Kadanka <marian.kadanka@openmailbox.org>, Steven Pusser <stevep@mxlinux.org>
+
+Package: parcellite
+Version: 1.2.5-1wmlive1
+Architecture: arm64
+Maintainer: Window Maker Live <wmlive@rumbero.org>
+Installed-Size: 627
+Depends: libc6 (>= 2.34), libglib2.0-0t64 (>= 2.36.0), libgtk2.0-0t64 (>= 2.24.0), libpango-1.0-0 (>= 1.14.0), libx11-6
+Homepage: https://github.com/rickyrockrat/parcellite
+Priority: optional
+Section: misc
+Filename: pool/main/p/parcellite/parcellite_1.2.5-1wmlive1_arm64.deb
+Size: 257256
+SHA256: fefaa3d9509a06fbe1d810a6aecd7d88393387f94c8588e6d8de60b4f4fbc354
+SHA1: 641bc7c82bcfef6f5dee6a08d3b8b849f38b06bd
+MD5sum: 698cdce63220536f07e689faa959c475
+Description: lightweight GTK2 clipboard manager
+ Parcellite is a stripped down, basic-features-only clipboard manager
+ with a small memory footprint for those who like simplicity.
+ .
+ Features:
+ .
+  * Keeps a clipboard history.
+  * Various view options to display items the way you like it.
+  * Daemon mode; guard your clipboard contents when you close applications.
+  * Perform custom commands using clipboard contents.
+
+Package: previous
+Version: 4.5-0wmlive1
+Architecture: arm64
+Maintainer: Window Maker Live <wmlive@rumbero.org>
+Installed-Size: 5306
+Depends: libc6 (>= 2.38), libgcc-s1 (>= 3.0), libpcap0.8t64 (>= 1.5.1), libpng16-16t64 (>= 1.6.46), libreadline8t64 (>= 6.0), libsdl3-0 (>= 3.2.0), libstdc++6 (>= 5)
+Homepage: http://previous.nextcommunity.net
+Priority: optional
+Section: otherosfs
+Filename: pool/main/p/previous/previous_4.5-0wmlive1_arm64.deb
+Size: 974916
+SHA512: 3e0d746fd83b827ed1a72424b441760d4faa37d77d322cb5a65125033c1c70971e8745d96863ca4a2ac9c5f2220caa04c095eb74819c7ceec2b467ec58b63a13
+SHA256: e65f5aa40b9fdebb46d6854f13fe75927b07d79c006e042d7e6738777187198e
+SHA1: 4a9e74d679d698a17865b6ff3f47b77932afa595
+MD5sum: 4d930bda6d3cda228da13feddb8e1620
+Description: NeXT Computer hardware emulator
+ Previous is a NeXT Computer emulator based on the Atari emulator Hatari.
+ It uses the latest m68k emulation core from WinUAE and the i860 emulator
+ from Jason Eckhardt. Previous works on all Systems which are supported
+ by the SDL library.
+
+Package: previous
+Version: 4.4-0wmlive1
+Architecture: arm64
+Maintainer: Window Maker Live <wmlive@rumbero.org>
+Installed-Size: 5305
+Depends: libc6 (>= 2.38), libgcc-s1 (>= 3.0), libpcap0.8t64 (>= 1.5.1), libpng16-16t64 (>= 1.6.46), libreadline8t64 (>= 6.0), libsdl3-0 (>= 3.2.0), libstdc++6 (>= 5)
+Homepage: http://previous.nextcommunity.net
+Priority: optional
+Section: otherosfs
+Filename: pool/main/p/previous/previous_4.4-0wmlive1_arm64.deb
+Size: 974644
+SHA512: 2a93c3fc970a11b3b259f746ffa2757f9b7f090fc7e3700bda6cf7ffe348f6eeb48cd7f4ab39bfaa9e0f8f8c3cd3472d2cad3fddd90f888b9be1daed091c3e5e
+SHA256: 04f4a16d3e622d6e9908b43b7d8df82ba808d9565f4a2120206bd5ad7e76db55
+SHA1: 71f1f2eaa090788aeacc7faced919b0a7fa10777
+MD5sum: 9d985a8c5dfa606e4bd4f446f7b30de1
+Description: NeXT Computer hardware emulator
+ Previous is a NeXT Computer emulator based on the Atari emulator Hatari.
+ It uses the latest m68k emulation core from WinUAE and the i860 emulator
+ from Jason Eckhardt. Previous works on all Systems which are supported
+ by the SDL library.
+
+Package: previous
+Version: 4.3-0wmlive1
+Architecture: arm64
+Maintainer: Window Maker Live <wmlive@rumbero.org>
+Installed-Size: 5241
+Depends: libc6 (>= 2.38), libgcc-s1 (>= 3.0), libpcap0.8t64 (>= 1.5.1), libpng16-16t64 (>= 1.6.46), libreadline8t64 (>= 6.0), libsdl3-0 (>= 3.2.0), libstdc++6 (>= 5)
+Homepage: http://previous.nextcommunity.net
+Priority: optional
+Section: otherosfs
+Filename: pool/main/p/previous/previous_4.3-0wmlive1_arm64.deb
+Size: 968640
+SHA512: e2b0ec7b89107ccb103e1a5005d7313c45f52f62d3ca3fe9046d8be1cca1e2ca5de4f762f7e24e1701d4c0b47d53c3a11bd8165a6f91b0592411ec940bc97cc1
+SHA256: 405a0f7aa053be57e100b8b7c84f8198da86913e46582f474608f50c263b16d9
+SHA1: 0274fae218652f8b674bface52e43a7c1aa18625
+MD5sum: 67afd84089955250f57cd64fee1086dd
+Description: NeXT Computer hardware emulator
+ Previous is a NeXT Computer emulator based on the Atari emulator Hatari.
+ It uses the latest m68k emulation core from WinUAE and the i860 emulator
+ from Jason Eckhardt. Previous works on all Systems which are supported
+ by the SDL library.
+
+Package: qdiskinfo
+Version: 0.3+git20250610+ds-2wmlive1
+Architecture: arm64
+Maintainer: Boyuan Yang <byang@debian.org>
+Installed-Size: 754
+Depends: pkexec, smartmontools, libc6 (>= 2.34), libgcc-s1 (>= 3.0), libqt6core6t64 (>= 6.8.2), libqt6gui6 (>= 6.1.2), libqt6widgets6 (>= 6.1.2), libstdc++6 (>= 13.1)
+Homepage: https://github.com/edisionnano/QDiskInfo
+Priority: optional
+Section: utils
+Filename: pool/main/q/qdiskinfo/qdiskinfo_0.3+git20250610+ds-2wmlive1_arm64.deb
+Size: 124808
+SHA256: ba0064ee38722628091f23b3cc53511d96b03fc3b542c4ca3d4d84053c81f837
+SHA1: e1203f24cdb61f82dc76356157482f3ab74d2a25
+MD5sum: f96829436f1bd00ea4e023ffa6d7a014
+Description: CrystalDiskInfo alternative for Linux
+ QDiskInfo is a frontend for smartctl. It provides a user experience
+ similar to CrystalDiskInfo. It shows the SMART (Self-Monitoring,
+ Analysis, and Reporting Technology) data of modern hard disk drives.
+
+Package: qt5-gtk2-platformtheme
+Source: qtstyleplugins-src
+Version: 5.0.0+git23.g335dbec-7wmlive1
+Architecture: arm64
+Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Installed-Size: 606
+Depends: libc6 (>= 2.17), libgdk-pixbuf-2.0-0 (>= 2.22.0), libglib2.0-0t64 (>= 2.12.0), libgtk2.0-0t64 (>= 2.24.0), libpango-1.0-0 (>= 1.14.0), libqt5core5t64 (>= 5.15.1), libqt5dbus5t64 (>= 5.14.1), libqt5gui5t64 (>= 5.14.1) | libqt5gui5-gles (>= 5.14.1), libqt5widgets5t64 (>= 5.0.2), libstdc++6 (>= 5), libx11-6, qtbase-abi-5-15-15
+Breaks: libqt5libqgtk2 (<< 5.7)
+Replaces: libqt5libqgtk2 (<< 5.7)
+Multi-Arch: same
+Homepage: https://code.qt.io/cgit/qt/qtstyleplugins.git/
+Priority: optional
+Section: libs
+Filename: pool/main/q/qtstyleplugins-src/qt5-gtk2-platformtheme_5.0.0+git23.g335dbec-7wmlive1_arm64.deb
+Size: 146292
+SHA256: d43a950900e43b822df3b120a8e4854fc11af7321a720850a405f3098ffb4950
+SHA1: 7c4bb26ed2bc1101dd62f9f5872b3f5232506af7
+MD5sum: 7e294a8ea8b0eda5f693e8cab87db4d1
+Description: Qt 5 extra widget styles - GTK+ 2 Platform theme
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the GTK+ 2 style and platform theme. Export
+ QT_QPA_PLATFORMTHEME=gtk2 to enable it for all Qt applications.
+
+Package: qt5-style-plugin-cleanlooks
+Source: qtstyleplugins-src
+Version: 5.0.0+git23.g335dbec-7wmlive1
+Architecture: arm64
+Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Installed-Size: 149
+Depends: libc6 (>= 2.17), libqt5core5t64 (>= 5.5.0), libqt5gui5t64 (>= 5.14.1) | libqt5gui5-gles (>= 5.14.1), libqt5widgets5t64 (>= 5.0.2), libstdc++6 (>= 5)
+Multi-Arch: same
+Homepage: https://code.qt.io/cgit/qt/qtstyleplugins.git/
+Priority: optional
+Section: libs
+Filename: pool/main/q/qtstyleplugins-src/qt5-style-plugin-cleanlooks_5.0.0+git23.g335dbec-7wmlive1_arm64.deb
+Size: 50392
+SHA256: 613d605b3821b0d4e8d6aab7446e2a4889d2150fb268bcd6348dc45c518537d2
+SHA1: 58644b221af16b67e6f0475a02e65b6b45cc6a6e
+MD5sum: df6c03349f624b3cc454186fcf321e1a
+Description: Qt 5 extra widget styles - Cleanlooks
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the Cleanlooks widget style.
+
+Package: qt5-style-plugin-motif
+Source: qtstyleplugins-src
+Version: 5.0.0+git23.g335dbec-7wmlive1
+Architecture: arm64
+Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Installed-Size: 148
+Depends: libc6 (>= 2.17), libqt5core5t64 (>= 5.0.2), libqt5gui5t64 (>= 5.14.1) | libqt5gui5-gles (>= 5.14.1), libqt5widgets5t64 (>= 5.0.2), libstdc++6 (>= 5)
+Multi-Arch: same
+Homepage: https://code.qt.io/cgit/qt/qtstyleplugins.git/
+Priority: optional
+Section: libs
+Filename: pool/main/q/qtstyleplugins-src/qt5-style-plugin-motif_5.0.0+git23.g335dbec-7wmlive1_arm64.deb
+Size: 32440
+SHA256: ed5fadd217ba8c472e892bf05453b89f709198b24df86b9a4bf5b4e4bfb53723
+SHA1: 1f25ef7b53c3fbb73b81cee49a89f59c7c2de1f2
+MD5sum: 88045eb1e7455e6e0bdfdbb63d0bc21b
+Description: Qt 5 extra widget styles - Motif
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the Motif widget style.
+
+Package: qt5-style-plugin-plastique
+Source: qtstyleplugins-src
+Version: 5.0.0+git23.g335dbec-7wmlive1
+Architecture: arm64
+Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Installed-Size: 213
+Depends: libc6 (>= 2.17), libqt5core5t64 (>= 5.5.0), libqt5gui5t64 (>= 5.14.1) | libqt5gui5-gles (>= 5.14.1), libqt5widgets5t64 (>= 5.0.2), libstdc++6 (>= 5), qtbase-abi-5-15-15
+Multi-Arch: same
+Homepage: https://code.qt.io/cgit/qt/qtstyleplugins.git/
+Priority: optional
+Section: libs
+Filename: pool/main/q/qtstyleplugins-src/qt5-style-plugin-plastique_5.0.0+git23.g335dbec-7wmlive1_arm64.deb
+Size: 65236
+SHA256: a652fd515ebf7f9c72288a483cfae75279b2f452d4723e7adc803e270bc48bcd
+SHA1: deba4cf8d12e65b84af8f095e0447786f8a65463
+MD5sum: 9a79c82e5069445180cbc5f151596660
+Description: Qt 5 extra widget styles - Plastique
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the Plastique widget style.
+
+Package: qt5-style-plugins
+Source: qtstyleplugins-src
+Version: 5.0.0+git23.g335dbec-7wmlive1
+Architecture: arm64
+Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Installed-Size: 11
+Depends: qt5-gtk2-platformtheme (= 5.0.0+git23.g335dbec-7wmlive1), qt5-style-plugin-cleanlooks (= 5.0.0+git23.g335dbec-7wmlive1), qt5-style-plugin-motif (= 5.0.0+git23.g335dbec-7wmlive1), qt5-style-plugin-plastique (= 5.0.0+git23.g335dbec-7wmlive1)
+Multi-Arch: same
+Homepage: https://code.qt.io/cgit/qt/qtstyleplugins.git/
+Priority: optional
+Section: metapackages
+Filename: pool/main/q/qtstyleplugins-src/qt5-style-plugins_5.0.0+git23.g335dbec-7wmlive1_arm64.deb
+Size: 3304
+SHA256: 595ba00e90e5800135340d82ccce1f677b5487c703de12a22c0d51692d89e921
+SHA1: 77057474e009ff3aee217042435ae8c2f40206d8
+MD5sum: b344c878670b058f34985431bb2c6a7a
+Description: Qt 5 extra widget styles
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This is a metapackage which pulls in all available styles and the GTK+ 2
+ platform theme.
+
+Package: qt5gtk2
+Version: 1.1-0wmlive1
+Architecture: arm64
+Maintainer: Window Maker Live <wmlive@rumbero.org>
+Installed-Size: 664
+Depends: libc6 (>= 2.17), libgcc-s1 (>= 3.0), libgdk-pixbuf-2.0-0 (>= 2.22.0), libglib2.0-0t64 (>= 2.12.0), libgtk2.0-0t64 (>= 2.24.0), libpango-1.0-0 (>= 1.14.0), libqt5core5t64 (>= 5.15.1), libqt5dbus5t64 (>= 5.14.1), libqt5gui5t64 (>= 5.14.1) | libqt5gui5-gles (>= 5.14.1), libqt5widgets5t64 (>= 5.0.2), libstdc++6 (>= 5), libx11-6, qtbase-abi-5-15-15, qt5ct
+Homepage: https://www.opencode.net/trialuser/qt5gtk2
+Priority: optional
+Section: x11
+Filename: pool/main/q/qt5gtk2/qt5gtk2_1.1-0wmlive1_arm64.deb
+Size: 153728
+SHA256: acadc89a9c7e701155811b4edc2f58786227566071a8053528247999d65dd1d2
+SHA1: 4ba6a0b0999d2b5bf7602913fc8008a84a722cca
+MD5sum: 2a4c6be24d23796fd06d29be99c1729c
+Description: GTK 2 integration plugins for Qt5
+ This package contains the GTK 2 style and platform theme, for proper usage
+ it requires that you have a functional GTK 2 theme selected.
+ .
+ To enable it for all Qt applications, export QT_QPA_PLATFORMTHEME=qt5gtk2
+ or 'gtk2', 'qt5gtk2' also work for compatibility reasons.
+ .
+ To avoid visual bugs, ensure that the environment variable QT_STYLE_OVERRIDE
+ is not set before usage.
+
+Package: qt6gtk2
+Version: 0.5-0wmlive1
+Architecture: arm64
+Maintainer: Unit 193 <unit193@unit193.net>
+Installed-Size: 408
+Depends: libc6 (>= 2.17), libgcc-s1 (>= 3.0), libgdk-pixbuf-2.0-0 (>= 2.22.0), libglib2.0-0t64 (>= 2.12.0), libgtk2.0-0t64 (>= 2.24.0), libpango-1.0-0 (>= 1.14.0), libqt6core6t64 (>= 6.8.2), libqt6gui6 (>= 6.8.2), libqt6widgets6 (>= 6.1.2), libstdc++6 (>= 5), libx11-6, qt6-base-private-abi (= 6.8.2), qt6ct
+Homepage: https://github.com/trialuser02/qt6gtk2/
+Priority: optional
+Section: x11
+Filename: pool/main/q/qt6gtk2/qt6gtk2_0.5-0wmlive1_arm64.deb
+Size: 96528
+SHA256: ee3aa1c28c6f8c5bd325db582f966d7d5eaa2216e6ee452bcd8c47daba4bbd6c
+SHA1: ed2c011b29c86e647bee104b05a32636faaf67ac
+MD5sum: 984bb91755af8df081d62c0c36a973cf
+Description: GTK 2 integration plugins for Qt6
+ This package contains the GTK 2 style and platform theme, for proper usage
+ it requires that you have a functional GTK 2 theme selected.
+ .
+ To enable it for all Qt applications, export QT_QPA_PLATFORMTHEME=qt6gtk2
+ or 'gtk2', 'qt5gtk2' also work for compatibility reasons.
+ .
+ To avoid visual bugs, ensure that the environment variable QT_STYLE_OVERRIDE
+ is not set before usage.
+
+Package: scantailor-advanced
+Version: 1.0.19-0wmlive4
+Architecture: arm64
+Maintainer: Andreas Noteng <andreas@noteng.no>
+Installed-Size: 4286
+Depends: libc6 (>= 2.34), libgcc-s1 (>= 3.0), libjpeg62-turbo (>= 1.3.1), libpng16-16t64 (>= 1.6.46), libqt6core6t64 (>= 6.8.2), libqt6gui6 (>= 6.4.0), libqt6openglwidgets6 (>= 6.1.2), libqt6svg6 (>= 6.6.0), libqt6widgets6 (>= 6.8.2), libqt6xml6 (>= 6.6.0), libstdc++6 (>= 13.1), libtiff6 (>= 4.0.3)
+Recommends: libtiff-tools
+Replaces: scantailor
+Homepage: https://github.com/vigri/scantailor-advanced/
+Priority: optional
+Section: graphics
+Filename: pool/main/s/scantailor-advanced/scantailor-advanced_1.0.19-0wmlive4_arm64.deb
+Size: 1088576
+SHA256: 88fa15ebc0fa6052be25395d7f94408ca89d55b600e0686c28398f0b07b75903
+SHA1: 5c88cf45308bc51d7d1e90269be39471a95d2647
+MD5sum: 62b30e47901d91fe15b86ed5745d8de5
+Description: interactive post-processing tool for scanned pages
+ Scan Tailor is an interactive post-processing tool for scanned pages. It
+ performs operations such as page splitting, deskewing, adding/removing
+ borders, and others. You give it raw scans, and you get pages ready to be
+ printed or assembled into a PDF or DJVU file. Scanning, optical character
+ recognition, and assembling multi-page documents are out of scope of this
+ project.
+
+Package: stepsync
+Version: 1.0-1wmlive4
+Architecture: arm64
+Maintainer: Window Maker Live <wmlive@rumbero.org>
+Installed-Size: 134
+Depends: gnustep-back0.32, gnustep-base-runtime (>= 1.31.1), gnustep-gui-runtime (>= 0.32.0), libc6 (>= 2.34), libgnustep-base1.31 (>= 1.31.1), libgnustep-gui0.32 (>= 0.32.0), libobjc4 (>= 4.2.1)
+Homepage: https://gap.nongnu.org/stepsync
+Priority: optional
+Section: gnustep
+Filename: pool/main/s/stepsync/stepsync_1.0-1wmlive4_arm64.deb
+Size: 22316
+SHA256: a18b42ee7cc9d15ba23bddd15a96fa075a7e6c91e0746a80b71bb836fe86e020
+SHA1: 7a3ad75506721941b91b84c6b9d24e1a20d16ea7
+MD5sum: 59b52dfd1c027a3f1ff49c6cbe5ea8e6
+Description: File and folder synchronization tool
+ StepSync allows keeping two folders synchronized, it can be thus used as a
+ back-up utility.  It manages two trees, starting from a folder as root and
+ recursing in them.
+
+Package: thematic.app
+Version: 0.2-1wmlive4
+Architecture: arm64
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 681
+Depends: gnustep-back0.32, gnustep-base-runtime (>= 1.31.1), gnustep-gui-runtime (>= 0.32.0), libc6 (>= 2.34), libgcc-s1 (>= 3.0), libgnustep-base1.31 (>= 1.31.1), libgnustep-gui0.32 (>= 0.32.0), libobjc4 (>= 4.2.1)
+Homepage: https://github.com/gnustep/apps-thematic
+Priority: optional
+Section: misc
+Filename: pool/main/t/thematic.app/thematic.app_0.2-1wmlive4_arm64.deb
+Size: 102908
+SHA256: 92111a1b0e853e5c9500c84c440ed6604b668d37fded146c3d632fdd447bc035
+SHA1: 9c7fedbf65bbd5b883305b65a8a121abaec8c25b
+MD5sum: cf3c83a6fa051aea32395b4b59aab88d
+Description: Thematic.app is a theme editor for GNUstep.
+ Install and run Thematic.app, then read online help for details of
+ what it can do, or read the help file in Resources/ThematicHelp.rtf
+
+Package: wmlive-base
+Version: 1.457
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 2412
+Depends: hwinfo, wmaker (>= 0.96.0), wmlive-theme-twostepsback, yad-gtk2, linux-vulnerability-mitigation
+Homepage: http://wmlive.rumbero.org
+Priority: optional
+Section: utils
+Filename: pool/main/w/wmlive-base/wmlive-base_1.457_all.deb
+Size: 497376
+SHA512: 84f8269932e5c678d99920c1515262edfa4612ec795437b793d9b563b2f7dd1b65c141706f3e5c276bafcd86ca21105836d3be5891c5d84ad80d112e43d59df9
+SHA256: ec34db237902228466fc0f57689c61d392513cd50ccc2fd20160642d11304955
+SHA1: 72d667b2b8b4c94ebf96bf049d74ce10597b774f
+MD5sum: 60062e4fac74181ff3740b2ec68927f5
+Description: Window Maker Live docs like ChangeLog, KnownIssues, etc
+ Window Make Live is a Debian based Linux distribution and the files
+ in this package comprise docs such as the ChangeLog and KnownIssues.
+ .
+ Furthermore, it provides the base /etc/skel home directory layout
+ for new user accounts preconfigured for the Window Maker desktop.
+
+Package: wmlive-installer
+Version: 1.244
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 737
+Depends: wmlive-base, netcat-openbsd, yad-gtk2
+Homepage: http://wmlive.rumbero.org
+Priority: optional
+Section: utils
+Filename: pool/main/w/wmlive-installer/wmlive-installer_1.244_all.deb
+Size: 90600
+SHA256: 426a33cb26957380b44dd82c7dada56928d856319bed2cd9e1609ea973b118fa
+SHA1: f377ae3d90161ef3f4cd5a338d21695ea673ecbf
+MD5sum: 6c23bf65e8604b6f2f71ebf38eba234d
+Description: Window Maker Live Installation Scripts
+ The scripts contained in this package perform additional post-installation
+ tasks via the debian-installer preseed/late_command facility and during the
+ first boot of the freshly installed system.
+ .
+ Package contains nothing you will ever need as standalone utilities and
+ it can therefore be safely removed once the system has been installed.
+
+Package: wmlive-miscutils
+Version: 1.30
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 49
+Depends: translate-shell
+Homepage: http://wmlive.rumbero.org
+Priority: optional
+Section: utils
+Filename: pool/main/w/wmlive-miscutils/wmlive-miscutils_1.30_all.deb
+Size: 10228
+SHA256: c7b834e106beaf64a2b716b013407785ea2fcfa72bbb547dcbf1dbdb31203af8
+SHA1: fcac41139b79377b14bd20bac204700307123ce3
+MD5sum: ad7411e857853b692903753cbdea7fd2
+Description: Miscellaneous Window Maker Live standalone utilities
+ Window Make Live is a Debian based Linux distribution and the scripts
+ contained in this package are also usable as standalone utilities.
+
+Package: wmlive-pixmaps
+Version: 0.13
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 6222
+Homepage: http://wmlive.rumbero.org
+Priority: optional
+Section: x11
+Filename: pool/main/w/wmlive-pixmaps/wmlive-pixmaps_0.13_all.deb
+Size: 1707060
+SHA256: e192f97e4658eb1eb442847983df4ff9718a0f17d2769fd71c6c179f4f5c2fef
+SHA1: 091892bb1f0982b05d09f0fe785c776385f00a44
+MD5sum: f215d171b516d02a5f2149cc1a845272
+Description: Collection of pixmaps and icons for Window Maker
+ An abundance of pixmaps to be used as application icons for the Window Maker
+ window manager and others.
+
+Package: wmlive-skel-audio
+Version: 0.3
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 919
+Replaces: wmlive-skel-data
+Homepage: http://wmlive.rumbero.org
+Priority: optional
+Section: utils
+Filename: pool/main/w/wmlive-skel-audio/wmlive-skel-audio_0.3_all.deb
+Size: 459960
+SHA256: f6276c3919aed0036c2906e157d1407fe4a6124f75bc5699813bbf84e40a10e6
+SHA1: 2201d01519e787b88f7834b494b4ee4bd60f6314
+MD5sum: 974a2738076fcee46dcc1deac10bc777
+Description: Sample audio content data for /etc/skel
+ Contains various multimedia related files for diverse programs
+ such as hydrogen, rosegarden, timidity, etc.
+
+Package: wmlive-skel-firefox-esr
+Version: 0.3
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 15222
+Depends: firefox-esr
+Priority: optional
+Section: x11
+Filename: pool/main/w/wmlive-skel-firefox-esr/wmlive-skel-firefox-esr_0.3_all.deb
+Size: 13204732
+SHA256: e5542d4658d5f5d7fed1a2515af9c4475d3b56f895f4a9dff0c129e52216a35c
+SHA1: d5a2f1cc8e0569e7f84013b70c6ab9f5490d6b99
+MD5sum: 0ec425a3355ff87cd42f8d95788c0530
+Description: Preconfigured firefox-esr profile folder for Window Maker Live
+ Assorted addons and preconfiguration settings for firefox to be used as
+ sample default configuration for the /etc/skel directory.
+
+Package: wmlive-skel-palemoon
+Version: 1.50
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 22911
+Depends: palemoon (>= 34.1.0)
+Homepage: http://wmlive.rumbero.org
+Priority: optional
+Section: x11
+Filename: pool/main/w/wmlive-skel-palemoon/wmlive-skel-palemoon_1.50_all.deb
+Size: 9301712
+SHA512: da40e15b2296ec30f7e26a90aba08d43be37c98512e3260b59e53be4dc372a954de3bf0ac5c80823e3f486fd6fed8bb4497cfb6f189e2c2dee947c009231008e
+SHA256: 91f71af587f3aae1cd4baa247a8a48b14f8c5a558e2a530cf000627055315617
+SHA1: 24663da89ad69210eaff00a291884da766150919
+MD5sum: 8a956774f2a8953e7a7bc746f3326e74
+Description: Preconfigured palemoon profile folder for Window Maker Live
+ Assorted addons, langpacks, and preconfiguration settings for palemoon to be
+ used as sample default configuration for the /etc/skel directory.
+
+Package: wmlive-theme-backstep
+Version: 1:0.8
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 201
+Recommends: wmlive-theme-gtk2-step, wmlive-theme-onestepback
+Homepage: http://shweps.free.fr/wiki/wakka.php?wiki=GtkThemes
+Priority: optional
+Section: x11
+Filename: pool/main/w/wmlive-theme-backstep/wmlive-theme-backstep_0.8_all.deb
+Size: 23608
+SHA256: 1fafd9ba0d234758cd838f66bb31f3eb065e9109d0e9b51bb2cfc98f6b5e8587
+SHA1: b5a98da0369d53f32489efbef831420666902521
+MD5sum: 95ba0ede9c2b52aabbfebfc10de640cb
+Description: Merge of the GTK2-Step and OneStepBack GTK+ themes
+ Both GTK2-Step and OneStepBack are GTK+ themes inspired in the NeXTSTEP looks.
+ .
+ GTK2-Step provides the visuals for both GTK2 (pixmap engine) and GTK1 (gtkstep
+ engine) based applications, while OneStepBack adds the ones required for GTK3.
+ .
+ This provides a mostly common visual appearance for applications based on all
+ three GTK+ variants and the WINGs widget set typically used by Window Maker.
+
+Package: wmlive-theme-gtk-gnustep
+Version: 1.0-3
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 291
+Homepage: http://gnome-look.org/content/show.php/GTK-GNUstep?content=117765
+Priority: optional
+Section: x11
+Filename: pool/main/w/wmlive-theme-gtk-gnustep/wmlive-theme-gtk-gnustep_1.0-3_all.deb
+Size: 33116
+SHA256: fd3f455a0b2c7058956768c56439bb8c3fd0fb9470da576b53d0f2c897d8acd5
+SHA1: aefdebd92046c6d5abbf46fc4333fbc5603c706b
+MD5sum: 0ab46cac43227cb50609ae487385d7c9
+Description: GTK-GNUstep theme for gtk2
+ GTK-GNUstep is a Gtk2 theme that matches the widgets used by default in the
+ WindowMaker/GNUStep environment.
+ .
+ This theme is intended to be installed in WindowMaker/GNUStep environment, so
+ as to harmonize the look of any gtk applications being used. The widgets are
+ an exact match wherever possible.
+
+Package: wmlive-theme-gtk2-step
+Version: 1.0-3
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 94
+Homepage: http://shweps.free.fr/wiki/wakka.php?wiki=GtkThemes
+Priority: optional
+Section: x11
+Filename: pool/main/w/wmlive-theme-gtk2-step/wmlive-theme-gtk2-step_1.0-3_all.deb
+Size: 11900
+SHA256: be641d816195e6e9c4986e87a62363bf50693c9aee9ce27d4ee180ef69b72c73
+SHA1: 59785d168614d3733b6ff6e536e348aca952a5dd
+MD5sum: dcf599e742e6691c21ad8d68c7719c17
+Description: GTK2 theme inspired in the NeXTSTEP widget
+ GTK theme inspired in the NeXTSTEP widget set for both GTK2 (pixmap engine)
+ and GTK1 (gtkstep engine). Blends very well with the WINGs widget set used for
+ the Window Maker window manager.
+
+Package: wmlive-theme-onestepback
+Version: 0.997-3
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 173
+Homepage: http://www.vide.memoire.free.fr/pages/onestepback/onestepback.php
+Priority: optional
+Section: x11
+Filename: pool/main/w/wmlive-theme-onestepback/wmlive-theme-onestepback_0.997-3_all.deb
+Size: 29804
+SHA256: 9f69a4c9840d5c71c99cc1bc185a6871995d29686ff542e309034778e8ea2ef5
+SHA1: 42fadabe8ec6852f91e20059c7696d5b49cde56e
+MD5sum: 1404481da9e5d2ae467f313e10989b96
+Description: OneStepBack theme for gtk2/3/4
+ OneStepBack is a gtk2/3/4 theme with some colors and embossed widgets
+ inspired by the good old NextStep look.  It is developed from scratch, is light
+ and minimal, uses only three shades of gray and a blueish color.
+
+Package: wmlive-theme-twostepsback
+Version: 0.1-3
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 750
+Homepage: https://www.gnome-look.org/p/2167998
+Priority: optional
+Section: x11
+Filename: pool/main/w/wmlive-theme-twostepsback/wmlive-theme-twostepsback_0.1-3_all.deb
+Size: 131236
+SHA256: 58358ea782ae83ac900d297d548c28970bfb96c7aa950aac167f7bf2bf0f6cc6
+SHA1: 0195a24f8a5cee8b5d11ef5873107ed15adb69e4
+MD5sum: fd9b79f07f19c1fce2bd9c4b71f100c8
+Description: TwoStepsBack theme with NeXTSTEP look for gtk2/3/4
+ TwoStepsBack is a Gtk 2, 3 and 4 theme with the NeXTSTEP look. It's a trivial
+ unification of the themes GTK-GNUstep (gtk2), WMStep (gtk3) and OneStepBack
+ (gtk4), all GPL open sources. Only few modifications were made for a better
+ match. Don't expect any spectacular results.
+
+Package: wmlive-utils
+Version: 1.132
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 1563
+Depends: debian-goodies, lxqt-sudo, ssh-askpass-gnome | ssh-askpass, yad-gtk2 | yad
+Homepage: http://wmlive.rumbero.org
+Priority: optional
+Section: utils
+Filename: pool/main/w/wmlive-utils/wmlive-utils_1.132_all.deb
+Size: 113204
+SHA256: 21cf0ba44eb792ddf86b0eead2c80f9f2236358c5fa64474b1372ddbe2a0c90a
+SHA1: c151de63617c35f6802a4f9e325ea42d34472eeb
+MD5sum: bb619883c679526b0bcf868a71a3db03
+Description: Window Maker Live Scripts
+ Window Make Live is a Debian based Linux distribution and the scripts
+ contained in this package manage certain tasks within it's environment.
+ .
+ Contains nothing you will ever need as standalone utilities.
+
+Package: wmudmount
+Version: 3.0-2wmlive4
+Architecture: arm64
+Maintainer: Brad Jorsch <anomie@users.sourceforge.net>
+Installed-Size: 248
+Depends: libc6 (>= 2.34), libcairo2 (>= 1.10.0), libgcr-base-3-1 (>= 3.8.0), libgcr-ui-3-1 (>= 3.8.0), libgdk-pixbuf-2.0-0 (>= 2.22.0), libglib2.0-0t64 (>= 2.36.0), libgtk-3-0t64 (>= 3.16.2), libsecret-1-0 (>= 0.7), libudisks2-0 (>= 2.0.91), libx11-6, udisks2
+Homepage: http://sourceforge.net/projects/wmudmount/
+Priority: optional
+Section: utils
+Filename: pool/main/w/wmudmount/wmudmount_3.0-2wmlive4_arm64.deb
+Size: 54048
+SHA256: f8fb7469d6a51bba3bff9429728f01632ab7872db62668643641bc9e892172ba
+SHA1: 43edb07e1ded2fe9777d15323d339e26797a41b5
+MD5sum: 727c246f562c685e752e428eb93afe75
+Description: WindowMaker filesystem mounting dockapp using udisks
+ wmudmount is a filesystem mounter that uses udisks to handle notification
+ of new filesystems and mounting of the filesystems as a non-root user. It also
+ includes a mode to display the mounted filesystems with the least free space
+ percentage (similar to wmfsm).
+
+Package: wrapperfactory.app
+Version: 0.1.0.onflapp-6wmlive4
+Architecture: arm64
+Maintainer: Debian GNUstep maintainers <pkg-gnustep-maintainers@lists.alioth.debian.org>
+Installed-Size: 764
+Depends: gnustep-back-common (>= 0.31.0-3), gnustep-layout-multiarch, gnustep-back0.32, gnustep-base-runtime (>= 1.31.1), gnustep-gui-runtime (>= 0.32.0), libc6 (>= 2.34), libgcc-s1 (>= 3.0), libgnustep-base1.31 (>= 1.31.1), libgnustep-gui0.32 (>= 0.32.0), libobjc4 (>= 4.6), steptalk
+Recommends: gworkspace.app
+Priority: optional
+Section: gnustep
+Filename: pool/main/w/wrapperfactory.app/wrapperfactory.app_0.1.0.onflapp-6wmlive4_arm64.deb
+Size: 118560
+SHA256: e4a338db249c78706fca87bf1d984de02b2c97e259f8f0505e7ec91c18dcb27a
+SHA1: 09523226462e50b91a5c4bed36d44cdfe38628bc
+MD5sum: 3367ac8587dffc3a31b7b00cbb5c377a
+Description: Application wrappers configuration tool for GNUstep
+ This provides an easy way to create GNUstep app-wrappers of non-GNUstep
+ applications. It is the most useful in conjunction with GWorkspace
+ environment.
+
+Package: xdgmenumaker
+Version: 2.4-0wmlive1
+Architecture: all
+Maintainer: B. Stack <bgstack15@gmail.com>
+Installed-Size: 186
+Pre-Depends: xvfb
+Depends: gir1.2-atk-1.0, gir1.2-pango-1.0, gir1.2-gtk-3.0, python3, python3-xdg, python3-gi
+Recommends: python3-pil
+Multi-Arch: foreign
+Homepage: https://github.com/gapan/xdgmenumaker
+Priority: optional
+Section: x11
+Filename: pool/main/x/xdgmenumaker/xdgmenumaker_2.4-0wmlive1_all.deb
+Size: 49016
+SHA256: a161e5c157be24f1ae124052d97b66e40cd40b27cb5fabd3be6c9b45e68b4357
+SHA1: 5820b3655c8815b0de1f6cdc046ca6637931ddb1
+MD5sum: 186cecacdc9ca833152f303b0f6e81e5
+Description: Cli tool that generates XDG menus for several window managers
+ xdgmenumaker is a command line tool, written in python, that generates
+ application menus using xdg information, by scanning *.desktop files in
+ all $XDG_DATA_DIRS/applications directories. All applications are sorted
+ according to the main categories as specified by freedesktop.org.
+ .
+ Supports amiwm, blackbox, compizboxmenu, fluxbox, fvwm, icewm, jwm,
+ pekwm, twm and derivatives such as ctwm and vtwm, windowmaker.
+
+Package: yad-gtk2
+Source: yad
+Version: 0.42.90-0wmlive1
+Architecture: arm64
+Maintainer: Window Maker Live <wmlive@rumbero.org>
+Installed-Size: 770
+Depends: libc6 (>= 2.38), libcairo2 (>= 1.2.4), libgdk-pixbuf-2.0-0 (>= 2.22.0), libglib2.0-0t64 (>= 2.76.0), libgtk2.0-0t64 (>= 2.24.0), libpango-1.0-0 (>= 1.18.0), libpangocairo-1.0-0 (>= 1.14.0)
+Replaces: yad
+Homepage: https://github.com/step-/yad
+Priority: optional
+Section: utils
+Filename: pool/main/y/yad/yad-gtk2_0.42.90-0wmlive1_arm64.deb
+Size: 186368
+SHA512: 0143e6227e208f37895cc185574a329160d27fe8dfef9cc4c041884131f10cb0dfa604d4d663b0be737302ac00cd078c2e4ca8ef27b6268a9914004914f35186
+SHA256: 36fd903ca36c1e6927763137517551037494f56857c5c9250bdeb9db7ed31332
+SHA1: bc1e8cf7c61b3c286dadd5631b88bdc13aebb822
+MD5sum: 99daee4021066ad02a3e7d4ed7c26610
+Description: tool for creating graphical dialogs from shell scripts
+ Yad allows you to display GTK2 dialog boxes from command line or shell
+ scripts. It is similar to Zenity but with more dialog types and options.
+
