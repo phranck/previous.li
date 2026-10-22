@@ -35,6 +35,11 @@ KEY_FILE = pathlib.Path(__file__).with_name("wmlive.rumbero.org.asc")
 #: uses either, so the copy carries both.
 SIGNED_FILES = ("InRelease", "Release", "Release.gpg")
 
+#: The only index files the copy carries. A Pi asks for nothing else, because
+#: Previously's source is of type deb, which never fetches the source index.
+#: The archive does not serve its source index anyway, though Release lists it.
+INDEX_DIRECTORY = f"main/binary-{ARCHITECTURE}/"
+
 DEFAULT_TARGET = pathlib.Path("apt/wmlive")
 FETCH_ATTEMPTS = 3
 FETCH_TIMEOUT_SECONDS = 60
@@ -156,7 +161,7 @@ def pruned(directory, kept):
 
 
 def fetched_suite(keyring):
-    """Downloads and verifies the suite's signed files and every index file they list.
+    """Downloads and verifies the suite's signed files and the index files under INDEX_DIRECTORY.
 
     @param keyring - A keyring holding only the archive's key.
     @returns dict from path relative to the suite to its bytes.
@@ -172,7 +177,8 @@ def fetched_suite(keyring):
     if not (inline and detached):
         raise SystemExit(f"The archive's index is not signed by {SIGNING_FINGERPRINT}")
     for path, size, digest in listed_files(files["Release"].decode("utf-8")):
-        files[path] = checked(fetched(f"{suite_url}/{path}"), size, digest, path)
+        if path.startswith(INDEX_DIRECTORY):
+            files[path] = checked(fetched(f"{suite_url}/{path}"), size, digest, path)
     return files
 
 
