@@ -766,6 +766,58 @@ kbd {
   color: var(--ink-soft);
 }
 
+/* --- a code box ---------------------------------------------------------- */
+
+/* One command to copy, with its button inside the box at the right. The code
+   scrolls inside itself rather than widening the page, and the button stays
+   where it is. */
+.codebox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
+  border-radius: var(--control-radius);
+  background: var(--paper-sunk);
+  border: 1px solid var(--rule);
+}
+
+.codebox__code {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: pre;
+  font-family: var(--mono);
+  font-size: var(--code-size);
+  line-height: calc(var(--step) * 4);
+}
+
+.codebox__copy {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--step) * 4);
+  height: calc(var(--step) * 4);
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--control-radius) - 4px);
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.codebox__copy:hover {
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+
+.codebox__copy--copied,
+.codebox__copy--copied:hover {
+  color: var(--next-live);
+}
+
 /* --- the screenshots ----------------------------------------------------- */
 
 /* The picture sits in a browser window, because that is where somebody

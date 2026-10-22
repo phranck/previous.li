@@ -1,5 +1,5 @@
-/* The two things on this page that do anything: copying the install line, and
-   the film's player. Everything else the page does is layout and a link. */
+/* The two things on this page that do anything: copying a command, and the
+   film's player. Everything else the page does is layout and a link. */
 
 const copyButton = document.getElementById("copy");
 const copyLabel = document.getElementById("copy-label");
@@ -12,7 +12,31 @@ const CONFIRMATION_MILLISECONDS = 1600;
 let confirmationTimer = 0;
 
 /**
- * Says the line has been taken, for a moment.
+ * Puts a command on the clipboard, or selects it where the clipboard is refused.
+ *
+ * Every browser refuses the clipboard outside a secure context, and this page
+ * is also opened from a checkout over file://. Selecting the command leaves the
+ * reader one keystroke away from the same result.
+ *
+ * @param {Element} element The element whose text is the command.
+ * @returns {Promise<"copied" | "selected">} Which of the two happened.
+ */
+async function take(element) {
+  const command = element.textContent.trim();
+  try {
+    await navigator.clipboard.writeText(command);
+    return "copied";
+  } catch {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    getSelection().removeAllRanges();
+    getSelection().addRange(range);
+    return "selected";
+  }
+}
+
+/**
+ * Says the install command has been taken, for a moment.
  *
  * The button keeps its own resting label rather than a constant written here,
  * so the two cannot disagree when the markup changes.
@@ -34,22 +58,30 @@ function confirm_(label, glyph) {
 }
 
 copyButton.addEventListener("click", async () => {
-  const line = commandLine.textContent.trim();
-
-  try {
-    await navigator.clipboard.writeText(line);
-    confirm_("Copied", "check");
-  } catch {
-    // Every browser refuses the clipboard outside a secure context, and this
-    // page is also opened from a checkout over file://. Selecting the line
-    // leaves the reader one keystroke away from the same result.
-    const range = document.createRange();
-    range.selectNodeContents(commandLine);
-    getSelection().removeAllRanges();
-    getSelection().addRange(range);
-    confirm_("Selected", "check");
-  }
+  const result = await take(commandLine);
+  confirm_(result === "copied" ? "Copied" : "Selected", "check");
 });
+
+/* A code box carries its button inside itself, at the right, with no label:
+   the glyph alone says that the command has been taken. data-copy names the
+   element that holds the command. */
+for (const button of document.querySelectorAll("[data-copy]")) {
+  const code = document.getElementById(button.dataset.copy);
+  const glyph = button.querySelector("use");
+  let timer = 0;
+
+  button.addEventListener("click", async () => {
+    await take(code);
+    glyph.setAttribute("href", "site/icons.svg#check");
+    button.classList.add("codebox__copy--copied");
+
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      glyph.setAttribute("href", "site/icons.svg#copy");
+      button.classList.remove("codebox__copy--copied");
+    }, CONFIRMATION_MILLISECONDS);
+  });
+}
 
 /* --- the film's player ----------------------------------------------------
 

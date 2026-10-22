@@ -430,9 +430,14 @@
 
         <article class="answer">
           <h3>What if I forget the admin's password?</h3>
-          <p class="answer__text">Remove the file <code>/var/lib/previously/password</code>
-            on the Pi with <code>sudo</code>. From that moment the machine is unclaimed
-            again, and the next browser to change something chooses a new one.</p>
+          <p class="answer__text">Remove the password file on the Pi, over SSH. From that
+            moment the admin is unclaimed again, and the next change chooses a new one.</p>
+          <div class="codebox">
+            <code class="codebox__code" id="reset-command">sudo rm /var/lib/previously/password</code>
+            <button class="codebox__copy" type="button" aria-label="Copy" data-copy="reset-command" data-umami-event="Copy reset command">
+              <svg class="icon" aria-hidden="true"><use href="site/icons.svg#copy"></use></svg>
+            </button>
+          </div>
         </article>
 
         <article class="answer">
