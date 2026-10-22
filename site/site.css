@@ -511,26 +511,6 @@ kbd {
   max-width: 52ch;
 }
 
-.hero__facts {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-1);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: var(--text-sm);
-}
-
-.hero__fact {
-  padding-inline: var(--space-2);
-  padding-top: calc(var(--label-lift) * -1);
-  line-height: calc(var(--step) * 4);
-  border: 1px solid var(--rule);
-  border-radius: calc(var(--step) * 2);
-  color: var(--ink-soft);
-}
-
 /* --- the install block --------------------------------------------------- */
 
 /* A window, which is the one shape of NeXTSTEP everybody recognises: a black
@@ -665,8 +645,7 @@ kbd {
    larger than the label's, so the correction is divided by exactly the factor
    that made it larger. */
 .button,
-.window__title,
-.hero__fact {
+.window__title {
   padding-bottom: calc(var(--label-lift) * 2);
 }
 
@@ -776,6 +755,28 @@ kbd {
   font-family: var(--mono);
   font-size: var(--code-size);
   white-space: pre;
+}
+
+/* --- the answers --------------------------------------------------------- */
+
+/* What people ask before the first boot, each answered under its question.
+   Plain headings and paragraphs in two columns and no frame around any of
+   them: these are answers rather than features, and a dozen boxes would read
+   as a brochure. */
+.answers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-6) var(--space-8);
+}
+
+.answer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.answer__text {
+  color: var(--ink-soft);
 }
 
 /* --- the screenshots ----------------------------------------------------- */
