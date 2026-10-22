@@ -144,11 +144,27 @@
       </div>
 
       <figure class="shot film">
-        <video class="film__video" controls playsinline preload="none"
-               poster="site/film/poster.jpg" width="1440" height="1080"
-               aria-label="A NeXT cube and a Raspberry Pi merge, the admin's applications appear on the cube's faces, and the film ends on the name Previously.">
-          <source src="site/film/previously.mp4" type="video/mp4">
-        </video>
+        <div class="player" id="player">
+          <video class="film__video" controls playsinline preload="metadata"
+                 poster="site/film/poster.jpg" width="1440" height="1080"
+                 aria-label="A NeXT cube and a Raspberry Pi merge, the admin's applications appear on the cube's faces, and the film ends on the name Previously.">
+            <source src="site/film/previously.mp4" type="video/mp4">
+          </video>
+          <div class="player__bar" hidden>
+            <button class="player__button" id="player-play" type="button" aria-label="Play">
+              <svg class="icon" aria-hidden="true"><use href="site/icons.svg#play"></use></svg>
+            </button>
+            <input class="player__timeline" id="player-timeline" type="range" min="0" max="0"
+                   step="any" value="0" aria-label="Position in the film">
+            <span class="player__time" id="player-time">0:00</span>
+            <button class="player__button" id="player-sound" type="button" aria-label="Sound off">
+              <svg class="icon" aria-hidden="true"><use href="site/icons.svg#speaker-high"></use></svg>
+            </button>
+            <button class="player__button" id="player-screen" type="button" aria-label="Full screen">
+              <svg class="icon" aria-hidden="true"><use href="site/icons.svg#corners-out"></use></svg>
+            </button>
+          </div>
+        </div>
       </figure>
 
       <div class="cards">

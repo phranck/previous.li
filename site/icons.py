@@ -36,6 +36,12 @@ PHOSPHOR = {
     "download-simple": "what the script fetches",
     "shield-check": "the script raises its own privileges and asks once",
     "arrow-square-out": "a link leaving this page",
+    "play": "starts the film",
+    "pause": "stops the film where it is",
+    "speaker-high": "the film's sound, which is on",
+    "speaker-slash": "the film's sound, which is off",
+    "corners-out": "shows the film on the whole screen",
+    "corners-in": "brings the film back from the whole screen",
 }
 
 BRAND = {
