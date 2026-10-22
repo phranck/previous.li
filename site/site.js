@@ -1,5 +1,6 @@
-/* The one thing on this page that does anything: copying the install line.
-   Everything else the page does is layout and a link. */
+/* The two things on this page that do anything: copying the install line, and
+   the film going back to its poster. Everything else the page does is layout
+   and a link. */
 
 const copyButton = document.getElementById("copy");
 const copyLabel = document.getElementById("copy-label");
@@ -50,3 +51,10 @@ copyButton.addEventListener("click", async () => {
     confirm_("Selected", "check");
   }
 });
+
+/* At its end the film would stand on its last frame, the television switched
+   off. Loading it again shows the poster, paused at the start, which is how a
+   reload finds it. */
+const film = document.querySelector(".film__video");
+
+film.addEventListener("ended", () => film.load());
