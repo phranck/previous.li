@@ -905,6 +905,20 @@ kbd {
   box-shadow: var(--shadow-window);
 }
 
+/* The browser's controls stand on the picture only while a pointer is over it
+   or the keyboard is on it, so the poster stands on its own. Only where the
+   pointer hovers: on a touch screen nothing would bring them back. */
+@media (hover: hover) {
+  .film__video::-webkit-media-controls-panel {
+    opacity: 0;
+  }
+
+  .film__video:hover::-webkit-media-controls-panel,
+  .film__video:focus-visible::-webkit-media-controls-panel {
+    opacity: 1;
+  }
+}
+
 /* --- the foot ------------------------------------------------------------ */
 
 .foot {

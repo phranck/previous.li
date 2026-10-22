@@ -28,6 +28,12 @@ a {
     transform var(--duration) var(--ease);
 }
 
+/* On the panel, because Chromium runs a transition there and none on the
+   enclosure around it. */
+.film__video::-webkit-media-controls-panel {
+  transition: opacity var(--duration) var(--ease);
+}
+
 /* Confirmation arrives at once and drains away afterwards, so the transition
    sits on the resting state and not on the confirmed one. */
 .button--copied,
