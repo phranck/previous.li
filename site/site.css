@@ -744,19 +744,6 @@ kbd {
   max-width: var(--measure-text);
 }
 
-/* A shell line inside a step, which scrolls rather than widening the page. */
-.snippet {
-  display: block;
-  overflow-x: auto;
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--control-radius);
-  background: var(--paper-sunk);
-  border: 1px solid var(--rule);
-  font-family: var(--mono);
-  font-size: var(--code-size);
-  white-space: pre;
-}
-
 /* --- the answers --------------------------------------------------------- */
 
 /* What people ask before the first boot, each answered under its question.
