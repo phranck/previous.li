@@ -28,6 +28,14 @@ a {
     transform var(--duration) var(--ease);
 }
 
+.player__bar {
+  transition: opacity var(--duration) var(--ease);
+}
+
+.player__button {
+  transition: background-color var(--duration) var(--ease);
+}
+
 /* Confirmation arrives at once and drains away afterwards, so the transition
    sits on the resting state and not on the confirmed one. */
 .button--copied,
