@@ -17,7 +17,7 @@ The website for [Previously](https://github.com/phranck/previously), a Raspberry
 
 There is no build step. Open `index.html` and it is the page.
 
-`promo/` is the source of a 32 second film about Previously, with sound. [Its README](promo/README.md) says how the film is made.
+`promo/` is the source of a 32 second film about Previously, with sound. [Its README](promo/README.md) says how the film is made. The page plays a copy of it from `site/film/`, which `site/film.py` makes out of the render.
 
 ## The copy of the Window Maker Live archive
 

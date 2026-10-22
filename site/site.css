@@ -132,6 +132,11 @@
   /* A control is not a card and takes none of a card's arithmetic. */
   --control-radius: 12px;
 
+  /* The corner of a frame around something that runs, the browser window and
+     the film alike, so the two pictures of the running thing read as one
+     kind. */
+  --frame-radius: 12px;
+
   --text-xs: 13px;
   --text-sm: 15px;
   --text-base: 17px;
@@ -800,7 +805,7 @@ kbd {
   --bar-height: 40px;
   width: fit-content;
   max-width: 100%;
-  border-radius: 12px;
+  border-radius: var(--frame-radius);
   overflow: hidden;
   /* No border: the real window has none. Its own contents run to the edge and
      the shadow is what separates it from what is behind. */
@@ -873,6 +878,31 @@ kbd {
 .shot__caption {
   font-size: var(--text-sm);
   color: var(--ink-soft);
+}
+
+/* --- the film ------------------------------------------------------------ */
+
+/* A figure like the screenshot's, without the browser bar, because the
+   television the film plays on is its own frame. It stands between the heading
+   and the cards, so it keeps the heading's distance to what follows it. It
+   stands inside the measure, whose padding is already its margin, so it may
+   take the whole column. */
+.film {
+  max-width: 100%;
+  margin-bottom: var(--space-8);
+}
+
+/* 896 wide makes it 672 tall, so the whole picture stays on a laptop's screen
+   under the bar while it plays. The black fills the frame until the poster has
+   arrived. */
+.film__video {
+  display: block;
+  width: 896px;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--frame-radius);
+  background: var(--next-black);
+  box-shadow: var(--shadow-window);
 }
 
 /* --- the foot ------------------------------------------------------------ */
