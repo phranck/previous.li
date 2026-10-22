@@ -1,15 +1,8 @@
 /* The two things on this page that do anything: copying a command, and the
    film's player. Everything else the page does is layout and a link. */
 
-const copyButton = document.getElementById("copy");
-const copyLabel = document.getElementById("copy-label");
-const copyIcon = document.getElementById("copy-icon").querySelector("use");
-const commandLine = document.getElementById("command");
-
-const RESTING_LABEL = copyLabel.textContent;
+/** How long a button shows the check mark after the command has been taken. */
 const CONFIRMATION_MILLISECONDS = 1600;
-
-let confirmationTimer = 0;
 
 /**
  * Puts a command on the clipboard, or selects it where the clipboard is refused.
@@ -35,36 +28,9 @@ async function take(element) {
   }
 }
 
-/**
- * Says the install command has been taken, for a moment.
- *
- * The button keeps its own resting label rather than a constant written here,
- * so the two cannot disagree when the markup changes.
- *
- * @param {string} label What the button says whilst confirming.
- * @param {string} glyph The symbol id in site/icons.svg to show with it.
- */
-function confirm_(label, glyph) {
-  copyLabel.textContent = label;
-  copyIcon.setAttribute("href", `site/icons.svg#${glyph}`);
-  copyButton.classList.add("button--copied");
-
-  clearTimeout(confirmationTimer);
-  confirmationTimer = setTimeout(() => {
-    copyLabel.textContent = RESTING_LABEL;
-    copyIcon.setAttribute("href", "site/icons.svg#copy");
-    copyButton.classList.remove("button--copied");
-  }, CONFIRMATION_MILLISECONDS);
-}
-
-copyButton.addEventListener("click", async () => {
-  const result = await take(commandLine);
-  confirm_(result === "copied" ? "Copied" : "Selected", "check");
-});
-
 /* A code box carries its button inside itself, at the right, with no label:
    the glyph alone says that the command has been taken. data-copy names the
-   element that holds the command. */
+   element that holds the command, which leaves a prompt beside it out. */
 for (const button of document.querySelectorAll("[data-copy]")) {
   const code = document.getElementById(button.dataset.copy);
   const glyph = button.querySelector("use");

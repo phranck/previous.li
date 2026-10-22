@@ -547,35 +547,14 @@ kbd {
 }
 
 .window__body {
-  display: flex;
-  align-items: stretch;
-  gap: var(--space-2);
   padding: var(--space-2);
   background: var(--paper-sunk);
 }
 
-.command {
-  flex: 1 1 auto;
-  /* A shell line is read left to right and is not prose, so it neither wraps
-     nor shortens. It scrolls inside itself, and reports no width upwards. */
-  min-width: 0;
-  overflow-x: auto;
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding-inline: var(--space-2);
+/* The body is already the sunk shade, so the box in it sinks one step further
+   to the page's own. */
+.window__body .codebox {
   background: var(--paper);
-  border: 1px solid var(--rule);
-  border-radius: var(--control-radius);
-  font-family: var(--mono);
-  font-size: var(--code-size);
-  line-height: calc(var(--step) * 5);
-  white-space: pre;
-}
-
-.command__prompt {
-  color: var(--accent);
-  user-select: none;
 }
 
 .window__note {
@@ -585,55 +564,7 @@ kbd {
   color: var(--ink-soft);
 }
 
-/* --- buttons ------------------------------------------------------------- */
-
-/* Every action is a button with a visible shape and an icon that says what it
-   does. The width comes from the label, and only a phone stretches it. */
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 0 var(--space-2);
-  height: calc(var(--step) * 5);
-  border: 1px solid transparent;
-  border-radius: var(--control-radius);
-  background: var(--accent);
-  color: var(--accent-ink);
-  font: 600 var(--text-sm) / 1 var(--font);
-  text-decoration: none;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.button:hover {
-  background: var(--accent-hover);
-}
-
-.button:active {
-  transform: translateY(1px);
-}
-
-.button--quiet {
-  background: transparent;
-  border-color: var(--rule);
-  color: var(--ink);
-}
-
-.button--quiet:hover {
-  background: var(--accent-wash);
-  border-color: var(--accent);
-}
-
-.button--copied,
-.button--copied:hover {
-  background: var(--next-live);
-  color: var(--next-white);
-}
-
-.button .icon {
-  font-size: calc(1em * var(--icon-scale));
-}
+/* --- labels beside glyphs ------------------------------------------------ */
 
 /* The lift a mixed-case label needs inside a control. A box of a stated height
    centres its contents in whatever is left after the padding, so the padding
@@ -644,12 +575,10 @@ kbd {
    the cap midline whatever the letters next to it are doing. Its own em is
    larger than the label's, so the correction is divided by exactly the factor
    that made it larger. */
-.button,
 .window__title {
   padding-bottom: calc(var(--label-lift) * 2);
 }
 
-.button .icon,
 .window__title .icon,
 .bar__links a .icon {
   transform: translateY(calc(var(--label-lift) / var(--icon-scale)));
@@ -775,7 +704,6 @@ kbd {
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  margin-top: var(--space-1);
   padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
   border-radius: var(--control-radius);
   background: var(--paper-sunk);
@@ -790,6 +718,12 @@ kbd {
   font-family: var(--mono);
   font-size: var(--code-size);
   line-height: calc(var(--step) * 4);
+}
+
+/* The shell's own prompt, shown but never copied. */
+.codebox__prompt {
+  color: var(--accent);
+  user-select: none;
 }
 
 .codebox__copy {
@@ -1127,17 +1061,5 @@ kbd {
 
   .hero {
     padding-block: var(--space-6) var(--space-8);
-  }
-}
-
-/* A phone, where a full-width button is the platform convention and a thumb
-   needs the target. This is the one place any button stretches. */
-@media (max-width: 520px) {
-  .window__body {
-    flex-direction: column;
-  }
-
-  .window__body .button {
-    width: 100%;
   }
 }

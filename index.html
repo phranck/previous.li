@@ -113,14 +113,12 @@
           Terminal
         </div>
         <div class="window__body">
-          <div class="command">
-            <span class="command__prompt" aria-hidden="true">$</span>
-            <span id="command">curl -fsSL https://previous.li/install.sh | bash</span>
+          <div class="codebox">
+            <code class="codebox__code"><span class="codebox__prompt" aria-hidden="true">$</span> <span id="command">curl -fsSL https://previous.li/install.sh | bash</span></code>
+            <button class="codebox__copy" type="button" aria-label="Copy" data-copy="command" data-umami-event="Copy install line">
+              <svg class="icon" aria-hidden="true"><use href="site/icons.svg#copy"></use></svg>
+            </button>
           </div>
-          <button class="button" id="copy" type="button" data-umami-event="Copy install line">
-            <svg class="icon" id="copy-icon" aria-hidden="true"><use href="site/icons.svg#copy"></use></svg>
-            <span id="copy-label">Copy</span>
-          </button>
         </div>
         <p class="window__note">Run it on the Pi over SSH as your own user, not as root. It
           uses <code>sudo</code> where it must, asks for the password once, and ends by
