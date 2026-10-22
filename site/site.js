@@ -69,6 +69,9 @@ const screenButton = document.getElementById("player-screen");
 /** How long the pointer may rest on a playing film before the controls leave it. */
 const IDLE_MILLISECONDS = 2500;
 
+/** What Umami counts the film's first start in a page view as. */
+const PLAY_EVENT = "Play film";
+
 let idleTimer = 0;
 
 /**
@@ -187,6 +190,13 @@ for (const change of ["loadedmetadata", "durationchange", "timeupdate", "emptied
   film.addEventListener(change, showPosition);
 }
 film.addEventListener("volumechange", showSound);
+
+/* Umami counts how many visitors start the film, so only the first start of a
+   page view is sent: a pause and a second start are the same visitor. The
+   Copy button is counted by its data-umami-event attribute, which Umami's
+   script reads on every click. Its script loads deferred and a blocker may
+   keep it away, so a missing umami sends nothing. */
+film.addEventListener("play", () => window.umami?.track(PLAY_EVENT), { once: true });
 document.addEventListener("fullscreenchange", showScreen);
 document.addEventListener("webkitfullscreenchange", showScreen);
 player.addEventListener("pointermove", wake);
