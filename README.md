@@ -19,6 +19,14 @@ There is no build step. Open `index.html` and it is the page.
 
 `promo/` is the source of a 32 second film about Previously, with sound. [Its README](promo/README.md) says how the film is made.
 
+## The copy of the Window Maker Live archive
+
+Previously installs the emulator Previous from the [Window Maker Live](https://wmlive.sourceforge.net/) archive at `wmlive.rumbero.org`. Some networks cannot reach that server, so `apt/wmlive/` holds a copy that Previously falls back to. GitHub Pages serves it at `https://previous.li/apt/wmlive/`.
+
+The copy holds the suite `wmlive-trixie` with its index files byte for byte and every arm64 package of `previous` its index names. Because the index files are identical, the archive's own signature covers them, and apt treats the copy as the same archive.
+
+`mirror/copy_wmlive.py` makes the copy. It checks the signature against the archive's key in `mirror/wmlive.rumbero.org.asc` and refuses any other key. It checks every file against the SHA-256 in the index, and it writes nothing unless everything checks out. The workflow `Mirror Window Maker Live` runs it every six hours and commits what changed.
+
 ## License
 
 This repository has been published under the [MIT](https://layered.mit-license.org) license.

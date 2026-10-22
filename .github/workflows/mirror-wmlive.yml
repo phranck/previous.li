@@ -1,0 +1,45 @@
+# Keeps apt/wmlive a copy of the Window Maker Live archive's suite for Previous,
+# so that installing Previous works on networks that cannot reach the archive.
+# mirror/copy_wmlive.py says what is copied and how it is checked. GitHub Pages
+# serves the copy from main at https://previous.li/apt/wmlive/.
+
+name: Mirror Window Maker Live
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "mirror/**"
+      - ".github/workflows/mirror-wmlive.yml"
+
+permissions:
+  contents: write
+
+# Two runs writing the copy at once would race on the same files, and a newer
+# run is no reason to throw away an older one half way.
+concurrency:
+  group: mirror-wmlive-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Copy the archive
+        run: python3 mirror/copy_wmlive.py apt/wmlive
+
+      - name: Commit the copy when it changed
+        run: |
+          git add apt/wmlive
+          if git diff --cached --quiet; then
+            echo "The copy is current."
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "Chore: Copy the Window Maker Live archive"
+          git push
