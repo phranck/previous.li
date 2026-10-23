@@ -1020,6 +1020,28 @@ Description: Thematic.app is a theme editor for GNUstep.
  what it can do, or read the help file in Resources/ThematicHelp.rtf
 
 Package: wmlive-base
+Version: 1.458
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 2462
+Depends: hwinfo, wmaker (>= 0.96.0), wmlive-theme-twostepsback, yad-gtk2, linux-vulnerability-mitigation
+Homepage: http://wmlive.rumbero.org
+Priority: optional
+Section: utils
+Filename: pool/main/w/wmlive-base/wmlive-base_1.458_all.deb
+Size: 509596
+SHA512: a74168983fa86bb0e6f24592637d7a9de2f484b23368d7b16aab4a73b7d7120b40bc0a26538bc4651885f3d0986cef91cc2958891fab09c042f9662064d591a8
+SHA256: c8c85bb7a7d2008a9e0d4a93f056a2ba1a68a708df84259bb05676935e29a2ca
+SHA1: c6299397bb74d78d5f5ec7a278cd154d7ba9c6f8
+MD5sum: d5dd5350cdbc84337b635e8ab2da9362
+Description: Window Maker Live docs like ChangeLog, KnownIssues, etc
+ Window Make Live is a Debian based Linux distribution and the files
+ in this package comprise docs such as the ChangeLog and KnownIssues.
+ .
+ Furthermore, it provides the base /etc/skel home directory layout
+ for new user accounts preconfigured for the Window Maker desktop.
+
+Package: wmlive-base
 Version: 1.457
 Architecture: all
 Maintainer: Paul Seelig <wmlive@rumbero.org>
@@ -1132,6 +1154,25 @@ MD5sum: 0ec425a3355ff87cd42f8d95788c0530
 Description: Preconfigured firefox-esr profile folder for Window Maker Live
  Assorted addons and preconfiguration settings for firefox to be used as
  sample default configuration for the /etc/skel directory.
+
+Package: wmlive-skel-palemoon
+Version: 1.51
+Architecture: all
+Maintainer: Paul Seelig <wmlive@rumbero.org>
+Installed-Size: 32600
+Depends: palemoon (>= 34.1.0)
+Homepage: http://wmlive.rumbero.org
+Priority: optional
+Section: x11
+Filename: pool/main/w/wmlive-skel-palemoon/wmlive-skel-palemoon_1.51_all.deb
+Size: 16331368
+SHA512: 44e34d60de59132bc50523555048d3b6780f8b61934f499f5920924db3d24182bb3d903015c0ef73d0af33efa8505330f4601d003570a5ad81022a6ddd0c88c4
+SHA256: 6fb226a925628feb54ecb8bb87b03ef1ef233f59ad4ad21b7e944de7c2dcb831
+SHA1: a796943e88971f336b045b1b6d729bf337f077fa
+MD5sum: e677c9e8eab4eb6984d42cdb3e19d14f
+Description: Preconfigured palemoon profile folder for Window Maker Live
+ Assorted addons, langpacks, and preconfiguration settings for palemoon to be
+ used as sample default configuration for the /etc/skel directory.
 
 Package: wmlive-skel-palemoon
 Version: 1.50
