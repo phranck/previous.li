@@ -6,7 +6,9 @@ none of these shows it. The board names the Pi instead. It is the Raspberry Pi
 admin/web/parts/board-pi5.svg, and it is fetched from there on every run, the
 way the page's install.sh fetches its one source. The page, the film and the
 admin therefore show one drawing, and a change to it reaches the page once
-these scripts run again.
+these scripts run again. The pictures a Pi shows while it starts and shuts
+down are drawn for every board the admin has a drawing of, so they fetch the
+others by their names.
 
 The board is drawn on a grid of 72 by 48 pixels and every edge but the NeXT
 logo's falls between two of them, so at a height that is a whole multiple of
@@ -29,7 +31,10 @@ import urllib.request
 
 from PIL import Image
 
-SOURCE = "https://raw.githubusercontent.com/phranck/previously/main/admin/web/parts/board-pi5.svg"
+#: Where the admin keeps a board's drawing, by the name it gives the board, and
+#: the board the page, the bar, the mark and the film show.
+SOURCE = "https://raw.githubusercontent.com/phranck/previously/main/admin/web/parts/board-{}.svg"
+PAGE_BOARD = "pi5"
 
 #: The NeXT logo inside the drawing, by the id board-pi5.svg keeps for it, and the
 #: black of the cube its letters stand on.
@@ -38,9 +43,13 @@ NEXT_BODY = "#000000"
 
 
 @functools.cache
-def drawing():
-    """The board's SVG document, as the admin serves it."""
-    with urllib.request.urlopen(SOURCE) as answer:
+def drawing(name=PAGE_BOARD):
+    """A board's SVG document, as the admin serves it.
+
+    Args:
+        name: The name the admin gives the board, such as "pi4".
+    """
+    with urllib.request.urlopen(SOURCE.format(name)) as answer:
         return answer.read().decode("utf-8")
 
 
@@ -80,9 +89,14 @@ def render(document, height):
     return Image.open(io.BytesIO(picture)).convert("RGBA")
 
 
-def draw(height):
-    """The board as a picture `height` pixels tall, on nothing."""
-    return render(drawing(), height)
+def draw(height, name=PAGE_BOARD):
+    """A board as a picture `height` pixels tall, on nothing.
+
+    Args:
+        height: The picture's height in whole pixels.
+        name: The name the admin gives the board, such as "pi4".
+    """
+    return render(drawing(name), height)
 
 
 def next_logo():

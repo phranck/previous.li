@@ -33,6 +33,7 @@ import io
 import pathlib
 
 import numpy
+from board import PAGE_BOARD
 from board import draw as draw_board
 from board import inner as board_inner
 from board import size as board_size
@@ -219,9 +220,13 @@ def inline(picture):
     return f"data:image/png;base64,{packed}"
 
 
-def pi_picture():
-    """The board as its smear and the film are made from: PI_HEIGHT tall."""
-    return draw_board(PI_HEIGHT)
+def pi_picture(name=PAGE_BOARD):
+    """A board as its smear and the film are made from: PI_HEIGHT tall.
+
+    Args:
+        name: The name the admin gives the board, the page's where left out.
+    """
+    return draw_board(PI_HEIGHT, name)
 
 
 def cube_picture():
