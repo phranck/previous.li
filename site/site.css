@@ -575,17 +575,45 @@ kbd {
    the cap midline whatever the letters next to it are doing. Its own em is
    larger than the label's, so the correction is divided by exactly the factor
    that made it larger. */
-.window__title {
+.window__title,
+.button {
   padding-bottom: calc(var(--label-lift) * 2);
 }
 
 .window__title .icon,
-.bar__links a .icon {
+.bar__links a .icon,
+.button .icon {
   transform: translateY(calc(var(--label-lift) / var(--icon-scale)));
 }
 
-.bar__links a .icon {
+.bar__links a .icon,
+.button .icon {
   font-size: calc(1em * var(--icon-scale));
+}
+
+/* --- the button ---------------------------------------------------------- */
+
+/* The one thing on this page that hands the reader something to do next:
+   fetching the file Raspberry Pi Imager opens Previously from. Filled with the
+   accent, so it is seen as a thing to press before its words are read, and as
+   wide as its label. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: calc(var(--step) * 5);
+  padding-inline: var(--space-2);
+  border-radius: var(--control-radius);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: var(--text-base);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.button:hover {
+  background: var(--accent-hover);
 }
 
 /* --- cards --------------------------------------------------------------- */
@@ -628,6 +656,14 @@ kbd {
 
 /* --- the steps ----------------------------------------------------------- */
 
+/* The column the number stands in and the gap after it, stated once for the
+   steps and for the line under them, which begins where a step's text does. */
+.steps,
+.steps__other {
+  --step-number: calc(var(--step) * 5);
+  --step-gap: var(--space-2);
+}
+
 .steps {
   display: grid;
   gap: var(--space-3);
@@ -636,8 +672,8 @@ kbd {
 
 .step {
   display: grid;
-  grid-template-columns: calc(var(--step) * 5) 1fr;
-  gap: var(--space-2);
+  grid-template-columns: var(--step-number) 1fr;
+  gap: var(--step-gap);
   align-items: start;
   padding-block: var(--space-2);
   border-top: 1px solid var(--rule);
@@ -671,6 +707,44 @@ kbd {
 .step__text {
   color: var(--ink-soft);
   max-width: var(--measure-text);
+}
+
+/* The download ends its step, with the button at the right edge and which
+   release it fetches at the left, which the script fills in. Without that line
+   the button keeps its edge. */
+.download {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.download__release {
+  margin-inline-end: auto;
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The other way in, said once under the steps rather than as a step of its
+   own, because it starts from a Pi that already runs. */
+.steps__other {
+  margin-top: var(--space-3);
+  padding-inline-start: calc(var(--step-number) + var(--step-gap));
+  color: var(--ink-soft);
+}
+
+/* On a phone the button takes the width a thumb needs, under the release. */
+@media (max-width: 640px) {
+  .download {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .download .button {
+    justify-content: center;
+  }
 }
 
 /* --- the answers --------------------------------------------------------- */

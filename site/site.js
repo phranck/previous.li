@@ -1,5 +1,6 @@
-/* The two things on this page that do anything: copying a command, and the
-   film's player. Everything else the page does is layout and a link. */
+/* The three things on this page that do anything: copying a command, the
+   film's player, and saying which release the download fetches. Everything
+   else the page does is layout and a link. */
 
 /** How long a button shows the check mark after the command has been taken. */
 const CONFIRMATION_MILLISECONDS = 1600;
@@ -208,3 +209,52 @@ showPlaying();
 showPosition();
 showSound();
 showScreen();
+
+/* --- the newest release ---------------------------------------------------
+
+   The download points at the newest release by an address that never changes,
+   so it works without any of this. What the script adds beside it is which
+   release that is, how large its image is and when it came out, read from the
+   endpoint the admin asks about releases as well. */
+
+/** The newest release of Previously, as GitHub's API describes it. */
+const RELEASE_API = "https://api.github.com/repos/phranck/previously/releases/latest";
+
+/** What a release calls the image Raspberry Pi Imager writes. */
+const IMAGE_ASSET = "previously-raspberry-pi.img.xz";
+
+/** Bytes in the megabyte a download is measured in, as browsers count it. */
+const BYTES_PER_MEGABYTE = 1000 * 1000;
+
+/**
+ * Says which release the download fetches, under the step that offers it.
+ *
+ * Left hidden where GitHub does not answer, answers with something else, or
+ * the release carries no image, because the download works either way.
+ *
+ * @returns {Promise<void>}
+ */
+async function showRelease() {
+  const line = document.getElementById("release");
+  try {
+    const answer = await fetch(RELEASE_API, { headers: { Accept: "application/vnd.github+json" } });
+    if (!answer.ok) {
+      return;
+    }
+    const release = await answer.json();
+    const image = release.assets.find((asset) => asset.name === IMAGE_ASSET);
+    if (!image) {
+      return;
+    }
+    const megabytes = Math.round(image.size / BYTES_PER_MEGABYTE);
+    const published = new Date(release.published_at).toLocaleDateString("en-GB", {
+      day: "numeric", month: "short", year: "numeric",
+    });
+    line.textContent = `Previously ${release.tag_name.replace(/^v/, "")} · ${megabytes} MB · ${published}`;
+    line.hidden = false;
+  } catch {
+    // No network or no GitHub: the line stays away and the link stays.
+  }
+}
+
+showRelease();
