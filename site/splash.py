@@ -5,12 +5,14 @@ it shuts down: the circuit board racing in from the left, on black, with
 
     .venv/bin/python site/splash.py
 
-It writes site/splash.png and site/splash-shutdown.png. Previously's
-design/mark.py fetches both from main, and its package build turns them into
-the pictures it draws onto the screen (phranck/previously#625, #636 and #641).
+It draws both for every board in BOARDS, as site/splash-<board>.png and
+site/splash-shutdown-<board>.png, so a Pi shows its own board. Previously's
+design/mark.py fetches them from main, and its package build turns them into
+the pictures it draws onto the screen (phranck/previously#625, #636, #641 and
+#646).
 
 The board and its trail are the hero's, out of board.py and hero.py, so the
-pictures and the page show one drawing.
+pictures and the page show one drawing of each board.
 
 Previously draws a picture as it is: it never scales it, centres it where it is
 smaller than the screen and clips it evenly on both sides where it is larger
@@ -30,8 +32,14 @@ import hero
 from PIL import Image, ImageDraw, ImageFont
 
 HERE = pathlib.Path(__file__).parent
-DESTINATION = HERE / "splash.png"
-SHUTDOWN_DESTINATION = HERE / "splash-shutdown.png"
+
+#: The boards Previously's admin has a drawing of, by the names its
+#: hardware.BOARDS gives them in phranck/previously, and where each board's two
+#: pictures go. Previously's tests hold its package to a pair for every board
+#: it knows, because this list cannot be read from there.
+BOARDS = ("pi4", "cm4", "pi5", "cm5")
+DESTINATION = "splash-{}.png"
+SHUTDOWN_DESTINATION = "splash-shutdown-{}.png"
 
 #: Screen pixels to each pixel of the board's drawing, which is 72 by 48. At 3
 #: the board is 216 by 144, and the picture fits whole on any screen from 800
@@ -64,14 +72,17 @@ TEXT_SIZE = 21
 TEXT_GAP = 24
 
 
-def laid_out():
-    """The board and its trail on black, before the colours are counted.
+def laid_out(name):
+    """A board and its trail on black, before the colours are counted.
+
+    Args:
+        name: The name the admin gives the board, such as "pi4".
 
     Returns:
         The RGB picture, and the board alone at the size it stands in it.
     """
     height = UNIT * BOARD_ROWS
-    sharp = hero.pi_picture()
+    sharp = hero.pi_picture(name)
     trail, reach = hero.smear(sharp, "left")
     scale = height / sharp.height
     board = sharp.resize((round(sharp.width * scale), height), Image.NEAREST)
@@ -136,16 +147,18 @@ def with_a_line(logo, text):
 
 
 def main():
-    picture, board = laid_out()
-    logo = reduced(picture, board)
-    colours = len(logo.getcolors(1 << 24))
-    if colours > COLOURS:
-        raise SystemExit(f"{colours} colours, and the board and its trail take {COLOURS}.")
-    for destination, text in ((DESTINATION, BOOT_TEXT), (SHUTDOWN_DESTINATION, SHUTDOWN_TEXT)):
-        drawn = with_a_line(logo, text)
-        drawn.save(destination, optimize=True)
-        print(f"{destination.name}: {drawn.width} by {drawn.height}, with {text!r} "
-              f"under the board {board.width} by {board.height} in the middle.")
+    for name in BOARDS:
+        picture, board = laid_out(name)
+        logo = reduced(picture, board)
+        colours = len(logo.getcolors(1 << 24))
+        if colours > COLOURS:
+            raise SystemExit(f"{name}: {colours} colours, and the board and its trail take {COLOURS}.")
+        for destination, text in ((DESTINATION, BOOT_TEXT), (SHUTDOWN_DESTINATION, SHUTDOWN_TEXT)):
+            drawn = with_a_line(logo, text)
+            path = HERE / destination.format(name)
+            drawn.save(path, optimize=True)
+            print(f"{path.name}: {drawn.width} by {drawn.height}, with {text!r} "
+                  f"under the board {board.width} by {board.height} in the middle.")
 
 
 if __name__ == "__main__":
