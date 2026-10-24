@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Draws the pictures a Pi running Previously shows while it starts and while
-it shuts down: the circuit board racing in from the left, on black, and the
-same with "Shutting down..." under it.
+it shuts down: the circuit board racing in from the left, on black, with
+"Retroforming..." under it in the one and "Shutting down..." in the other.
 
     .venv/bin/python site/splash.py
 
 It writes site/splash.png and site/splash-shutdown.png. Previously's
 design/mark.py fetches both from main, and its package build turns them into
-the pictures it draws onto the screen (phranck/previously#625 and #636).
+the pictures it draws onto the screen (phranck/previously#625, #636 and #641).
 
 The board and its trail are the hero's, out of board.py and hero.py, so the
 pictures and the page show one drawing.
@@ -17,8 +17,9 @@ smaller than the screen and clips it evenly on both sides where it is larger
 (admin/previously/splash.py). So the board is drawn at a whole multiple of its
 48 rows, and the picture carries as much black on the right as the trail is
 long on the left, which puts the board itself in the middle of every screen.
-The shutdown picture carries as much black above the board as its text takes
-below, so the board stands where it stood at boot.
+Each picture carries as much black above the board as its line takes below,
+and the line takes the same room in both, so the board stands at the same
+place while the Pi starts and while it shuts down.
 
 It needs what hero.py needs: numpy, Pillow, rsvg-convert and the network.
 """
@@ -49,15 +50,17 @@ BOARD_COLOUR_PIXELS = 20
 
 BLACK = (0, 0, 0)
 
-#: What the shutdown picture says under the board, in the site's face and in
-#: its softer ink, `--ink-soft` in site.css, at the size the page sets a large
-#: line in, `--text-lg`.
+#: What the pictures say under the board: while the Pi starts, a play on
+#: transforming into a retro machine, and while it shuts down. In the site's
+#: face and in its softer ink, `--ink-soft` in site.css, at the size the page
+#: sets a large line in, `--text-lg`.
+BOOT_TEXT = "Retroforming..."
 SHUTDOWN_TEXT = "Shutting down..."
 FACE = HERE / "fonts" / "inter-variable-latin.woff2"
 INK_SOFT = (0xA6, 0xA6, 0xB4)
 TEXT_SIZE = 21
 
-#: How far below the board the text stands.
+#: How far below the board the line stands.
 TEXT_GAP = 24
 
 
@@ -105,24 +108,30 @@ def reduced(picture, board):
     return picture.quantize(palette=holder, dither=Image.Dither.FLOYDSTEINBERG).convert("RGB")
 
 
-def shutting_down(logo):
-    """The boot picture with SHUTDOWN_TEXT centred under the board.
+def with_a_line(logo, text):
+    """The board with one line centred under it.
+
+    The room the line takes is the face's whole line, its ascent and its
+    descent, rather than what one text reaches, so every line takes the same
+    room and the board stands at the same place in every picture. The line is
+    set on its baseline.
 
     Args:
-        logo: The boot picture, whose middle is the board's middle.
+        logo: The board and its trail, whose middle is the board's middle.
+        text: What the line says.
 
     Returns:
-        The RGB picture, as wide as the boot picture and taller by the text and
-        its gap twice over, once below the board and once above it as black.
+        The RGB picture, as wide as the logo and taller by the line and its gap
+        twice over, once below the board and once above it as black.
     """
     face = ImageFont.truetype(str(FACE), TEXT_SIZE)
-    left, top, right, bottom = face.getbbox(SHUTDOWN_TEXT)
-    band = TEXT_GAP + (bottom - top)
+    ascent, descent = face.getmetrics()
+    band = TEXT_GAP + ascent + descent
     picture = Image.new("RGB", (logo.width, logo.height + 2 * band), BLACK)
     picture.paste(logo, (0, band))
     ImageDraw.Draw(picture).text(
-        ((logo.width - (right - left)) / 2 - left, band + logo.height + TEXT_GAP - top),
-        SHUTDOWN_TEXT, font=face, fill=INK_SOFT)
+        (logo.width / 2, band + logo.height + TEXT_GAP + ascent), text,
+        font=face, fill=INK_SOFT, anchor="ms")
     return picture
 
 
@@ -132,14 +141,11 @@ def main():
     colours = len(logo.getcolors(1 << 24))
     if colours > COLOURS:
         raise SystemExit(f"{colours} colours, and the board and its trail take {COLOURS}.")
-    logo.save(DESTINATION, optimize=True)
-    print(f"{DESTINATION.name}: {logo.width} by {logo.height}, {colours} colours, "
-          f"the board {board.width} by {board.height} in the middle.")
-
-    shutdown = shutting_down(logo)
-    shutdown.save(SHUTDOWN_DESTINATION, optimize=True)
-    print(f"{SHUTDOWN_DESTINATION.name}: {shutdown.width} by {shutdown.height}, "
-          f"with {SHUTDOWN_TEXT!r} under the board.")
+    for destination, text in ((DESTINATION, BOOT_TEXT), (SHUTDOWN_DESTINATION, SHUTDOWN_TEXT)):
+        drawn = with_a_line(logo, text)
+        drawn.save(destination, optimize=True)
+        print(f"{destination.name}: {drawn.width} by {drawn.height}, with {text!r} "
+              f"under the board {board.width} by {board.height} in the middle.")
 
 
 if __name__ == "__main__":
