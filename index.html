@@ -244,48 +244,78 @@
           <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
           Install
         </p>
-        <h2>Three steps, and none of them needs a terminal</h2>
-        <p class="section__lead">All it takes is a Raspberry Pi 4 or 5, a card or USB
-          stick of 8 GB or more, and Raspberry Pi Imager 2.</p>
+        <h2>Two ways to get NeXTSTEP onto your Pi</h2>
+        <p class="section__lead">Write the ready image to a card, or install Previously
+          onto a Raspberry Pi OS Lite that already runs. Both end in the same machine.</p>
       </div>
 
-      <ol class="steps">
-        <li class="step">
-          <div class="step__body">
-            <h3>Get Raspberry Pi Imager</h3>
-            <p class="step__text">Install <a href="https://www.raspberrypi.com/software/"
-              target="_blank" rel="noopener">Raspberry Pi Imager 2</a> on your computer, or
-              update it. It is free, for macOS, Windows and Linux.</p>
+      <div class="cards">
+        <article class="card">
+          <div class="card__icon">
+            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
           </div>
-        </li>
+          <h3>The ready image</h3>
+          <p class="card__text">For a new card or USB stick of 8 GB or more, with nothing
+            to type.</p>
 
-        <li class="step">
-          <div class="step__body">
-            <h3>Open Previously in the Imager</h3>
-            <p class="step__text">Download Previously for Raspberry Pi Imager and open the
-              file. Choose your Pi, set your user, hostname and Wi-Fi, and write the
-              card.</p>
-            <div class="download">
-              <p class="download__release" id="release" hidden></p>
-              <a class="button" href="https://github.com/phranck/previously/releases/latest/download/previously.rpi-imager-manifest" data-umami-event="Download for Imager">
-                <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
-                Download for Raspberry Pi Imager
-              </a>
-            </div>
+          <ol class="steps">
+            <li class="step">
+              <p class="step__text">Install <a href="https://www.raspberrypi.com/software/"
+                target="_blank" rel="noopener">Raspberry Pi Imager 2</a> on your computer, or
+                update an older one.</p>
+            </li>
+            <li class="step">
+              <div class="step__body">
+                <p class="step__text">Download Previously for Raspberry Pi Imager and open
+                  the file.</p>
+                <div class="download">
+                  <p class="download__release" id="release" hidden></p>
+                  <a class="button" href="https://github.com/phranck/previously/releases/latest/download/previously.rpi-imager-manifest" data-umami-event="Download for Imager">
+                    <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
+                    Download for Raspberry Pi Imager
+                  </a>
+                </div>
+              </div>
+            </li>
+            <li class="step">
+              <p class="step__text">Choose your Raspberry Pi 4 or 5, Previously, and the card
+                or stick.</p>
+            </li>
+            <li class="step">
+              <p class="step__text">Set the hostname, a user, a password and the Wi-Fi in the
+                Imager's customisation.</p>
+            </li>
+            <li class="step">
+              <p class="step__text">Write it, put it into the Pi and switch it on. NeXTSTEP
+                starts, and the admin answers at
+                <code>http://&lt;hostname&gt;.local:8810</code>.</p>
+            </li>
+          </ol>
+        </article>
+
+        <article class="card">
+          <div class="card__icon">
+            <svg class="icon" aria-hidden="true"><use href="site/icons.svg#terminal-window"></use></svg>
           </div>
-        </li>
+          <h3>The install command</h3>
+          <p class="card__text">For a Pi that runs Raspberry Pi OS Lite, 64 bit, or will.</p>
 
-        <li class="step">
-          <div class="step__body">
-            <h3>Boot and open the admin</h3>
-            <p class="step__text">Put the card in the Pi and switch it on. NeXTSTEP starts,
-              and the admin answers at <code>http://&lt;hostname&gt;.local:8810</code>.</p>
-          </div>
-        </li>
-      </ol>
-
-      <p class="steps__other">Already running Raspberry Pi OS Lite? The command at the top
-        of this page installs the same onto it.</p>
+          <ol class="steps">
+            <li class="step">
+              <p class="step__text">Write Raspberry Pi OS Lite (64-bit) with Raspberry Pi
+                Imager, and let it set your user, Wi-Fi and SSH.</p>
+            </li>
+            <li class="step">
+              <p class="step__text">Log in over SSH and paste the install command from the top
+                of this page. A few minutes later NeXTSTEP is on the Pi's screen.</p>
+            </li>
+            <li class="step">
+              <p class="step__text">Open <code>http://&lt;hostname&gt;.local:8810</code> in a
+                browser on your network.</p>
+            </li>
+          </ol>
+        </article>
+      </div>
     </div>
   </section>
 

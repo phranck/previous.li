@@ -656,26 +656,24 @@ kbd {
 
 /* --- the steps ----------------------------------------------------------- */
 
-/* The column the number stands in and the gap after it, stated once for the
-   steps and for the line under them, which begins where a step's text does. */
-.steps,
-.steps__other {
-  --step-number: calc(var(--step) * 5);
-  --step-gap: var(--space-2);
-}
-
+/* A list of steps stands inside a card, under the card's own text, so it
+   takes none of the indent and margins a list brings, and the number is the
+   only marker. */
 .steps {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
   counter-reset: step;
 }
 
 .step {
   display: grid;
-  grid-template-columns: var(--step-number) 1fr;
-  gap: var(--step-gap);
+  grid-template-columns: calc(var(--step) * 5) 1fr;
+  gap: var(--space-2);
   align-items: start;
-  padding-block: var(--space-2);
+  padding-block: var(--space-2) 0;
   border-top: 1px solid var(--rule);
 }
 
@@ -714,10 +712,11 @@ kbd {
    the button keeps its edge. */
 .download {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
   gap: var(--space-2);
-  margin-top: var(--space-1);
+  margin-top: var(--space-2);
 }
 
 .download__release {
@@ -725,14 +724,6 @@ kbd {
   font-size: var(--text-sm);
   color: var(--ink-soft);
   font-variant-numeric: tabular-nums;
-}
-
-/* The other way in, said once under the steps rather than as a step of its
-   own, because it starts from a Pi that already runs. */
-.steps__other {
-  margin-top: var(--space-3);
-  padding-inline-start: calc(var(--step-number) + var(--step-gap));
-  color: var(--ink-soft);
 }
 
 /* On a phone the button takes the width a thumb needs, under the release. */
