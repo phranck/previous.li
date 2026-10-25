@@ -134,6 +134,13 @@
   --card-text-inset: calc(var(--card-radius) / 2);
   --card-inner-radius: max(calc(var(--card-radius) - var(--card-padding)), 0px);
 
+  /* An answer's surface is a card with less of a curve, because it opens
+     under a line of type rather than standing on its own. Its question begins
+     where that curve gives way to the straight edge, and so does its chevron
+     at the other end. */
+  --answer-radius: 16px;
+  --answer-text-inset: calc(var(--answer-radius) / 2);
+
   /* A control is not a card and takes none of a card's arithmetic. */
   --control-radius: 12px;
   /* A button that stands inside a window or a code box is smaller than the
@@ -770,13 +777,18 @@ kbd {
 
    The whole row opens its answer, with the caret at the end the row is read
    towards. The marker a browser draws in front of a summary goes, because the
-   caret says the same. */
+   caret says the same. A question stands nearer its own answer than the
+   answer above it, which is what tells the two apart without a rule. */
+.answer {
+  padding-block: var(--space-1);
+}
+
 .answer__question {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  padding-block: var(--space-3);
+  padding: var(--space-2) var(--answer-text-inset);
   list-style: none;
   cursor: pointer;
 }
@@ -803,17 +815,16 @@ kbd {
 }
 
 /* The answer lies on a surface of its own, a shade lighter than the section,
-   with a card's corners and padding. It stands inside the body rather than
-   being the body, because site.js moves the body's height down to nothing as
-   it closes, and a padding or a margin of the body's own would hold that
-   height open. */
+   with a card's padding. It stands inside the body rather than being the
+   body, because site.js moves the body's height down to nothing as it closes,
+   and a padding or a margin of the body's own would hold that height open. */
 .answer__content {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-1);
   padding: var(--card-padding);
-  border-radius: var(--card-radius);
+  border-radius: var(--answer-radius);
   background: var(--paper-raised);
 }
 
