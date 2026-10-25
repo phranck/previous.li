@@ -171,6 +171,11 @@
   --text-2xl: 36px;
   --text-3xl: 56px;
 
+  /* The prose a reader reads through, in a card, in a step and in an answer.
+     It is the size of a section's lead, so the text under a heading reads at
+     one size wherever it stands. */
+  --text-prose: var(--text-lg);
+
   --line-tight: 1.15;
   --line-normal: 1.6;
 
@@ -676,6 +681,7 @@ kbd {
 }
 
 .card__text {
+  font-size: var(--text-prose);
   color: var(--ink-soft);
 }
 
@@ -730,6 +736,7 @@ kbd {
 }
 
 .step__text {
+  font-size: var(--text-prose);
   color: var(--ink-soft);
   max-width: var(--measure-text);
 }
@@ -832,6 +839,7 @@ kbd {
 }
 
 .answer__text {
+  font-size: var(--text-prose);
   color: var(--ink-soft);
 }
 
