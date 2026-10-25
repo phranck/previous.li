@@ -148,11 +148,6 @@
      kind. */
   --frame-radius: 12px;
 
-  /* What stands centred in the column, the film and the two install windows,
-     is one width, so the two read as the same kind of thing. The film is what
-     sets it, for the reason given at .film__video. */
-  --centered-width: 896px;
-
   --text-xs: 13px;
   --text-sm: 15px;
   --text-base: 17px;
@@ -519,11 +514,12 @@ kbd {
 /* --- the install block --------------------------------------------------- */
 
 /* The two ways onto a Pi, one above the other, so each is read whole before
-   the other begins. */
+   the other begins. They stand centred, 32 pixels in from either side of the
+   column, which is 1072 wide inside the measure's padding. */
 .ways {
   display: grid;
   gap: var(--space-6);
-  max-width: var(--centered-width);
+  max-width: 1008px;
   margin-inline: auto;
 }
 
@@ -980,7 +976,7 @@ kbd {
    under the bar while it plays. */
 .film__video {
   display: block;
-  width: var(--centered-width);
+  width: 896px;
   max-width: 100%;
   height: auto;
 }
