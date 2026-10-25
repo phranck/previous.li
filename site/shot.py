@@ -1,35 +1,40 @@
 #!/usr/bin/env python3
-"""Takes the picture of the admin tool that this page shows.
+"""Takes the pictures of the admin tool that this page and its film show.
 
+    python3 shot.py shoot [url] [out.png]
     python3 shot.py open [url]
-    python3 shot.py arrange
     python3 shot.py size
-    python3 shot.py shoot [out.png]
     python3 shot.py window name [out.png]
     python3 shot.py desk [out.png]
 
-`open` starts a Chrome of its own, on its own profile and without a window,
-and pins the page at 1120 by 832 with two device pixels to the point.
-`arrange` lays the desk out the way ARRANGEMENT says, and `shoot` writes
-shots/workspace.png at 2240 by 1664.
+`shoot` takes the page's own picture in Safari Technology Preview. It starts
+the Technology Preview's own safaridriver, lays the desk out the way
+ARRANGEMENT says and writes shots/workspace.png at 2240 by 1664.
 
-`window` takes one window by its name in the admin, such as files or info,
-with nothing of the desk around it and four device pixels to each of
-NeXTSTEP's own. `desk` takes the desk with every window hidden. The film is
-made of both.
+`open` starts a Chrome of its own for the film, on its own profile and
+without a window, and pins the page at 1120 by 832. `window` then takes one
+window by its name in the admin, such as files or info, with nothing of the
+desk around it and four device pixels to each of NeXTSTEP's own. `desk` takes
+the desk with every window hidden. The film is made of both. They run in
+Chrome because its DevTools protocol sets the device pixels to the point,
+and WebDriver has no command for that.
 
-Three things about it are the whole reason it exists rather than a screen grab:
+Three things make the page's picture more than a screen grab:
 
   The size    1120 by 832 is what a NeXT MegaPixel Display held, and the page
               shows the picture at 1120, so a display with two device pixels to
               the point draws it one for one.
-  The pin     Emulation.setDeviceMetricsOverride holds the page at that size,
-              so the frame is the same every time.
-  The source  Page.captureScreenshot takes the picture out of the page, so it
-              carries no window frame and none of the rounded corners macOS
-              gives one. A screen grab of the window carries both.
+  The fit     WebDriver sizes the window rather than the page in it, so the
+              window is resized until the page is 1120 wide and CORNER_ROOM
+              taller than 832. A display that does not draw two device pixels
+              to the point stops the run.
+  The source  The page is held at 1120 by 832 at the top of that window, and
+              only its body is taken, so the picture carries no window frame
+              and none of the rounded corners macOS gives a window's lower
+              edge. A screen grab carries both.
 
-It needs websocket-client, which is not in the standard library:
+`shoot` needs nothing beyond the standard library. The Chrome commands need
+websocket-client:
 
     python3 -m venv .venv && .venv/bin/pip install websocket-client
     .venv/bin/python site/shot.py open
@@ -39,12 +44,12 @@ import base64
 import contextlib
 import json
 import pathlib
+import struct
 import subprocess
 import sys
 import time
+import urllib.error
 import urllib.request
-
-import websocket
 
 HERE = pathlib.Path(__file__).parent
 
@@ -52,6 +57,28 @@ HERE = pathlib.Path(__file__).parent
 PORT = 9333
 PROFILE = "/tmp/chrome-shot-profile"
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+#: Safari Technology Preview's own driver. Its session runs in a window of its
+#: own, so nothing here reaches the Safari somebody is using.
+SAFARIDRIVER = "/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver"
+SAFARI_PORT = 9334
+
+#: The browser name that makes safaridriver start the Technology Preview.
+SAFARI_BROWSER = "Safari Technology Preview"
+
+#: How often the window is resized before a page that will not measure the
+#: display's size stops the run.
+FIT_TRIES = 3
+
+#: Points the Safari window is taller than the display. macOS rounds a
+#: window's lower corners and Safari's picture of the page carries that
+#: rounding, so the page is held at the display's size above this margin and
+#: only the page is taken.
+CORNER_ROOM = 64
+
+#: How long the panes the arrangement has just shown take to load their
+#: pictures, such as the mark beside a system that is here, in seconds.
+PICTURES_SECONDS = 1
 
 #: The NeXT MegaPixel Display, and two device pixels to the point.
 WIDTH, HEIGHT, SCALE = 1120, 832, 2
@@ -148,6 +175,10 @@ def waited_for_page():
 
 def talk(commands):
     """Sends commands to the page and returns each result, in order."""
+    # Imported here, because only the Chrome commands need it and `shoot`
+    # runs without it.
+    import websocket
+
     socket = websocket.create_connection(page_target()["webSocketDebuggerUrl"],
                                          suppress_origin=True, timeout=30)
     results = []
@@ -206,7 +237,12 @@ def picture(destination, scale=SCALE, clip=None):
     if clip:
         params["clip"] = {**clip, "scale": 1}
     result = talk([pin(scale), ("Page.captureScreenshot", params)])
-    destination.write_bytes(base64.b64decode(result[1]["data"]))
+    written(destination, base64.b64decode(result[1]["data"]))
+
+
+def written(destination, png):
+    """Writes a picture and says what to run over it before it is committed."""
+    destination.write_bytes(png)
     print(f"{destination} written. Run `oxipng -o 4 --strip safe` over it, "
           f"which takes about a fifth off and changes no pixel.")
 
@@ -219,17 +255,26 @@ HIDE_THE_DESK = "nx-menu, nx-dock, nx-floor, nx-ask { visibility: hidden !import
 HIDE_THE_WINDOWS = "nx-window, nx-ask { visibility: hidden !important; }"
 
 
-def hidden(rule):
+#: Holds the page at the display's size inside a window taller than the
+#: display, which is what keeps the window's rounded corners out of the
+#: picture. The admin's body is 100vh tall and its dock and floor are fixed to
+#: the window, so the body is given the display's height and made the box the
+#: fixed ones stand in.
+HOLD_THE_DISPLAY = (f"html, body {{ height: {HEIGHT}px !important; }}"
+                    " body { contain: layout paint; }")
+
+
+def styled(rule):
     """JavaScript that adds a style rule to the page for one picture.
 
-    Removed again by `SHOWN`. A rule rather than a style on each element,
+    Removed again by `UNSTYLED`. A rule rather than a style on each element,
     so taking it away leaves every element exactly as it was.
     """
-    return (f"(() => {{ const style = document.createElement('style'); style.id = 'shot-hidden';"
+    return (f"(() => {{ const style = document.createElement('style'); style.id = 'shot-style';"
             f" style.textContent = {json.dumps(rule)}; document.head.append(style); }})()")
 
 
-SHOWN = "(() => { document.getElementById('shot-hidden')?.remove(); })()"
+UNSTYLED = "(() => { document.getElementById('shot-style')?.remove(); })()"
 
 
 def shoot_window(name, destination):
@@ -252,7 +297,7 @@ def shoot_window(name, destination):
         destination: Where the PNG goes.
     """
     scale = DEVICE_PIXELS_PER_NEXT_PIXEL
-    evaluate(hidden(HIDE_THE_DESK), scale)
+    evaluate(styled(HIDE_THE_DESK), scale)
     try:
         box = evaluate(f"""(() => {{
           const target = document.querySelector('nx-window[name="{name}"]');
@@ -287,95 +332,204 @@ def shoot_window(name, destination):
             delete document.body.dataset.shotZoom;
           }}
         }})()""")
-        evaluate(SHOWN)
+        evaluate(UNSTYLED)
 
 
 def shoot_desk(destination):
     """Takes the desk with every window hidden: the workspace, the menu, the
     dock and the floor, at the size of the page's own picture."""
-    evaluate(hidden(HIDE_THE_WINDOWS))
+    evaluate(styled(HIDE_THE_WINDOWS))
     try:
         picture(destination)
     finally:
-        evaluate(SHOWN)
+        evaluate(UNSTYLED)
 
 
-#: When the page in the tab began loading, which a page loaded again answers
-#: differently.
-LOADED_AT = "performance.timeOrigin"
+class Safari:
+    """A WebDriver session in Safari Technology Preview, for one picture.
 
-
-def reloaded():
-    """Loads the page again and waits until the Pi's answers are in it.
-
-    Page.reload answers before the old page is gone, and the old page reports
-    itself complete, so what is waited for is a page that began loading later
-    than this one did.
+    WebDriver is HTTP and JSON, so urllib speaks it and nothing needs
+    installing. The driver and its session last as long as the `with` block
+    that opens them.
     """
-    before = evaluate(LOADED_AT)
-    talk([pin(), ("Page.reload", {"ignoreCache": True})])
-    waited_for(f"{LOADED_AT} !== {before} && document.readyState === 'complete'",
-               "the admin did not load again")
-    # The Installer asks the Pi for more than the other windows do, and draws
-    # its tabs once the answer is in.
-    waited_for("document.getElementById('installer-tabs')?.children.length > 0",
-               "the Installer never had an answer from the Pi")
-    time.sleep(READINGS_SECONDS)
+
+    def __enter__(self):
+        self.driver = subprocess.Popen([SAFARIDRIVER, "--port", str(SAFARI_PORT)],
+                                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        try:
+            self.waited_for_driver()
+            capabilities = {"capabilities": {"alwaysMatch": {"browserName": SAFARI_BROWSER}}}
+            self.session = self.ask("POST", "/session", capabilities)["sessionId"]
+            self.own = self.command("GET", "window")
+        except BaseException:
+            self.stop_driver()
+            raise
+        return self
+
+    def __exit__(self, *exception):
+        with contextlib.suppress(OSError, SystemExit):
+            self.ask("DELETE", f"/session/{self.session}")
+        self.stop_driver()
+
+    def stop_driver(self):
+        """Ends the safaridriver this session started."""
+        self.driver.terminate()
+        self.driver.wait()
+
+    def waited_for_driver(self):
+        """Waits until safaridriver says it can start a session."""
+        for _ in range(WAIT_TRIES):
+            with contextlib.suppress(OSError):
+                if self.ask("GET", "/status").get("ready"):
+                    return
+            time.sleep(0.5)
+        raise SystemExit("safaridriver did not answer on its port")
+
+    def ask(self, method, path, body=None):
+        """Sends one WebDriver request and returns its value.
+
+        Raises:
+            OSError: while nothing answers on the port.
+            SystemExit: where Safari answers with an error, which it names.
+        """
+        data = None if body is None else json.dumps(body).encode()
+        request = urllib.request.Request(f"http://127.0.0.1:{SAFARI_PORT}{path}", data=data,
+                                         method=method,
+                                         headers={"Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(request, timeout=60) as answer:
+                return json.load(answer)["value"]
+        except urllib.error.HTTPError as refusal:
+            reason = json.load(refusal).get("value", {}).get("message", refusal.reason)
+            raise SystemExit(f"Safari refused {method} {path}: {reason}") from None
+
+    def command(self, method, path, body=None):
+        """Sends one request to this session."""
+        return self.ask(method, f"/session/{self.session}/{path}", body)
+
+    def evaluate(self, expression):
+        """Runs JavaScript in the page and returns what it comes to, awaiting a promise."""
+        return self.command("POST", "execute/sync",
+                            {"script": f"return ({expression});", "args": []})
+
+    def waited_for(self, expression, failure):
+        """Waits until an expression in the page comes to true.
+
+        Args:
+            expression: JavaScript whose value is true once the page is ready.
+            failure: What to stop with where it never is, within WAIT_TRIES tries.
+        """
+        for _ in range(WAIT_TRIES):
+            if self.evaluate(expression) is True:
+                return
+            time.sleep(0.5)
+        raise SystemExit(failure)
+
+    def alone(self):
+        """Closes every tab but the session's own and goes back to it.
+
+        An extension can open a tab of its own in the session, and WebDriver
+        then talks to whichever tab is in front, and a tab bar takes height
+        from the page.
+        """
+        for handle in self.command("GET", "window/handles"):
+            if handle != self.own:
+                self.command("POST", "window", {"handle": handle})
+                self.command("DELETE", "window")
+        self.command("POST", "window", {"handle": self.own})
+
+    def fit(self):
+        """Sizes the window until the page in it is the display's width and
+        CORNER_ROOM taller than the display.
+
+        WebDriver sets the window, and the toolbar takes part of it, so the
+        window grows by whatever the page still lacks.
+        """
+        wanted = (WIDTH, HEIGHT + CORNER_ROOM)
+        self.command("POST", "window/rect", {"x": 40, "y": 40, "width": wanted[0], "height": wanted[1]})
+        for _ in range(FIT_TRIES):
+            width, height = self.evaluate("[innerWidth, innerHeight]")
+            if (width, height) == wanted:
+                return
+            frame = self.command("GET", "window/rect")
+            self.command("POST", "window/rect", {"width": frame["width"] + wanted[0] - width,
+                                                 "height": frame["height"] + wanted[1] - height})
+        raise SystemExit(f"the page in Safari measures {width} by {height}, not {wanted[0]} by {wanted[1]}")
+
+    def picture(self, destination):
+        """Takes the page's body as a PNG of the display's device pixels.
+
+        The body, because HOLD_THE_DISPLAY holds it at the display's size
+        above the window's rounded corners, and the whole page would reach
+        down into them.
+        """
+        scale = self.evaluate("devicePixelRatio")
+        if scale != SCALE:
+            raise SystemExit(f"this display draws {scale} device pixels to the point, "
+                             f"and the picture needs {SCALE}")
+        box = self.evaluate("(({ x, y, width, height }) => [x, y, width, height])"
+                            "(document.body.getBoundingClientRect())")
+        if box != [0, 0, WIDTH, HEIGHT]:
+            raise SystemExit(f"the page's body stands at {box}, not at 0, 0, {WIDTH} by {HEIGHT}")
+        body = next(iter(self.command("POST", "element",
+                                      {"using": "css selector", "value": "body"}).values()))
+        png = base64.b64decode(self.command("GET", f"element/{body}/screenshot"))
+        size = struct.unpack(">II", png[16:24])
+        if size != (WIDTH * SCALE, HEIGHT * SCALE):
+            raise SystemExit(f"Safari took {size[0]} by {size[1]} pixels, "
+                             f"not {WIDTH * SCALE} by {HEIGHT * SCALE}")
+        written(destination, png)
 
 
-def waited_for(expression, failure):
-    """Waits until an expression in the page comes to true.
-
-    Asked through `talk` rather than `evaluate`, because a page that is
-    loading has no context to run anything in for a moment, and that is an
-    answer to wait out rather than a failure.
-
-    Args:
-        expression: JavaScript whose value is true once the page is ready.
-        failure: What to stop with where it never is, within WAIT_TRIES tries.
-    """
-    for _ in range(WAIT_TRIES):
-        time.sleep(0.5)
-        answer = talk([pin(), ("Runtime.evaluate",
-                               {"expression": expression, "returnByValue": True})])[1]
-        if answer.get("result", {}).get("value") is True:
-            return
-    raise SystemExit(failure)
-
-
-def arrange():
-    """Lays the desk out the way the page's picture has it.
+def shoot_page(url, destination):
+    """Lays the desk out the way the page's picture has it, and takes it.
 
     The admin draws its desk from what the browser remembers, so the
     arrangement is written there and the page loaded again: every window in
     ARRANGEMENT open where it says, the desk at 100%, which is NeXTSTEP's own
     size, and the last window in front. The Installer is shown on its Systems
     tab, because the six systems are what the page talks about.
+
+    Args:
+        url: Where the admin answers.
+        destination: Where the PNG goes.
     """
     desk = {name: {"open": True, **place} for name, place in ARRANGEMENT.items()}
     desk["desk"] = {"front": list(ARRANGEMENT)[-1]}
-    evaluate(f"""(() => {{
-      localStorage.setItem({json.dumps(SIZE_KEY)}, "1");
-      localStorage.setItem({json.dumps(DESK_KEY)}, {json.dumps(json.dumps(desk))});
-    }})()""")
-    reloaded()
+    with Safari() as safari:
+        safari.command("POST", "url", {"url": url})
+        safari.alone()
+        safari.fit()
+        safari.evaluate(f"""(() => {{
+          localStorage.setItem({json.dumps(SIZE_KEY)}, "1");
+          localStorage.setItem({json.dumps(DESK_KEY)}, {json.dumps(json.dumps(desk))});
+        }})()""")
+        safari.command("POST", "refresh")
+        # The Installer asks the Pi for more than the other windows do, and
+        # draws its tabs once the answer is in.
+        safari.waited_for("document.getElementById('installer-tabs')?.children.length > 0",
+                          "the Installer never had an answer from the Pi")
+        time.sleep(READINGS_SECONDS)
 
-    astray = evaluate(f"""(() => {{
-      const places = {json.dumps(ARRANGEMENT)};
-      [...document.getElementById("installer-tabs").children]
-        .find((tab) => tab.textContent.trim() === "Systems")?.click();
-      for (const name of Object.keys(places)) {{
-        document.querySelector(`nx-window[name="${{name}}"]`)?.raise();
-      }}
-      return Object.entries(places).filter(([name, place]) => {{
-        const target = document.querySelector(`nx-window[name="${{name}}"]`);
-        return !target || target.hidden
-          || target.offsetLeft !== place.x || target.offsetTop !== place.y;
-      }}).map(([name]) => name);
-    }})()""")
-    if astray:
-        raise SystemExit(f"not where ARRANGEMENT puts them: {', '.join(astray)}")
-    print(f"{len(ARRANGEMENT)} windows arranged, {list(ARRANGEMENT)[-1]} in front")
+        astray = safari.evaluate(f"""(() => {{
+          const places = {json.dumps(ARRANGEMENT)};
+          [...document.getElementById("installer-tabs").children]
+            .find((tab) => tab.textContent.trim() === "Systems")?.click();
+          for (const name of Object.keys(places)) {{
+            document.querySelector(`nx-window[name="${{name}}"]`)?.raise();
+          }}
+          return Object.entries(places).filter(([name, place]) => {{
+            const target = document.querySelector(`nx-window[name="${{name}}"]`);
+            return !target || target.hidden
+              || target.offsetLeft !== place.x || target.offsetTop !== place.y;
+          }}).map(([name]) => name);
+        }})()""")
+        if astray:
+            raise SystemExit(f"not where ARRANGEMENT puts them: {', '.join(astray)}")
+        safari.evaluate(styled(HOLD_THE_DISPLAY))
+        time.sleep(PICTURES_SECONDS)
+        safari.alone()
+        safari.picture(destination)
 
 
 def open_browser(url):
@@ -407,14 +561,12 @@ def main():
     if what == "open":
         open_browser(sys.argv[2] if len(sys.argv) > 2 else ADMIN)
 
-    elif what == "arrange":
-        arrange()
-
     elif what == "size":
         print(evaluate("[innerWidth, innerHeight, devicePixelRatio]"))
 
     elif what == "shoot":
-        picture(pathlib.Path(sys.argv[2]) if len(sys.argv) > 2 else DESTINATION)
+        shoot_page(sys.argv[2] if len(sys.argv) > 2 else ADMIN,
+                   pathlib.Path(sys.argv[3]) if len(sys.argv) > 3 else DESTINATION)
 
     elif what == "window" and len(sys.argv) > 2:
         name = sys.argv[2]
