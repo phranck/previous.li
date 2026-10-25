@@ -136,6 +136,9 @@
 
   /* A control is not a card and takes none of a card's arithmetic. */
   --control-radius: 12px;
+  /* A button that stands inside a window or a code box is smaller than the
+     controls around it, so its corner is tighter as well. */
+  --button-radius: calc(var(--control-radius) - 4px);
 
   /* A window on this page has a control's corner. Text standing above one
      begins half that corner in, where the curve gives way to the straight
@@ -612,7 +615,7 @@ kbd {
      in the same window. */
   height: calc(var(--step) * 4);
   padding-inline: var(--space-2);
-  border-radius: var(--control-radius);
+  border-radius: var(--button-radius);
   background: var(--accent);
   color: var(--accent-ink);
   font-size: var(--text-sm);
@@ -826,7 +829,7 @@ kbd {
   height: calc(var(--step) * 4);
   padding: 0;
   border: 0;
-  border-radius: calc(var(--control-radius) - 4px);
+  border-radius: var(--button-radius);
   background: transparent;
   color: var(--ink-soft);
   font-size: 18px;
