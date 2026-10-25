@@ -594,7 +594,8 @@ kbd {
 /* The one thing on this page that hands the reader something to do next:
    fetching the file Raspberry Pi Imager opens Previously from. Filled with the
    accent, so it is seen as a thing to press before its words are read, and as
-   wide as its label. */
+   wide as its label, which is set at the size of the release line beside
+   it. */
 .button {
   display: inline-flex;
   align-items: center;
@@ -604,7 +605,7 @@ kbd {
   border-radius: var(--control-radius);
   background: var(--accent);
   color: var(--accent-ink);
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
