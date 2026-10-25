@@ -87,6 +87,11 @@
      answer lies on. It is lighter than the page and carries more of the
      workspace colour, so the first screen has a horizon rather than an edge. */
   --paper-raised: #262935;
+  /* Every second row of steps in a window. It lies a fifth of the way from the
+     sunk section around the window to the raised shade. That makes it just
+     lighter than the section, so the window keeps its edge beside the row and
+     the rows stay quiet. */
+  --paper-stripe: color-mix(in oklab, var(--paper-sunk) 80%, var(--paper-raised));
   --ink: #f2f2f6;
   --ink-soft: #a6a6b4;
   --rule: #2c2c38;
@@ -576,7 +581,6 @@ kbd {
 /* The page's own shade on a sunk section, like a card there, so the code box
    in it sinks as it does everywhere else. */
 .window__body {
-  padding: var(--space-3);
   background: var(--paper);
 }
 
@@ -681,7 +685,6 @@ kbd {
    margins a list brings, and the number is the only marker. */
 .steps {
   display: grid;
-  gap: var(--space-1);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -694,13 +697,13 @@ kbd {
   grid-template-columns: calc(var(--step) * 4) 1fr;
   gap: var(--space-2);
   align-items: start;
-  padding-block: var(--space-2) 0;
-  border-top: 1px solid var(--rule);
+  /* The window's body has no padding, so each row reaches both of its edges
+     and holds its own contents in. */
+  padding: var(--space-2) var(--space-3);
 }
 
-.step:first-child {
-  padding-top: 0;
-  border-top: 0;
+.step:nth-child(even) {
+  background: var(--paper-stripe);
 }
 
 .step::before {
