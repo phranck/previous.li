@@ -11,8 +11,8 @@
                        design/kit/base.css. Every screenshot on this page lies
                        on it, which is where a NeXTSTEP window lies.
      The title bar     Black, with its name centred in white and bold. The
-                       install block wears one, because that block is the
-                       thing you operate, and it is the one shape of the
+                       two install blocks wear one, because they are the
+                       things you operate, and it is the one shape of the
                        original that everybody recognises.
      The face          Inter, a neo-grotesque in the line Helvetica belongs to,
                        which is what NeXTSTEP set its whole interface in.
@@ -39,8 +39,9 @@
                         picture inside is shown at its own size.
      The counting       Umami counts on previous.li alone, as data-domains
                         on its script says, so a preview or a checkout opened
-                        on another host sends it nothing. The Copy button
-                        names its event in data-umami-event.
+                        on another host sends it nothing. The Copy buttons
+                        and the download name their events in
+                        data-umami-event.
    --------------------------------------------------------------------------- */
 
 /* --- the type ------------------------------------------------------------ */
@@ -394,7 +395,7 @@ kbd {
 /* A heading standing above a card begins where that card's curve gives way to
    its straight edge, rather than out at the page edge the corner has already
    pulled the card away from. Only above a card: the sections whose content is
-   a picture or a list of steps have no curve to clear, and taking the inset
+   a picture or a list of answers have no curve to clear, and taking the inset
    there would turn a derived value back into an arbitrary one. */
 .section:has(.cards) .section__head {
   padding-inline-start: var(--card-text-inset);
@@ -436,7 +437,7 @@ kbd {
 /* --- the hero ------------------------------------------------------------ */
 
 /* The page opens on one thing, so the opening is centred on it: the sentence,
-   the line to paste, and nothing to either side. Everything below this is
+   the two ways onto a Pi, and nothing to either side. Everything below this is
    left aligned, because that is where reading starts.
 
    It also opens a shade lighter than the page and sinks into it, so the first
@@ -513,9 +514,10 @@ kbd {
 
 /* --- the install block --------------------------------------------------- */
 
-/* A window, which is the one shape of NeXTSTEP everybody recognises: a black
-   bar with its name centred in white and bold. The frame around it is this
-   page's own, so the quotation stays a quotation. */
+/* A window for each way onto a Pi, which is the one shape of NeXTSTEP
+   everybody recognises: a black bar with its name centred in white and bold.
+   The frame around it is this page's own, so the quotation stays a
+   quotation. */
 .window {
   width: 100%;
   max-width: 760px;
@@ -523,8 +525,8 @@ kbd {
   overflow: hidden;
   background: var(--paper);
   box-shadow: var(--shadow-float);
-  /* Its own alignment, because the opening above it is centred and a line to
-     paste is read from the left. */
+  /* Its own alignment, because the opening above it is centred and steps are
+     read from the left. */
   text-align: left;
 }
 
@@ -547,7 +549,7 @@ kbd {
 }
 
 .window__body {
-  padding: var(--space-2);
+  padding: var(--space-3);
   background: var(--paper-sunk);
 }
 
@@ -557,11 +559,9 @@ kbd {
   background: var(--paper);
 }
 
-.window__note {
-  padding: 0 var(--space-2) var(--space-2);
-  background: var(--paper-sunk);
-  font-size: var(--text-sm);
-  color: var(--ink-soft);
+/* What the window is for, in the ink the steps under it are not set in. */
+.window__text {
+  color: var(--ink);
 }
 
 /* --- labels beside glyphs ------------------------------------------------ */
@@ -656,7 +656,7 @@ kbd {
 
 /* --- the steps ----------------------------------------------------------- */
 
-/* A list of steps stands inside a card, under the card's own text, so it
+/* A list of steps stands inside a window, under the window's own text, so it
    takes none of the indent and margins a list brings, and the number is the
    only marker. */
 .steps {
@@ -670,7 +670,8 @@ kbd {
 
 .step {
   display: grid;
-  grid-template-columns: calc(var(--step) * 5) 1fr;
+  /* The number's column is as wide as the number is tall, so it is a circle. */
+  grid-template-columns: calc(var(--step) * 4) 1fr;
   gap: var(--space-2);
   align-items: start;
   padding-block: var(--space-2) 0;
@@ -695,16 +696,25 @@ kbd {
   font-weight: 650;
 }
 
+/* A step that hands over something to run or to fetch carries it under its
+   text. */
 .step__body {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2);
   min-width: 0;
 }
 
 .step__text {
   color: var(--ink-soft);
   max-width: var(--measure-text);
+}
+
+/* An address in a step is one word to the browser, and on a phone it is wider
+   than the column, so it breaks where it has to rather than widening the
+   window. */
+.step__text code {
+  overflow-wrap: anywhere;
 }
 
 /* The download ends its step, with the button at the right edge and which
@@ -716,7 +726,6 @@ kbd {
   align-items: center;
   justify-content: flex-end;
   gap: var(--space-2);
-  margin-top: var(--space-2);
 }
 
 .download__release {

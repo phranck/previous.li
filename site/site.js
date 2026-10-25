@@ -192,8 +192,8 @@ film.addEventListener("volumechange", showSound);
 
 /* Umami counts how many visitors start the film, so only the first start of a
    page view is sent: a pause and a second start are the same visitor. The
-   Copy button is counted by its data-umami-event attribute, which Umami's
-   script reads on every click. Its script loads deferred and a blocker may
+   Copy buttons and the download are counted by their data-umami-event
+   attribute, which Umami's script reads on every click. Its script loads deferred and a blocker may
    keep it away, so a missing umami sends nothing. */
 film.addEventListener("play", () => window.umami?.track(PLAY_EVENT), { once: true });
 document.addEventListener("fullscreenchange", showScreen);
@@ -227,7 +227,7 @@ const IMAGE_ASSET = "previously-raspberry-pi.img.xz";
 const BYTES_PER_MEGABYTE = 1000 * 1000;
 
 /**
- * Says which release the download fetches, under the step that offers it.
+ * Says which release the download fetches, beside the button that fetches it.
  *
  * Left hidden where GitHub does not answer, answers with something else, or
  * the release carries no image, because the download works either way.
