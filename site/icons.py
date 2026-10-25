@@ -39,6 +39,7 @@ PHOSPHOR = {
     "arrows-clockwise": "running the line again, and the updates that come later",
     "trash-simple": "taking Previously off the Pi again",
     "question": "the answers to what people ask before the first boot, and their entry in the bar",
+    "caret-circle-double-down": "opens the answer under a question, and turns while it is open",
     "arrow-square-out": "a link leaving this page",
     "play": "starts the film",
     "pause": "stops the film where it is",

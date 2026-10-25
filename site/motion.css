@@ -36,6 +36,11 @@ a {
   transition: background-color var(--duration) var(--ease);
 }
 
+.answer__question h3,
+.answer__caret {
+  transition: color var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+
 /* Confirmation arrives at once and drains away afterwards, so the transition
    sits on the resting state and not on the confirmed one. */
 .button--copied,
@@ -44,6 +49,13 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Shortened rather than removed, because an instant change of state reads
+     as a glitch rather than as a response. The token carries it as well,
+     because site.js reads it for the answers it folds. */
+  :root {
+    --duration: 60ms;
+  }
+
   html {
     scroll-behavior: auto;
   }
@@ -51,9 +63,7 @@ a {
   *,
   *::before,
   *::after {
-    /* Shortened rather than removed, because an instant change of state reads
-       as a glitch rather than as a response. */
-    transition-duration: 60ms !important;
-    animation-duration: 60ms !important;
+    transition-duration: var(--duration) !important;
+    animation-duration: var(--duration) !important;
   }
 }

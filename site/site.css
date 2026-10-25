@@ -83,9 +83,9 @@
      grey, so a surface next to the accent reads as belonging to it. */
   --paper: #121218;
   --paper-sunk: #1b1b23;
-  /* Where the page starts before it sinks to --paper, which is the only place
-     it is used. It is lighter than the page and carries more of the workspace
-     colour, so the first screen has a horizon rather than an edge. */
+  /* Where the page starts before it sinks to --paper, and the surface an open
+     answer lies on. It is lighter than the page and carries more of the
+     workspace colour, so the first screen has a horizon rather than an edge. */
   --paper-raised: #262935;
   --ink: #f2f2f6;
   --ink-soft: #a6a6b4;
@@ -133,6 +133,13 @@
   --card-padding: var(--space-3);
   --card-text-inset: calc(var(--card-radius) / 2);
   --card-inner-radius: max(calc(var(--card-radius) - var(--card-padding)), 0px);
+
+  /* An answer's surface is a card with less of a curve, because it opens
+     under a line of type rather than standing on its own. Its question begins
+     where that curve gives way to the straight edge, and so does its chevron
+     at the other end. */
+  --answer-radius: 16px;
+  --answer-text-inset: calc(var(--answer-radius) / 2);
 
   /* A control is not a card and takes none of a card's arithmetic. */
   --control-radius: 12px;
@@ -763,30 +770,66 @@ kbd {
 
 /* --- the answers --------------------------------------------------------- */
 
-/* What people ask before the first boot, each answered under its question.
-   Plain headings and paragraphs in two columns and no frame around any of
-   them: these are answers rather than features, and a dozen boxes would read
-   as a brochure. */
-.answers {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: var(--space-6) var(--space-8);
+/* What people ask before the first boot, one question under another, each
+   answer folded away under its question until it is opened. No rule and no
+   frame around any of them: these are answers rather than features, and a
+   dozen boxes would read as a brochure.
+
+   The whole row opens its answer, with the caret at the end the row is read
+   towards. The marker a browser draws in front of a summary goes, because the
+   caret says the same. A question stands nearer its own answer than the
+   answer above it, which is what tells the two apart without a rule. */
+.answer {
+  padding-block: var(--space-1);
 }
 
-.answer {
+.answer__question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--answer-text-inset);
+  list-style: none;
+  cursor: pointer;
+}
+
+.answer__question::-webkit-details-marker {
+  display: none;
+}
+
+/* As large as the question it stands beside. */
+.answer__caret {
+  font-size: var(--text-lg);
+  color: var(--ink-soft);
+}
+
+.answer__question:hover h3,
+.answer__question:hover .answer__caret {
+  color: var(--accent);
+}
+
+/* Turned while the answer is open, and back as soon as it begins to close,
+   which site.js marks before the answer has finished folding away. */
+.answer[open]:not([data-closing]) .answer__caret {
+  transform: rotate(180deg);
+}
+
+/* The answer lies on a surface of its own, a shade lighter than the section,
+   with a card's padding. It stands inside the body rather than being the
+   body, because site.js moves the body's height down to nothing as it closes,
+   and a padding or a margin of the body's own would hold that height open. */
+.answer__content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+  padding: var(--card-padding);
+  border-radius: var(--answer-radius);
+  background: var(--paper-raised);
 }
 
 .answer__text {
   color: var(--ink-soft);
-}
-
-/* The answers lie on the sunk shade, so a code box among them takes the page's
-   own to stand apart from it. */
-.answer .codebox {
-  background: var(--paper);
 }
 
 /* --- a code box ---------------------------------------------------------- */

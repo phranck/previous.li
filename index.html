@@ -397,98 +397,182 @@
       </div>
 
       <div class="answers">
-        <article class="answer">
-          <h3>Is a Pi 4 enough, or do I need a Pi 5?</h3>
-          <p class="answer__text">Yes. Previously is built and tested on both. The cube it
-            emulates out of the box is a NeXTcube Turbo with a 68040 at 33 MHz and 128 MB
-            of memory. Nothing in the installer turns a Pi 3 or a Pi 400 away, but those are
-            not what it is made on.</p>
-        </article>
-
-        <article class="answer">
-          <h3>What does the Pi's screen show?</h3>
-          <p class="answer__text">NeXTSTEP's own picture, 1120 by 832 pixels in four grays
-            on the default cube, full screen on whatever hangs on the HDMI port, with black
-            at the sides where your monitor is wider. The NeXT lives on that screen; the
-            admin in the browser only sets it up, and Grab in the admin takes a screenshot of
-            it when asked.</p>
-        </article>
-
-        <article class="answer">
-          <h3>Where do keyboard and mouse go?</h3>
-          <p class="answer__text">Into the Pi. The admin passes nothing you type into
-            NeXTSTEP. Inside Previous, F10 is the NeXT's power key, F12 opens the emulator's
-            own settings and F11 leaves full screen.</p>
-        </article>
-
-        <article class="answer">
-          <h3>Is there sound?</h3>
-          <p class="answer__text">Yes. Plug a USB speaker into the Pi and NeXTSTEP plays
-            through it. The Info window in the admin names the sound card it sees.</p>
-        </article>
-
-        <article class="answer">
-          <h3>How do I switch it off?</h3>
-          <p class="answer__text">In the admin's Info window, with Power Off or Restart.
-            Either one shuts NeXTSTEP down through its power key first and waits for it,
-            because cutting the power under a running NeXTSTEP damages its disk the way it
-            damaged a real one. Power Off in the admin's window for the emulated machine
-            stops only the machine, until Power On or the next boot of the Pi.</p>
-        </article>
-
-        <article class="answer">
-          <h3>Does the emulated NeXT see my network?</h3>
-          <p class="answer__text">Its Ethernet is switched on in the configuration the
-            installer writes, and the Config Editor is where you turn it off or change the
-            socket. Previously writes nothing beyond that, so what the NeXT reaches from
-            there is Previous's own default.</p>
-        </article>
-
-        <article class="answer">
-          <h3>Does it need the internet once it runs?</h3>
-          <p class="answer__text">No. It reaches out only when asked: to GitHub when the
-            Info window checks for a newer release, to archive.org when you fetch a system,
-            and to the Window Maker Live archive, or its copy on previous.li, when the
-            emulator is installed or updated.</p>
-        </article>
-
-        <article class="answer">
-          <h3>Can I still get a shell on the Pi?</h3>
-          <p class="answer__text">Yes. SSH stays the way in, exactly as before. The Terminal
-            window in the admin is that same SSH login in a browser: it asks for a Pi user's
-            password, not the admin's, and takes one session at a time.</p>
-        </article>
-
-        <article class="answer">
-          <h3>What if I forget the admin's password?</h3>
-          <p class="answer__text">Remove the password file on the Pi, over SSH. From that
-            moment the admin is unclaimed again, and the next change chooses a new one.</p>
-          <div class="codebox">
-            <code class="codebox__code" id="reset-command">sudo rm /var/lib/previously/password</code>
-            <button class="codebox__copy" type="button" aria-label="Copy" data-copy="reset-command" data-umami-event="Copy reset command">
-              <svg class="icon" aria-hidden="true"><use href="site/icons.svg#copy"></use></svg>
-            </button>
+        <details class="answer">
+          <summary class="answer__question">
+            <h3>Is a Pi 4 enough, or do I need a Pi 5?</h3>
+            <svg class="icon answer__caret" aria-hidden="true"><use href="site/icons.svg#caret-circle-double-down"></use></svg>
+          </summary>
+          <div class="answer__body">
+            <div class="answer__content">
+              <p class="answer__text">Yes. Previously is built and tested on both. The cube it
+                emulates out of the box is a NeXTcube Turbo with a 68040 at 33 MHz and 128 MB
+                of memory. Nothing in the installer turns a Pi 3 or a Pi 400 away, but those are
+                not what it is made on.</p>
+            </div>
           </div>
-        </article>
+        </details>
 
-        <article class="answer">
-          <h3>Can it share a Pi with other things?</h3>
-          <p class="answer__text">No, better not. It takes the first console and the screen
-            for itself and silences the boot, so it belongs on a Pi of its own.</p>
-        </article>
+        <details class="answer">
+          <summary class="answer__question">
+            <h3>What does the Pi's screen show?</h3>
+            <svg class="icon answer__caret" aria-hidden="true"><use href="site/icons.svg#caret-circle-double-down"></use></svg>
+          </summary>
+          <div class="answer__body">
+            <div class="answer__content">
+              <p class="answer__text">NeXTSTEP's own picture, 1120 by 832 pixels in four grays
+                on the default cube, full screen on whatever hangs on the HDMI port, with black
+                at the sides where your monitor is wider. The NeXT lives on that screen; the
+                admin in the browser only sets it up, and Grab in the admin takes a screenshot of
+                it when asked.</p>
+            </div>
+          </div>
+        </details>
 
-        <article class="answer">
-          <h3>What does it cost, and where is the code?</h3>
-          <p class="answer__text">Nothing, and on GitHub: the admin, the installer and the
-            helper in one repository, with the releases beside them. Questions and anything
-            that does not work go into its issues.</p>
-        </article>
+        <details class="answer">
+          <summary class="answer__question">
+            <h3>Where do keyboard and mouse go?</h3>
+            <svg class="icon answer__caret" aria-hidden="true"><use href="site/icons.svg#caret-circle-double-down"></use></svg>
+          </summary>
+          <div class="answer__body">
+            <div class="answer__content">
+              <p class="answer__text">Into the Pi. The admin passes nothing you type into
+                NeXTSTEP. Inside Previous, F10 is the NeXT's power key, F12 opens the emulator's
+                own settings and F11 leaves full screen.</p>
+            </div>
+          </div>
+        </details>
 
-        <article class="answer">
-          <h3>Is there a ready made image to write?</h3>
-          <p class="answer__text">Yes. Since 1.11.0 every release comes with one for
-            Raspberry Pi Imager, see <a href="#install">Install</a> above.</p>
-        </article>
+        <details class="answer">
+          <summary class="answer__question">
+            <h3>Is there sound?</h3>
+            <svg class="icon answer__caret" aria-hidden="true"><use href="site/icons.svg#caret-circle-double-down"></use></svg>
+          </summary>
+          <div class="answer__body">
+            <div class="answer__content">
+              <p class="answer__text">Yes. Plug a USB speaker into the Pi and NeXTSTEP plays
+                through it. The Info window in the admin names the sound card it sees.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="answer">
+          <summary class="answer__question">
+            <h3>How do I switch it off?</h3>
+            <svg class="icon answer__caret" aria-hidden="true"><use href="site/icons.svg#caret-circle-double-down"></use></svg>
+          </summary>
+          <div class="answer__body">
+            <div class="answer__content">
+              <p class="answer__text">In the admin's Info window, with Power Off or Restart.
+                Either one shuts NeXTSTEP down through its power key first and waits for it,
+                because cutting the power under a running NeXTSTEP damages its disk the way it
+                damaged a real one. Power Off in the admin's window for the emulated machine
+                stops only the machine, until Power On or the next boot of the Pi.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="answer">
+          <summary class="answer__question">
+            <h3>Does the emulated NeXT see my network?</h3>
+            <svg class="icon answer__caret" aria-hidden="true"><use href="site/icons.svg#caret-circle-double-down"></use></svg>
+          </summary>
+          <div class="answer__body">
+            <div class="answer__content">
+              <p class="answer__text">Its Ethernet is switched on in the configuration the
+                installer writes, and the Config Editor is where you turn it off or change the
+                socket. Previously writes nothing beyond that, so what the NeXT reaches from
+                there is Previous's own default.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="answer">
+          <summary class="answer__question">
+            <h3>Does it need the internet once it runs?</h3>
+            <svg class="icon answer__caret" aria-hidden="true"><use href="site/icons.svg#caret-circle-double-down"></use></svg>
+          </summary>
+          <div class="answer__body">
+            <div class="answer__content">
+              <p class="answer__text">No. It reaches out only when asked: to GitHub when the
+                Info window checks for a newer release, to archive.org when you fetch a system,
+                and to the Window Maker Live archive, or its copy on previous.li, when the
+                emulator is installed or updated.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="answer">
+          <summary class="answer__question">
+            <h3>Can I still get a shell on the Pi?</h3>
+            <svg class="icon answer__caret" aria-hidden="true"><use href="site/icons.svg#caret-circle-double-down"></use></svg>
+          </summary>
+          <div class="answer__body">
+            <div class="answer__content">
+              <p class="answer__text">Yes. SSH stays the way in, exactly as before. The Terminal
+                window in the admin is that same SSH login in a browser: it asks for a Pi user's
+                password, not the admin's, and takes one session at a time.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="answer">
+          <summary class="answer__question">
+            <h3>What if I forget the Previously Admin password?</h3>
+            <svg class="icon answer__caret" aria-hidden="true"><use href="site/icons.svg#caret-circle-double-down"></use></svg>
+          </summary>
+          <div class="answer__body">
+            <div class="answer__content">
+              <p class="answer__text">Remove the password file on the Pi, over SSH. From that
+                moment the admin is unclaimed again, and the next change chooses a new one.</p>
+              <div class="codebox">
+                <code class="codebox__code" id="reset-command">sudo rm /var/lib/previously/password</code>
+                <button class="codebox__copy" type="button" aria-label="Copy" data-copy="reset-command" data-umami-event="Copy reset command">
+                  <svg class="icon" aria-hidden="true"><use href="site/icons.svg#copy"></use></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details class="answer">
+          <summary class="answer__question">
+            <h3>Can it share a Pi with other things?</h3>
+            <svg class="icon answer__caret" aria-hidden="true"><use href="site/icons.svg#caret-circle-double-down"></use></svg>
+          </summary>
+          <div class="answer__body">
+            <div class="answer__content">
+              <p class="answer__text">No, better not. It takes the first console and the screen
+                for itself and silences the boot, so it belongs on a Pi of its own.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="answer">
+          <summary class="answer__question">
+            <h3>What does it cost, and where is the code?</h3>
+            <svg class="icon answer__caret" aria-hidden="true"><use href="site/icons.svg#caret-circle-double-down"></use></svg>
+          </summary>
+          <div class="answer__body">
+            <div class="answer__content">
+              <p class="answer__text">Nothing, and on GitHub: the admin, the installer and the
+                helper in one repository, with the releases beside them. Questions and anything
+                that does not work go into its issues.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="answer">
+          <summary class="answer__question">
+            <h3>Is there a ready made image to write?</h3>
+            <svg class="icon answer__caret" aria-hidden="true"><use href="site/icons.svg#caret-circle-double-down"></use></svg>
+          </summary>
+          <div class="answer__body">
+            <div class="answer__content">
+              <p class="answer__text">Yes. Since 1.11.0 every release comes with one for
+                Raspberry Pi Imager, see <a href="#install">Install</a> above.</p>
+            </div>
+          </div>
+        </details>
       </div>
     </div>
   </section>

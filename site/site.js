@@ -1,6 +1,7 @@
-/* The three things on this page that do anything: copying a command, the
-   film's player, and saying which release the download fetches. Everything
-   else the page does is layout and a link. */
+/* The four things on this page that do anything: copying a command, the
+   film's player, saying which release the download fetches, and folding the
+   answers under their questions. Everything else the page does is layout and
+   a link. */
 
 /** How long a button shows the check mark after the command has been taken. */
 const CONFIRMATION_MILLISECONDS = 1600;
@@ -193,8 +194,9 @@ film.addEventListener("volumechange", showSound);
 /* Umami counts how many visitors start the film, so only the first start of a
    page view is sent: a pause and a second start are the same visitor. The
    Copy buttons and the download are counted by their data-umami-event
-   attribute, which Umami's script reads on every click. Its script loads deferred and a blocker may
-   keep it away, so a missing umami sends nothing. */
+   attribute, which Umami's script reads on every click. Its script loads
+   deferred and a blocker may keep it away, so a missing umami sends
+   nothing. */
 film.addEventListener("play", () => window.umami?.track(PLAY_EVENT), { once: true });
 document.addEventListener("fullscreenchange", showScreen);
 document.addEventListener("webkitfullscreenchange", showScreen);
@@ -258,3 +260,60 @@ async function showRelease() {
 }
 
 showRelease();
+
+/* --- the answers ----------------------------------------------------------
+
+   Each question is a details element, which opens and closes without any of
+   this. What the script adds is the movement: the answer's height travels
+   rather than jumping, which a stylesheet cannot do in WebKit, because WebKit
+   does not interpolate a height to auto. The movement runs on the browser's
+   own timeline and takes the page's own duration and easing, which
+   motion.css states and shortens for somebody who asked for less motion. */
+
+/**
+ * Opens or closes one answer by moving its height from where it stands to
+ * where it is going.
+ *
+ * The movement starts from the height the answer has at that moment, so a
+ * click in the middle of a movement turns it round from wherever it has got
+ * to. A
+ * closing answer stays open until it has folded away, and data-closing says
+ * in the meantime that it is on its way, which turns the caret back at once.
+ *
+ * @param {HTMLDetailsElement} answer The question and its answer.
+ * @param {HTMLElement} body The part under the question that folds away.
+ */
+function fold(answer, body) {
+  const closing = answer.open && !answer.hasAttribute("data-closing");
+  // WebKit lays out the body of a closed details element at its full height,
+  // so a closed answer starts from nothing rather than from what it reports.
+  const from = answer.open ? body.getBoundingClientRect().height : 0;
+  for (const running of body.getAnimations()) {
+    running.cancel();
+  }
+  answer.open = true;
+  answer.toggleAttribute("data-closing", closing);
+  const to = closing ? 0 : body.getBoundingClientRect().height;
+
+  const motion = getComputedStyle(document.documentElement);
+  body.style.overflow = "clip";
+  const movement = body.animate([{ height: `${from}px` }, { height: `${to}px` }], {
+    duration: parseFloat(motion.getPropertyValue("--duration")),
+    easing: motion.getPropertyValue("--ease").trim(),
+  });
+  movement.addEventListener("finish", () => {
+    body.style.overflow = "";
+    if (closing) {
+      answer.open = false;
+      answer.removeAttribute("data-closing");
+    }
+  });
+}
+
+for (const answer of document.querySelectorAll(".answer")) {
+  const body = answer.querySelector(".answer__body");
+  answer.querySelector(".answer__question").addEventListener("click", (event) => {
+    event.preventDefault();
+    fold(answer, body);
+  });
+}
