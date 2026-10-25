@@ -17,6 +17,8 @@ The website for [Previously](https://github.com/phranck/previously), a Raspberry
 
 There is no build step. Open `index.html` and it is the page.
 
+Every file the page loads is named with a stamp of its content, such as `site/site.css?v=1a2b3c4d`. After changing one of them, run `python3 site/stamp.py` and commit what it changes. The `Stamps` check fails a pull request whose stamps no longer match their files.
+
 `promo/` is the source of a 32 second film about Previously, with sound. [Its README](promo/README.md) says how the film is made. The page plays a copy of it from `site/film/`, which `site/film.py` makes out of the render.
 
 ## The copy of the Window Maker Live archive
