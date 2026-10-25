@@ -137,6 +137,12 @@
   /* A control is not a card and takes none of a card's arithmetic. */
   --control-radius: 12px;
 
+  /* A window on this page has a control's corner. Text standing above one
+     begins half that corner in, where the curve gives way to the straight
+     edge. */
+  --window-radius: var(--control-radius);
+  --window-text-inset: calc(var(--window-radius) / 2);
+
   /* The corner of a frame around something that runs, the browser window and
      the film alike, so the two pictures of the running thing read as one
      kind. */
@@ -521,12 +527,23 @@ kbd {
   margin-inline: auto;
 }
 
+/* One way: what it is for, above the window that does it. */
+.way {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.way__text {
+  padding-inline-start: var(--window-text-inset);
+  color: var(--ink);
+}
+
 /* A window for each way onto a Pi, which is the one shape of NeXTSTEP
    everybody recognises: a black bar with its name centred in white and bold.
    The frame around it is this page's own, so the quotation stays a
    quotation. */
 .window {
-  border-radius: var(--control-radius);
+  border-radius: var(--window-radius);
   overflow: hidden;
   background: var(--paper);
   box-shadow: var(--shadow-float);
@@ -555,11 +572,6 @@ kbd {
 .window__body {
   padding: var(--space-3);
   background: var(--paper);
-}
-
-/* What the window is for, in the ink the steps under it are not set in. */
-.window__text {
-  color: var(--ink);
 }
 
 /* --- labels beside glyphs ------------------------------------------------ */
@@ -659,13 +671,12 @@ kbd {
 
 /* --- the steps ----------------------------------------------------------- */
 
-/* A list of steps stands inside a window, under the window's own text, so it
-   takes none of the indent and margins a list brings, and the number is the
-   only marker. */
+/* A list of steps fills a window's body, so it takes none of the indent and
+   margins a list brings, and the number is the only marker. */
 .steps {
   display: grid;
   gap: var(--space-1);
-  margin: var(--space-2) 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
   counter-reset: step;
@@ -682,6 +693,7 @@ kbd {
 }
 
 .step:first-child {
+  padding-top: 0;
   border-top: 0;
 }
 
