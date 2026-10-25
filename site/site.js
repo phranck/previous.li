@@ -7,6 +7,20 @@
 const CONFIRMATION_MILLISECONDS = 1600;
 
 /**
+ * Shows another symbol of the sprite in a glyph.
+ *
+ * Only the part after the # changes. The page names the sprite with the stamp
+ * site/stamp.py gives it, and an address written here without that stamp
+ * would fetch the sprite a second time, as it was before it last changed.
+ *
+ * @param {SVGUseElement} glyph The use element to change.
+ * @param {string} symbol The symbol id in site/icons.svg.
+ */
+function showGlyph(glyph, symbol) {
+  glyph.setAttribute("href", glyph.getAttribute("href").replace(/#.*$/, `#${symbol}`));
+}
+
+/**
  * Puts a command on the clipboard, or selects it where the clipboard is refused.
  *
  * Every browser refuses the clipboard outside a secure context, and this page
@@ -40,12 +54,12 @@ for (const button of document.querySelectorAll("[data-copy]")) {
 
   button.addEventListener("click", async () => {
     await take(code);
-    glyph.setAttribute("href", "site/icons.svg#check");
+    showGlyph(glyph, "check");
     button.classList.add("codebox__copy--copied");
 
     clearTimeout(timer);
     timer = setTimeout(() => {
-      glyph.setAttribute("href", "site/icons.svg#copy");
+      showGlyph(glyph, "copy");
       button.classList.remove("codebox__copy--copied");
     }, CONFIRMATION_MILLISECONDS);
   });
@@ -93,7 +107,7 @@ function clockOf(seconds) {
  * @param {string} label What pressing it does, for whoever cannot see the glyph.
  */
 function setButton(button, glyph, label) {
-  button.querySelector("use").setAttribute("href", `site/icons.svg#${glyph}`);
+  showGlyph(button.querySelector("use"), glyph);
   button.setAttribute("aria-label", label);
 }
 
