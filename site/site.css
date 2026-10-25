@@ -764,20 +764,11 @@ kbd {
 /* --- the answers --------------------------------------------------------- */
 
 /* What people ask before the first boot, one question under another, each
-   answer folded away under its question until it is opened. Rules between
-   them and no frame around any: these are answers rather than features, and
-   a dozen boxes would read as a brochure. */
-.answers {
-  max-width: var(--centered-width);
-  margin-inline: auto;
-  border-bottom: 1px solid var(--rule);
-}
+   answer folded away under its question until it is opened. No rule and no
+   frame around any of them: these are answers rather than features, and a
+   dozen boxes would read as a brochure.
 
-.answer {
-  border-top: 1px solid var(--rule);
-}
-
-/* The whole row opens its answer, with the caret at the end the row is read
+   The whole row opens its answer, with the caret at the end the row is read
    towards. The marker a browser draws in front of a summary goes, because the
    caret says the same. */
 .answer__question {
@@ -825,7 +816,6 @@ kbd {
 }
 
 .answer__text {
-  max-width: var(--measure-text);
   color: var(--ink-soft);
 }
 
