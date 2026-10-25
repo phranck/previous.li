@@ -395,8 +395,8 @@ kbd {
 /* A heading standing above a card begins where that card's curve gives way to
    its straight edge, rather than out at the page edge the corner has already
    pulled the card away from. Only above a card: the sections whose content is
-   a picture or a list of answers have no curve to clear, and taking the inset
-   there would turn a derived value back into an arbitrary one. */
+   a picture, a window or a list of answers have no curve to clear, and taking
+   the inset there would turn a derived value back into an arbitrary one. */
 .section:has(.cards) .section__head {
   padding-inline-start: var(--card-text-inset);
 }
@@ -436,9 +436,9 @@ kbd {
 
 /* --- the hero ------------------------------------------------------------ */
 
-/* The page opens on one thing, so the opening is centred on it: the sentence,
-   the two ways onto a Pi, and nothing to either side. Everything below this is
-   left aligned, because that is where reading starts.
+/* The page opens on one thing, so the opening is centred on it: the picture
+   and the sentence, and nothing to either side. Everything below this is left
+   aligned, because that is where reading starts.
 
    It also opens a shade lighter than the page and sinks into it, so the first
    screen has a horizon rather than an edge. The lower end is the page's own
@@ -449,13 +449,6 @@ kbd {
   padding-block: var(--space-12) var(--space-16);
   background: linear-gradient(180deg, var(--paper-raised), var(--paper));
   text-align: center;
-}
-
-.hero__grid {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-6);
 }
 
 .hero__copy {
@@ -514,20 +507,22 @@ kbd {
 
 /* --- the install block --------------------------------------------------- */
 
+/* The two ways onto a Pi, one above the other, so each is read whole before
+   the other begins. */
+.ways {
+  display: grid;
+  gap: var(--space-6);
+}
+
 /* A window for each way onto a Pi, which is the one shape of NeXTSTEP
    everybody recognises: a black bar with its name centred in white and bold.
    The frame around it is this page's own, so the quotation stays a
    quotation. */
 .window {
-  width: 100%;
-  max-width: 760px;
   border-radius: var(--control-radius);
   overflow: hidden;
   background: var(--paper);
   box-shadow: var(--shadow-float);
-  /* Its own alignment, because the opening above it is centred and steps are
-     read from the left. */
-  text-align: left;
 }
 
 .window__title {
@@ -548,14 +543,10 @@ kbd {
   opacity: 0.85;
 }
 
+/* The page's own shade on a sunk section, like a card there, so the code box
+   in it sinks as it does everywhere else. */
 .window__body {
   padding: var(--space-3);
-  background: var(--paper-sunk);
-}
-
-/* The body is already the sunk shade, so the box in it sinks one step further
-   to the page's own. */
-.window__body .codebox {
   background: var(--paper);
 }
 
@@ -624,13 +615,15 @@ kbd {
   gap: var(--space-3);
 }
 
+/* Cards lie on the page's own shade, so they take the sunk one, which is the
+   lighter of the two. */
 .card {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
   padding: var(--card-padding);
   border-radius: var(--card-radius);
-  background: var(--paper);
+  background: var(--paper-sunk);
   border: 1px solid var(--rule);
   box-shadow: var(--shadow-card);
 }
@@ -767,6 +760,12 @@ kbd {
 
 .answer__text {
   color: var(--ink-soft);
+}
+
+/* The answers lie on the sunk shade, so a code box among them takes the page's
+   own to stand apart from it. */
+.answer .codebox {
+  background: var(--paper);
 }
 
 /* --- a code box ---------------------------------------------------------- */
