@@ -763,23 +763,69 @@ kbd {
 
 /* --- the answers --------------------------------------------------------- */
 
-/* What people ask before the first boot, each answered under its question.
-   Plain headings and paragraphs in two columns and no frame around any of
-   them: these are answers rather than features, and a dozen boxes would read
-   as a brochure. */
+/* What people ask before the first boot, one question under another, each
+   answer folded away under its question until it is opened. Rules between
+   them and no frame around any: these are answers rather than features, and
+   a dozen boxes would read as a brochure. */
 .answers {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: var(--space-6) var(--space-8);
+  max-width: var(--centered-width);
+  margin-inline: auto;
+  border-bottom: 1px solid var(--rule);
 }
 
 .answer {
+  border-top: 1px solid var(--rule);
+}
+
+/* The whole row opens its answer, with the caret at the end the row is read
+   towards. The marker a browser draws in front of a summary goes, because the
+   caret says the same. */
+.answer__question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: var(--space-3);
+  list-style: none;
+  cursor: pointer;
+}
+
+.answer__question::-webkit-details-marker {
+  display: none;
+}
+
+/* As large as the question it stands beside. */
+.answer__caret {
+  font-size: var(--text-lg);
+  color: var(--ink-soft);
+}
+
+.answer__question:hover h3,
+.answer__question:hover .answer__caret {
+  color: var(--accent);
+}
+
+/* Turned while the answer is open, and back as soon as it begins to close,
+   which site.js marks before the answer has finished folding away. */
+.answer[open]:not([data-closing]) .answer__caret {
+  transform: rotate(180deg);
+}
+
+.answer__body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
+}
+
+/* The space under an answer belongs to what it holds rather than to the body
+   around it, because site.js moves the body's height down to nothing as it
+   closes, and a padding would hold that height open. */
+.answer__body > :last-child {
+  margin-bottom: var(--space-3);
 }
 
 .answer__text {
+  max-width: var(--measure-text);
   color: var(--ink-soft);
 }
 
