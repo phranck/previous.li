@@ -87,10 +87,10 @@
      answer lies on. It is lighter than the page and carries more of the
      workspace colour, so the first screen has a horizon rather than an edge. */
   --paper-raised: #262935;
-  /* Every second row of steps in a window. It lies halfway between the
-     window's own shade and the sunk section around the window, so a row never
-     takes the section's color and the window keeps its edge. */
-  --paper-stripe: color-mix(in oklab, var(--paper) 50%, var(--paper-sunk));
+  /* Every second row of steps in a window. It lies halfway between the sunk
+     section around the window and the raised shade, so a row is lighter than
+     that section and the window keeps its edge beside it. */
+  --paper-stripe: color-mix(in oklab, var(--paper-sunk) 50%, var(--paper-raised));
   --ink: #f2f2f6;
   --ink-soft: #a6a6b4;
   --rule: #2c2c38;
