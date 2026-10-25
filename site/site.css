@@ -600,7 +600,9 @@ kbd {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  height: calc(var(--step) * 5);
+  /* The height of a window's title bar, which is the other bar of this size
+     in the same window. */
+  height: calc(var(--step) * 4);
   padding-inline: var(--space-2);
   border-radius: var(--control-radius);
   background: var(--accent);
