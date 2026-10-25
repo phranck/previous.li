@@ -142,6 +142,11 @@
      kind. */
   --frame-radius: 12px;
 
+  /* What stands centred in the column, the film and the two install windows,
+     is one width, so the two read as the same kind of thing. The film is what
+     sets it, for the reason given at .film__video. */
+  --centered-width: 896px;
+
   --text-xs: 13px;
   --text-sm: 15px;
   --text-base: 17px;
@@ -512,6 +517,8 @@ kbd {
 .ways {
   display: grid;
   gap: var(--space-6);
+  max-width: var(--centered-width);
+  margin-inline: auto;
 }
 
 /* A window for each way onto a Pi, which is the one shape of NeXTSTEP
@@ -958,7 +965,7 @@ kbd {
    under the bar while it plays. */
 .film__video {
   display: block;
-  width: 896px;
+  width: var(--centered-width);
   max-width: 100%;
   height: auto;
 }
