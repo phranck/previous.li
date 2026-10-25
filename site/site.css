@@ -11,8 +11,8 @@
                        design/kit/base.css. Every screenshot on this page lies
                        on it, which is where a NeXTSTEP window lies.
      The title bar     Black, with its name centred in white and bold. The
-                       install block wears one, because that block is the
-                       thing you operate, and it is the one shape of the
+                       two install blocks wear one, because they are the
+                       things you operate, and it is the one shape of the
                        original that everybody recognises.
      The face          Inter, a neo-grotesque in the line Helvetica belongs to,
                        which is what NeXTSTEP set its whole interface in.
@@ -39,8 +39,9 @@
                         picture inside is shown at its own size.
      The counting       Umami counts on previous.li alone, as data-domains
                         on its script says, so a preview or a checkout opened
-                        on another host sends it nothing. The Copy button
-                        names its event in data-umami-event.
+                        on another host sends it nothing. The Copy buttons
+                        and the download name their events in
+                        data-umami-event.
    --------------------------------------------------------------------------- */
 
 /* --- the type ------------------------------------------------------------ */
@@ -135,6 +136,15 @@
 
   /* A control is not a card and takes none of a card's arithmetic. */
   --control-radius: 12px;
+  /* A button that stands inside a window or a code box is smaller than the
+     controls around it, so its corner is tighter as well. */
+  --button-radius: calc(var(--control-radius) - 4px);
+
+  /* A window on this page has a control's corner. Text standing above one
+     begins half that corner in, where the curve gives way to the straight
+     edge. */
+  --window-radius: var(--control-radius);
+  --window-text-inset: calc(var(--window-radius) / 2);
 
   /* The corner of a frame around something that runs, the browser window and
      the film alike, so the two pictures of the running thing read as one
@@ -394,8 +404,8 @@ kbd {
 /* A heading standing above a card begins where that card's curve gives way to
    its straight edge, rather than out at the page edge the corner has already
    pulled the card away from. Only above a card: the sections whose content is
-   a picture or a list of steps have no curve to clear, and taking the inset
-   there would turn a derived value back into an arbitrary one. */
+   a picture, a window or a list of answers have no curve to clear, and taking
+   the inset there would turn a derived value back into an arbitrary one. */
 .section:has(.cards) .section__head {
   padding-inline-start: var(--card-text-inset);
 }
@@ -435,9 +445,9 @@ kbd {
 
 /* --- the hero ------------------------------------------------------------ */
 
-/* The page opens on one thing, so the opening is centred on it: the sentence,
-   the line to paste, and nothing to either side. Everything below this is
-   left aligned, because that is where reading starts.
+/* The page opens on one thing, so the opening is centred on it: the picture
+   and the sentence, and nothing to either side. Everything below this is left
+   aligned, because that is where reading starts.
 
    It also opens a shade lighter than the page and sinks into it, so the first
    screen has a horizon rather than an edge. The lower end is the page's own
@@ -448,13 +458,6 @@ kbd {
   padding-block: var(--space-12) var(--space-16);
   background: linear-gradient(180deg, var(--paper-raised), var(--paper));
   text-align: center;
-}
-
-.hero__grid {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-6);
 }
 
 .hero__copy {
@@ -513,19 +516,36 @@ kbd {
 
 /* --- the install block --------------------------------------------------- */
 
-/* A window, which is the one shape of NeXTSTEP everybody recognises: a black
-   bar with its name centred in white and bold. The frame around it is this
-   page's own, so the quotation stays a quotation. */
+/* The two ways onto a Pi, one above the other, so each is read whole before
+   the other begins. They stand centred, 32 pixels in from either side of the
+   column, which is 1072 wide inside the measure's padding. */
+.ways {
+  display: grid;
+  gap: var(--space-6);
+  max-width: 1008px;
+  margin-inline: auto;
+}
+
+/* One way: what it is for, above the window that does it. */
+.way {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.way__text {
+  padding-inline-start: var(--window-text-inset);
+  color: var(--ink);
+}
+
+/* A window for each way onto a Pi, which is the one shape of NeXTSTEP
+   everybody recognises: a black bar with its name centred in white and bold.
+   The frame around it is this page's own, so the quotation stays a
+   quotation. */
 .window {
-  width: 100%;
-  max-width: 760px;
-  border-radius: var(--control-radius);
+  border-radius: var(--window-radius);
   overflow: hidden;
   background: var(--paper);
   box-shadow: var(--shadow-float);
-  /* Its own alignment, because the opening above it is centred and a line to
-     paste is read from the left. */
-  text-align: left;
 }
 
 .window__title {
@@ -546,22 +566,11 @@ kbd {
   opacity: 0.85;
 }
 
+/* The page's own shade on a sunk section, like a card there, so the code box
+   in it sinks as it does everywhere else. */
 .window__body {
-  padding: var(--space-2);
-  background: var(--paper-sunk);
-}
-
-/* The body is already the sunk shade, so the box in it sinks one step further
-   to the page's own. */
-.window__body .codebox {
+  padding: var(--space-3);
   background: var(--paper);
-}
-
-.window__note {
-  padding: 0 var(--space-2) var(--space-2);
-  background: var(--paper-sunk);
-  font-size: var(--text-sm);
-  color: var(--ink-soft);
 }
 
 /* --- labels beside glyphs ------------------------------------------------ */
@@ -575,17 +584,48 @@ kbd {
    the cap midline whatever the letters next to it are doing. Its own em is
    larger than the label's, so the correction is divided by exactly the factor
    that made it larger. */
-.window__title {
+.window__title,
+.button {
   padding-bottom: calc(var(--label-lift) * 2);
 }
 
 .window__title .icon,
-.bar__links a .icon {
+.bar__links a .icon,
+.button .icon {
   transform: translateY(calc(var(--label-lift) / var(--icon-scale)));
 }
 
-.bar__links a .icon {
+.bar__links a .icon,
+.button .icon {
   font-size: calc(1em * var(--icon-scale));
+}
+
+/* --- the button ---------------------------------------------------------- */
+
+/* The one thing on this page that hands the reader something to do next:
+   fetching the file Raspberry Pi Imager opens Previously from. Filled with the
+   accent, so it is seen as a thing to press before its words are read, and as
+   wide as its label, which is set at the size of the release line beside
+   it. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  /* The height of a window's title bar, which is the other bar of this size
+     in the same window. */
+  height: calc(var(--step) * 4);
+  padding-inline: var(--space-2);
+  border-radius: var(--button-radius);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.button:hover {
+  background: var(--accent-hover);
 }
 
 /* --- cards --------------------------------------------------------------- */
@@ -596,13 +636,15 @@ kbd {
   gap: var(--space-3);
 }
 
+/* Cards lie on the page's own shade, so they take the sunk one, which is the
+   lighter of the two. */
 .card {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
   padding: var(--card-padding);
   border-radius: var(--card-radius);
-  background: var(--paper);
+  background: var(--paper-sunk);
   border: 1px solid var(--rule);
   box-shadow: var(--shadow-card);
 }
@@ -628,22 +670,29 @@ kbd {
 
 /* --- the steps ----------------------------------------------------------- */
 
+/* A list of steps fills a window's body, so it takes none of the indent and
+   margins a list brings, and the number is the only marker. */
 .steps {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
   counter-reset: step;
 }
 
 .step {
   display: grid;
-  grid-template-columns: calc(var(--step) * 5) 1fr;
+  /* The number's column is as wide as the number is tall, so it is a circle. */
+  grid-template-columns: calc(var(--step) * 4) 1fr;
   gap: var(--space-2);
   align-items: start;
-  padding-block: var(--space-2);
+  padding-block: var(--space-2) 0;
   border-top: 1px solid var(--rule);
 }
 
 .step:first-child {
+  padding-top: 0;
   border-top: 0;
 }
 
@@ -661,16 +710,55 @@ kbd {
   font-weight: 650;
 }
 
+/* A step that hands over something to run or to fetch carries it under its
+   text. */
 .step__body {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2);
   min-width: 0;
 }
 
 .step__text {
   color: var(--ink-soft);
   max-width: var(--measure-text);
+}
+
+/* An address in a step is one word to the browser, and on a phone it is wider
+   than the column, so it breaks where it has to rather than widening the
+   window. */
+.step__text code {
+  overflow-wrap: anywhere;
+}
+
+/* The download ends its step, with the button at the right edge and which
+   release it fetches at the left, which the script fills in. Without that line
+   the button keeps its edge. */
+.download {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.download__release {
+  margin-inline-end: auto;
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* On a phone the button takes the width a thumb needs, under the release. */
+@media (max-width: 640px) {
+  .download {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .download .button {
+    justify-content: center;
+  }
 }
 
 /* --- the answers --------------------------------------------------------- */
@@ -693,6 +781,12 @@ kbd {
 
 .answer__text {
   color: var(--ink-soft);
+}
+
+/* The answers lie on the sunk shade, so a code box among them takes the page's
+   own to stand apart from it. */
+.answer .codebox {
+  background: var(--paper);
 }
 
 /* --- a code box ---------------------------------------------------------- */
@@ -735,7 +829,7 @@ kbd {
   height: calc(var(--step) * 4);
   padding: 0;
   border: 0;
-  border-radius: calc(var(--control-radius) - 4px);
+  border-radius: var(--button-radius);
   background: transparent;
   color: var(--ink-soft);
   font-size: 18px;

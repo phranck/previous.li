@@ -1,5 +1,6 @@
-/* The two things on this page that do anything: copying a command, and the
-   film's player. Everything else the page does is layout and a link. */
+/* The three things on this page that do anything: copying a command, the
+   film's player, and saying which release the download fetches. Everything
+   else the page does is layout and a link. */
 
 /** How long a button shows the check mark after the command has been taken. */
 const CONFIRMATION_MILLISECONDS = 1600;
@@ -191,8 +192,8 @@ film.addEventListener("volumechange", showSound);
 
 /* Umami counts how many visitors start the film, so only the first start of a
    page view is sent: a pause and a second start are the same visitor. The
-   Copy button is counted by its data-umami-event attribute, which Umami's
-   script reads on every click. Its script loads deferred and a blocker may
+   Copy buttons and the download are counted by their data-umami-event
+   attribute, which Umami's script reads on every click. Its script loads deferred and a blocker may
    keep it away, so a missing umami sends nothing. */
 film.addEventListener("play", () => window.umami?.track(PLAY_EVENT), { once: true });
 document.addEventListener("fullscreenchange", showScreen);
@@ -208,3 +209,52 @@ showPlaying();
 showPosition();
 showSound();
 showScreen();
+
+/* --- the newest release ---------------------------------------------------
+
+   The download points at the newest release by an address that never changes,
+   so it works without any of this. What the script adds beside it is which
+   release that is, how large its image is and when it came out, read from the
+   endpoint the admin asks about releases as well. */
+
+/** The newest release of Previously, as GitHub's API describes it. */
+const RELEASE_API = "https://api.github.com/repos/phranck/previously/releases/latest";
+
+/** What a release calls the image Raspberry Pi Imager writes. */
+const IMAGE_ASSET = "previously-raspberry-pi.img.xz";
+
+/** Bytes in the megabyte a download is measured in, as browsers count it. */
+const BYTES_PER_MEGABYTE = 1000 * 1000;
+
+/**
+ * Says which release the download fetches, beside the button that fetches it.
+ *
+ * Left hidden where GitHub does not answer, answers with something else, or
+ * the release carries no image, because the download works either way.
+ *
+ * @returns {Promise<void>}
+ */
+async function showRelease() {
+  const line = document.getElementById("release");
+  try {
+    const answer = await fetch(RELEASE_API, { headers: { Accept: "application/vnd.github+json" } });
+    if (!answer.ok) {
+      return;
+    }
+    const release = await answer.json();
+    const image = release.assets.find((asset) => asset.name === IMAGE_ASSET);
+    if (!image) {
+      return;
+    }
+    const megabytes = Math.round(image.size / BYTES_PER_MEGABYTE);
+    const published = new Date(release.published_at).toLocaleDateString("en-GB", {
+      day: "numeric", month: "short", year: "numeric",
+    });
+    line.textContent = `Previously ${release.tag_name.replace(/^v/, "")} · ${megabytes} MB · ${published}`;
+    line.hidden = false;
+  } catch {
+    // No network or no GitHub: the line stays away and the link stays.
+  }
+}
+
+showRelease();

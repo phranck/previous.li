@@ -89,45 +89,122 @@
 <main id="top">
 
   <section class="hero">
-    <div class="measure hero__grid">
-      <div class="hero__copy">
-        <!-- One machine turning into another, after the page Apple and NeXT
-             put up in December 1996 to announce the purchase. site/hero.py
-             draws it and site/og-image.svg places the same file above the
-             name, so a link to this page unfolds into what the page opens on.
-             It carries everything it draws inside itself, which is what lets
-             an img show it at all. -->
-        <img class="hero__mark" src="site/hero.svg" width="1502" height="383" alt="A gray circuit board and the NeXT cube rushing at each other, each trailing a smear, with a pressed Merge button and the cursor that pressed it between them.">
+    <div class="measure hero__copy">
+      <!-- One machine turning into another, after the page Apple and NeXT
+           put up in December 1996 to announce the purchase. site/hero.py
+           draws it and site/og-image.svg places the same file above the
+           name, so a link to this page unfolds into what the page opens on.
+           It carries everything it draws inside itself, which is what lets
+           an img show it at all. -->
+      <img class="hero__mark" src="site/hero.svg" width="1502" height="383" alt="A gray circuit board and the NeXT cube rushing at each other, each trailing a smear, with a pressed Merge button and the cursor that pressed it between them.">
 
-        <h1>A Raspberry Pi that <s class="hero__struck">boosts</s>… boots directly
-          into NeXTSTEP</h1>
+      <h1>A Raspberry Pi that <s class="hero__struck">boosts</s>… boots directly
+        into NeXTSTEP</h1>
 
-        <p class="hero__lead">Previously turns a Raspberry Pi 4 or 5 into a NeXT. Turn it
-          on and it boots direct into NeXTSTEP under the Previous emulator, set up from a
-          browser in an admin that looks like NeXTSTEP.</p>
+      <p class="hero__lead">Previously turns a Raspberry Pi 4 or 5 into a NeXT. Turn it
+        on and it boots direct into NeXTSTEP under the Previous emulator, set up from a
+        browser in an admin that looks like NeXTSTEP.</p>
+    </div>
+  </section>
+
+  <section class="section section--sunk" id="install">
+    <div class="measure">
+      <div class="section__head">
+        <p class="section__kicker">
+          <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
+          Install
+        </p>
+        <h2>Two ways to get NeXTSTEP onto your Pi</h2>
       </div>
 
-      <div class="window">
-        <div class="window__title">
-          <svg class="icon" aria-hidden="true"><use href="site/icons.svg#terminal-window"></use></svg>
-          Terminal
-        </div>
-        <div class="window__body">
-          <div class="codebox">
-            <code class="codebox__code"><span class="codebox__prompt" aria-hidden="true">$</span> <span id="command">curl -fsSL https://previous.li/install.sh | bash</span></code>
-            <button class="codebox__copy" type="button" aria-label="Copy" data-copy="command" data-umami-event="Copy install line">
-              <svg class="icon" aria-hidden="true"><use href="site/icons.svg#copy"></use></svg>
-            </button>
+      <div class="ways">
+        <div class="way">
+          <p class="way__text">Install it onto a Pi that runs Raspberry Pi OS Lite, 64 bit.</p>
+          <div class="window">
+            <div class="window__title">
+              <svg class="icon" aria-hidden="true"><use href="site/icons.svg#terminal-window"></use></svg>
+              Terminal
+            </div>
+            <div class="window__body">
+              <ol class="steps">
+                <li class="step">
+                  <p class="step__text">Write Raspberry Pi OS Lite (64-bit) with Raspberry Pi
+                    Imager, and let it set your user, Wi-Fi and SSH.</p>
+                </li>
+                <li class="step">
+                  <div class="step__body">
+                    <p class="step__text">Log in over SSH as your own user, not as root, and run
+                      this. It asks for your password once, and a few minutes later NeXTSTEP is
+                      on the Pi's screen.</p>
+                    <div class="codebox">
+                      <code class="codebox__code"><span class="codebox__prompt" aria-hidden="true">$</span> <span id="command">curl -fsSL https://previous.li/install.sh | bash</span></code>
+                      <button class="codebox__copy" type="button" aria-label="Copy" data-copy="command" data-umami-event="Copy install line">
+                        <svg class="icon" aria-hidden="true"><use href="site/icons.svg#copy"></use></svg>
+                      </button>
+                    </div>
+                  </div>
+                </li>
+                <li class="step">
+                  <p class="step__text">Open the address it ends with,
+                    <code>http://&lt;hostname&gt;.local:8810</code>, in a browser on your
+                    network.</p>
+                </li>
+              </ol>
+            </div>
           </div>
         </div>
-        <p class="window__note">Run it on the Pi over SSH as your own user, not as root. It
-          uses <code>sudo</code> where it must, asks for the password once, and ends by
-          showing you the admin's address.</p>
+
+        <div class="way">
+          <p class="way__text">Or write the ready image to a new card or USB stick of 8 GB or more, with nothing to type.</p>
+          <div class="window">
+            <div class="window__title">
+              <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
+              Raspberry Pi Imager
+            </div>
+            <div class="window__body">
+              <ol class="steps">
+                <li class="step">
+                  <p class="step__text">Install <a href="https://www.raspberrypi.com/software/"
+                    target="_blank" rel="noopener">Raspberry Pi Imager 2</a> on your computer, or
+                    update an older one.</p>
+                </li>
+                <li class="step">
+                  <div class="step__body">
+                    <p class="step__text">Download Previously for Raspberry Pi Imager and
+                      double-click the file. It is an Imager manifest. It opens Raspberry Pi
+                      Imager with Previously in its list, and tells the Imager how to customize
+                      the image.</p>
+                    <div class="download">
+                      <p class="download__release" id="release" hidden></p>
+                      <a class="button" href="https://github.com/phranck/previously/releases/latest/download/previously.rpi-imager-manifest" data-umami-event="Download for Imager">
+                        <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
+                        Download
+                      </a>
+                    </div>
+                  </div>
+                </li>
+                <li class="step">
+                  <p class="step__text">Choose your Raspberry Pi 4 or 5, Previously, and the card
+                    or stick.</p>
+                </li>
+                <li class="step">
+                  <p class="step__text">Set the hostname, a user, a password and the Wi-Fi in the
+                    Imager's customization.</p>
+                </li>
+                <li class="step">
+                  <p class="step__text">Write it, put it into the Pi and switch it on. NeXTSTEP
+                    starts, and the admin answers at
+                    <code>http://&lt;hostname&gt;.local:8810</code>.</p>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="section section--sunk" id="what">
+  <section class="section" id="what">
     <div class="measure">
       <div class="section__head">
         <p class="section__kicker">
@@ -232,51 +309,7 @@
     </figure>
   </section>
 
-  <section class="section" id="install">
-    <div class="measure">
-      <div class="section__head">
-        <p class="section__kicker">
-          <svg class="icon" aria-hidden="true"><use href="site/icons.svg#download-simple"></use></svg>
-          Install
-        </p>
-        <h2>Three steps, and the second one is a single command</h2>
-        <p class="section__lead">All it takes is a Raspberry Pi 4 or 5 and a card or USB
-          stick with the current Raspberry Pi OS Lite, 64 bit.</p>
-      </div>
-
-      <ol class="steps">
-        <li class="step">
-          <div class="step__body">
-            <h3>Flash the card</h3>
-            <p class="step__text">Write Raspberry Pi OS Lite (64-bit) onto a microSD card
-              or a USB stick with the Raspberry Pi Imager, and let the Imager set your user,
-              Wi-Fi and SSH. That is all the preparation there is.</p>
-          </div>
-        </li>
-
-        <li class="step">
-          <div class="step__body">
-            <h3>Boot, connect, paste the command</h3>
-            <p class="step__text">Boot the Pi, open an SSH session to it, and paste the
-              install command from the top of this page. It fetches and sets up everything,
-              from the emulator to a ready NeXTSTEP 3.3 disk, and a few minutes later
-              NeXTSTEP is on the Pi's screen.</p>
-          </div>
-        </li>
-
-        <li class="step">
-          <div class="step__body">
-            <h3>Open Previously in the browser</h3>
-            <p class="step__text">Open <code>http://&lt;name&gt;.local:8810</code> on any
-              computer in your network. From now on the Pi is a NeXT, and the admin is where
-              you change it.</p>
-          </div>
-        </li>
-      </ol>
-    </div>
-  </section>
-
-  <section class="section section--sunk">
+  <section class="section">
     <div class="measure">
       <div class="section__head">
         <p class="section__kicker">
@@ -352,7 +385,7 @@
     </div>
   </section>
 
-  <section class="section" id="questions">
+  <section class="section section--sunk" id="questions">
     <div class="measure">
       <div class="section__head">
         <p class="section__kicker">
@@ -453,7 +486,8 @@
 
         <article class="answer">
           <h3>Is there a ready made image to write?</h3>
-          <p class="answer__text">No, not yet. But it is in the works.</p>
+          <p class="answer__text">Yes. Since 1.11.0 every release comes with one for
+            Raspberry Pi Imager, see <a href="#install">Install</a> above.</p>
         </article>
       </div>
     </div>
