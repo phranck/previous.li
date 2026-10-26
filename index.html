@@ -35,7 +35,7 @@
 <link rel="manifest" href="site/site.webmanifest?v=3fa39395">
 
 <link rel="preload" href="site/fonts/inter-tight-variable-latin.woff2?v=77fefe8c" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="site/site.css?v=0976bad0">
+<link rel="stylesheet" href="site/site.css?v=d1a66e15">
 <link rel="stylesheet" href="site/motion.css?v=2cb4683a">
 
 <script type="application/ld+json">
@@ -137,7 +137,7 @@
                       this. It asks for your password once, and a few minutes later NeXTSTEP is
                       on the Pi's screen.</p>
                     <div class="codebox">
-                      <code class="codebox__code"><span class="codebox__prompt" aria-hidden="true">$</span> <span id="command">curl -fsSL https://previous.li/install.sh | bash</span></code>
+                      <code class="codebox__code"><span class="codebox__prompt" aria-hidden="true">$</span> <span id="command"><span class="syntax__command">curl</span> <span class="syntax__flag">-fsSL</span> <span class="syntax__path">https://previous.li/install.sh</span> <span class="syntax__operator">|</span> <span class="syntax__command">bash</span></span></code>
                       <button class="codebox__copy" type="button" aria-label="Copy" data-copy="command" data-umami-event="Copy install line">
                         <svg class="icon" aria-hidden="true"><use href="site/icons.svg?v=4f95eb7c#copy"></use></svg>
                       </button>
@@ -146,7 +146,7 @@
                 </li>
                 <li class="step">
                   <p class="step__text">Open the address it ends with,
-                    <code>http://&lt;hostname&gt;.local:8810</code>, in a browser on your
+                    <code><span class="syntax__path">http://</span><wbr><span class="syntax__placeholder">&lt;hostname&gt;</span><wbr><span class="syntax__path">.local:8810</span></code>, in a browser on your
                     network.</p>
                 </li>
               </ol>
@@ -194,7 +194,7 @@
                 <li class="step">
                   <p class="step__text">Write it, put it into the Pi and switch it on. NeXTSTEP
                     starts, and the admin answers at
-                    <code>http://&lt;hostname&gt;.local:8810</code>.</p>
+                    <code><span class="syntax__path">http://</span><wbr><span class="syntax__placeholder">&lt;hostname&gt;</span><wbr><span class="syntax__path">.local:8810</span></code>.</p>
                 </li>
               </ol>
             </div>
@@ -332,7 +332,7 @@
           </h3>
           <p class="card__text">The install command fetches the installer from
             phranck/previously and runs it. The installer puts the admin tool on the Pi as a
-            Debian package and asks its helper, <code>setup.py</code> in the same
+            Debian package and asks its helper, <code><span class="syntax__path">setup.py</span></code> in the same
             repository, for the rest.</p>
         </article>
 
@@ -384,7 +384,7 @@
           </h3>
           <p class="card__text">Remove in the Installer window gives the console and the
             boot back and removes the emulator; the disks and your configurations stay.
-            <code>sudo apt purge previously</code> removes the admin tool.</p>
+            <code><span class="syntax__command">sudo</span> <span class="syntax__command">apt</span> purge previously</code> removes the admin tool.</p>
         </article>
       </div>
     </div>
@@ -530,7 +530,7 @@
               <p class="answer__text">Remove the password file on the Pi, over SSH. From that
                 moment the admin is unclaimed again, and the next change chooses a new one.</p>
               <div class="codebox">
-                <code class="codebox__code" id="reset-command">sudo rm /var/lib/previously/password</code>
+                <code class="codebox__code" id="reset-command"><span class="syntax__command">sudo</span> <span class="syntax__command">rm</span> <span class="syntax__path">/var/lib/previously/password</span></code>
                 <button class="codebox__copy" type="button" aria-label="Copy" data-copy="reset-command" data-umami-event="Copy reset command">
                   <svg class="icon" aria-hidden="true"><use href="site/icons.svg?v=4f95eb7c#copy"></use></svg>
                 </button>

@@ -181,9 +181,24 @@
   --line-tight: 1.15;
   --line-normal: 1.6;
 
-  /* Code is read at the size it is written at, so it does not follow the
-     reading scale. */
-  --code-size: 15px;
+  /* Code, in a line of prose and in a box alike, a pixel below the prose, so
+     its wider letters do not read larger than the words around it. */
+  --code-size: calc(var(--text-prose) - 1px);
+
+  /* Inter Tight's x-height in em, read from its file with fontTools. Code is
+     sized so its own x-height meets this one at its size, whichever
+     monospaced face the browser picks. */
+  --text-x-height: 0.5459;
+
+  /* What code is colored by, in the page's NeXTSTEP colors: the program in the
+     workspace's violet at its strongest, a path or an address in a pale tint
+     of it, an option in NeXT's light gray, and the part somebody fills in in
+     white. Each reads at 5.6:1 or more on every surface of this page; the
+     operators between them keep the prose's soft ink. */
+  --syntax-command: oklch(0.72 0.15 284.1);
+  --syntax-flag: var(--next-light);
+  --syntax-path: oklch(0.88 0.04 284.1);
+  --syntax-placeholder: var(--next-white);
 
   --font: "Inter Tight Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, "DejaVu Sans Mono", monospace;
@@ -282,6 +297,28 @@ code,
 kbd {
   font-family: var(--mono);
   font-size: var(--code-size);
+  font-size-adjust: var(--text-x-height);
+}
+
+.syntax__command {
+  color: var(--syntax-command);
+}
+
+.syntax__flag {
+  color: var(--syntax-flag);
+}
+
+.syntax__path {
+  color: var(--syntax-path);
+}
+
+.syntax__placeholder {
+  color: var(--syntax-placeholder);
+  font-style: italic;
+}
+
+.syntax__operator {
+  color: var(--ink-soft);
 }
 
 :focus-visible {
@@ -759,7 +796,8 @@ kbd {
 }
 
 /* An address in a step is one word to the browser, and on a phone it is wider
-   than the column, so it breaks where it has to rather than widening the
+   than the column. The markup offers a break before and after the host name,
+   and only where those do not fit does it break anywhere rather than widen the
    window. */
 .step__text code {
   overflow-wrap: anywhere;
@@ -901,8 +939,6 @@ kbd {
   min-width: 0;
   overflow-x: auto;
   white-space: pre;
-  font-family: var(--mono);
-  font-size: var(--code-size);
   line-height: calc(var(--step) * 4);
 }
 
