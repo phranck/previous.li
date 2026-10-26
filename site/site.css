@@ -1231,12 +1231,16 @@ kbd {
 }
 
 /* LAYERED's accounts, the way new.layered.work shows them in its footer: each
-   mark in a small tile, muted until the pointer arrives, which lifts it. The
-   sizes are that site's own. */
+   mark in a small tile, muted until the pointer arrives, which colors it and
+   lifts it. The sizes are that site's own. The color is the strongest violet
+   sRGB holds at the NeXTSTEP workspace's hue, 284.1 in OKLCH, at a lightness of
+   0.66: at the muted mark's own lightness the gamut leaves too little chroma
+   for the hue to show. */
 .foot__social {
   --social-tile: 38px;
   --social-mark: 18px;
   --social-lift: 2px;
+  --social-hover-ink: oklch(0.66 0.188 284.1);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -1259,13 +1263,12 @@ kbd {
   font-size: var(--social-mark);
 }
 
-/* Under the pointer the tile fills with the NeXTSTEP workspace and the mark
-   turns white on it. A mark this small does not show a change of hue at its
-   own lightness; a change of fill it does. */
+/* The mark, the edge and a wash of the tile take the violet; the tile stays
+   dark. */
 .foot .foot__social-link:hover {
-  border-color: var(--accent);
-  background: var(--next-desktop);
-  color: var(--next-white);
+  border-color: color-mix(in oklab, var(--social-hover-ink) 70%, transparent);
+  background: color-mix(in oklab, var(--social-hover-ink) 16%, var(--paper-sunk));
+  color: var(--social-hover-ink);
   text-decoration: none;
   transform: translateY(calc(-1 * var(--social-lift)));
 }
