@@ -36,6 +36,12 @@ a {
   transition: background-color var(--duration) var(--ease);
 }
 
+.foot__social-link {
+  transition: color var(--duration) var(--ease),
+    background-color var(--duration) var(--ease),
+    border-color var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+
 .answer__question h3,
 .answer__caret {
   transition: color var(--duration) var(--ease), transform var(--duration) var(--ease);
