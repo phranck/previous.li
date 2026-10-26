@@ -1174,11 +1174,9 @@ kbd {
   color: var(--ink-soft);
 }
 
-/* Further down than the gap between the two lines above it, because it belongs
-   to somebody else and should read as a footnote rather than as a third line
-   of this footer. */
+/* It belongs to somebody else and reads as a footnote, which the space the
+   social row keeps above and below itself sets apart. */
 .foot__trademarks {
-  margin-top: var(--space-2);
   max-width: 62ch;
   font-size: var(--text-xs);
   color: color-mix(in oklab, var(--ink-soft) 70%, var(--paper));
@@ -1225,7 +1223,7 @@ kbd {
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-1);
-  margin: 0;
+  margin: var(--space-3) 0;
   padding: 0;
   list-style: none;
 }
