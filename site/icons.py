@@ -32,6 +32,7 @@ PHOSPHOR = {
     "monitor": "the screen, which shows NeXTSTEP and nothing else",
     "sliders-horizontal": "the admin tool, which configures the machine",
     "arrow-counter-clockwise": "every change the script makes can be undone",
+    "clock-counter-clockwise": "a copy of a disk, to go back to",
     "terminal-window": "the shell the line is pasted into",
     "download-simple": "what the script fetches",
     "shield-check": "the script raises its own privileges and asks once",
