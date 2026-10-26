@@ -35,7 +35,7 @@
 <link rel="manifest" href="site/site.webmanifest?v=3fa39395">
 
 <link rel="preload" href="site/fonts/inter-variable-latin.woff2?v=c9407645" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="site/site.css?v=09135332">
+<link rel="stylesheet" href="site/site.css?v=fa420cf9">
 <link rel="stylesheet" href="site/motion.css?v=152e2cbe">
 
 <script type="application/ld+json">
@@ -243,10 +243,10 @@
 
       <div class="cards">
         <article class="card">
-          <div class="card__icon">
+          <h3 class="card__title">
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg?v=ecdd4c8b#monitor"></use></svg>
-          </div>
-          <h3>Nothing but NeXTSTEP</h3>
+            Nothing but NeXTSTEP
+          </h3>
           <p class="card__text">Power the Pi on and it goes straight into NeXTSTEP, with
             no boot messages, no Linux login and no desktop in between. The screen stays
             with the NeXT: after a shutdown inside NeXTSTEP the machine simply boots again,
@@ -254,10 +254,10 @@
         </article>
 
         <article class="card">
-          <div class="card__icon">
+          <h3 class="card__title">
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg?v=ecdd4c8b#sliders-horizontal"></use></svg>
-          </div>
-          <h3>An admin that looks like the machine</h3>
+            An admin that looks like the machine
+          </h3>
           <p class="card__text">Pick one of eleven NeXT machines, with or without Turbo,
             Color and NeXTdimension, and set memory, drives and ports with switches and
             sliders. Drop a saved configuration onto the machine's window and it starts as
@@ -265,10 +265,10 @@
         </article>
 
         <article class="card">
-          <div class="card__icon">
+          <h3 class="card__title">
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg?v=ecdd4c8b#download-simple"></use></svg>
-          </div>
-          <h3>Six systems on one card</h3>
+            Six systems on one card
+          </h3>
           <p class="card__text">NeXTSTEP 3.3 comes with the installation. Afterwards the
             admin fetches NeXTSTEP 2.2, 3.0 and 3.2 and OPENSTEP 4.0 and 4.2 from
             archive.org, 23 to 75 MB each, and boots whichever you choose; each is a 2 GB
@@ -321,10 +321,10 @@
 
       <div class="cards">
         <article class="card">
-          <div class="card__icon">
+          <h3 class="card__title">
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg?v=ecdd4c8b#shield-check"></use></svg>
-          </div>
-          <h3>Read it first</h3>
+            Read it first
+          </h3>
           <p class="card__text">The install command fetches the installer from
             phranck/previously and runs it. The installer puts the admin tool on the Pi as a
             Debian package and asks its helper, <code>setup.py</code> in the same
@@ -332,10 +332,10 @@
         </article>
 
         <article class="card">
-          <div class="card__icon">
+          <h3 class="card__title">
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg?v=ecdd4c8b#key"></use></svg>
-          </div>
-          <h3>What runs as root, and what does not</h3>
+            What runs as root, and what does not
+          </h3>
           <p class="card__text">The admin runs as your user on port 8810, plain HTTP, for
             your home network only; reading is open, every change needs the password. Only
             the helper runs as root, and all the admin hands it is a short request of names
@@ -343,40 +343,40 @@
         </article>
 
         <article class="card">
-          <div class="card__icon">
+          <h3 class="card__title">
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg?v=ecdd4c8b#arrow-counter-clockwise"></use></svg>
-          </div>
-          <h3>A step that fails puts itself back</h3>
+            A step that fails puts itself back
+          </h3>
           <p class="card__text">Each step records how to undo itself, and a failure
             reverses what was done. The terminal and the Installer window say which step
             stopped and why, and Install starts it again.</p>
         </article>
 
         <article class="card">
-          <div class="card__icon">
+          <h3 class="card__title">
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg?v=ecdd4c8b#arrows-clockwise"></use></svg>
-          </div>
-          <h3>Safe to run again</h3>
+            Safe to run again
+          </h3>
           <p class="card__text">A second run skips what is done and replaces only an admin
             tool older than the newest release. Later updates come from the admin: the Info
             window updates the tool, the Installer window the emulator.</p>
         </article>
 
         <article class="card">
-          <div class="card__icon">
+          <h3 class="card__title">
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg?v=ecdd4c8b#terminal-window"></use></svg>
-          </div>
-          <h3>Ctrl+C, and the power</h3>
+            Ctrl+C, and the power
+          </h3>
           <p class="card__text">Once the admin tool is installed, the Pi does the rest by
             itself; Ctrl+C or a dropped SSH session only stops you watching. After a power
             cut during the install, run the install command again.</p>
         </article>
 
         <article class="card">
-          <div class="card__icon">
+          <h3 class="card__title">
             <svg class="icon" aria-hidden="true"><use href="site/icons.svg?v=ecdd4c8b#trash-simple"></use></svg>
-          </div>
-          <h3>Taking it off again</h3>
+            Taking it off again
+          </h3>
           <p class="card__text">Remove in the Installer window gives the console and the
             boot back and removes the emulator; the disks and your configurations stay.
             <code>sudo apt purge previously</code> removes the admin tool.</p>
