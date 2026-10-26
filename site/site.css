@@ -139,6 +139,8 @@
   --card-padding: var(--space-3);
   --card-text-inset: calc(var(--card-radius) / 2);
   --card-inner-radius: max(calc(var(--card-radius) - var(--card-padding)), 0px);
+  /* The least a card is wide before its row gives up a column. */
+  --card-min-width: 280px;
 
   /* An answer's surface is a card with less of a curve, because it opens
      under a line of type rather than standing on its own. Its question begins
@@ -652,8 +654,18 @@ kbd {
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(var(--card-min-width), 1fr));
   gap: var(--space-3);
+}
+
+/* Two to a row at most: a column is never narrower than half the row, so a
+   third does not fit, and never narrower than a card, so a row too narrow for
+   two holds one. */
+.cards--pairs {
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(max(var(--card-min-width), calc((100% - var(--space-3)) / 2)), 1fr)
+  );
 }
 
 /* Cards lie on the page's own shade, so they take the sunk one, which is the
