@@ -450,12 +450,20 @@ kbd {
   color: var(--next-white);
 }
 
+/* Two thirds of the column on a wide screen; the narrow block gives a phone
+   the whole of it. */
 .section__head {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  max-width: var(--measure-text);
+  max-width: calc(100% * 2 / 3);
   margin-bottom: var(--space-8);
+}
+
+/* Runs to that width rather than balancing its lines shorter, and still leaves
+   no word alone on its last line. */
+.section__head h2 {
+  text-wrap: pretty;
 }
 
 /* A heading standing above a card begins where that card's curve gives way to
@@ -1323,6 +1331,10 @@ kbd {
 
   .section {
     padding-block: var(--space-8);
+  }
+
+  .section__head {
+    max-width: none;
   }
 
   .hero {
