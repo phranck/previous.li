@@ -135,16 +135,12 @@
      padding is larger than the radius here, so anything at the content edge
      sits past the curve entirely and is square, which is what the clamp
      says. */
-  --card-radius: 24px;
+  --card-radius: 16px;
   --card-padding: var(--space-3);
   --card-text-inset: calc(var(--card-radius) / 2);
   --card-inner-radius: max(calc(var(--card-radius) - var(--card-padding)), 0px);
   /* The least a card is wide before its row gives up a column. */
   --card-min-width: 280px;
-
-  /* An answer's surface is a card with less of a curve, because it opens
-     under a line of type rather than standing on its own. */
-  --answer-radius: 16px;
 
   /* A control is not a card and takes none of a card's arithmetic. */
   --control-radius: 12px;
@@ -865,7 +861,7 @@ kbd {
      the text of its answer begin at one edge, and the chevron ends at the
      other. */
   padding: var(--space-1) var(--card-padding);
-  border-radius: var(--answer-radius);
+  border-radius: var(--card-radius);
   list-style: none;
   cursor: pointer;
 }
@@ -900,7 +896,7 @@ kbd {
 }
 
 /* The answer lies on a surface of its own, a shade lighter than the section,
-   with a card's padding. It stands inside the body rather than being the
+   with a card's padding and corner. It stands inside the body rather than being the
    body, because site.js moves the body's height down to nothing as it closes,
    and a padding or a margin of the body's own would hold that height open.
 
@@ -918,7 +914,7 @@ kbd {
   gap: var(--space-2);
   margin-block: var(--space-1);
   padding: var(--card-padding);
-  border-radius: var(--answer-radius);
+  border-radius: var(--card-radius);
   background: var(--paper-raised);
 }
 
