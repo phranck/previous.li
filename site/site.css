@@ -14,8 +14,9 @@
                        two install blocks wear one, because they are the
                        things you operate, and it is the one shape of the
                        original that everybody recognises.
-     The face          Inter, a neo-grotesque in the line Helvetica belongs to,
-                       which is what NeXTSTEP set its whole interface in.
+     The face          Inter Tight, Inter with closer spacing, a
+                       neo-grotesque in the line Helvetica belongs to, which
+                       is what NeXTSTEP set its whole interface in.
 
    Everything else is ordinary modern layout with a great deal of air in it.
 
@@ -48,17 +49,17 @@
 
 /* Served from here rather than from a font host, because this page hands out
    an install script and has no business telling a third party who fetched it.
-   The latin subset alone: the page is English, and the rest is 85kB nobody on
-   it would use. */
+   The latin subset alone, because the page is English. The range is the one
+   Fontsource states for the file. */
 @font-face {
-  font-family: "Inter Variable";
+  font-family: "Inter Tight Variable";
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url("fonts/inter-variable-latin.woff2?v=c9407645") format("woff2");
+  src: url("fonts/inter-tight-variable-latin.woff2?v=77fefe8c") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
-    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 /* --- the tokens ---------------------------------------------------------- */
@@ -185,7 +186,7 @@
      reading scale. */
   --code-size: 15px;
 
-  --font: "Inter Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font: "Inter Tight Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, "DejaVu Sans Mono", monospace;
 
   /* A mixed-case label inside a control sits a little above the cap midline,
@@ -238,19 +239,19 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* No tracking of their own: Inter Tight is spaced for large sizes already, and
+   a negative letter-spacing on top of it runs the letters into each other. */
 h1,
 h2,
 h3 {
   margin: 0;
   line-height: var(--line-tight);
-  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
 h1 {
   font-size: var(--text-3xl);
   font-weight: 700;
-  letter-spacing: -0.03em;
 }
 
 h2 {
@@ -338,7 +339,6 @@ kbd {
   gap: var(--space-1);
   font-size: var(--text-xl);
   font-weight: 650;
-  letter-spacing: -0.02em;
   text-decoration: none;
 }
 
@@ -362,7 +362,7 @@ kbd {
   align-items: center;
   gap: 2px;
   margin-inline-start: auto;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
 }
 
 /* An entry is a shape rather than an underlined word: the line under it reads
@@ -380,6 +380,7 @@ kbd {
   padding-bottom: calc(var(--label-lift) * 2);
   border-radius: var(--control-radius);
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .bar__links a:hover {
@@ -387,9 +388,10 @@ kbd {
   color: var(--nav-hover-ink);
 }
 
-/* Below the measure the entries crowd the wordmark, and the page's own
-   sections are a scroll away in any case. */
-@media (max-width: 640px) {
+/* The wordmark and the four entries take 749 pixels with the bar's padding,
+   measured in Safari. Below that the entries go, and the page's own sections
+   are a scroll away in any case. */
+@media (max-width: 760px) {
   .bar__links {
     display: none;
   }
@@ -507,9 +509,10 @@ kbd {
    each breaks where its own type wants to. A headline set across 1120 pixels
    is read in two movements of the head.
 
-   The measure holds the headline to two lines with the break after the struck
-   word, which is where the sentence corrects itself. A third line puts that
-   break mid-correction and the line stops working.
+   The headline breaks after the struck word, which is where the sentence
+   corrects itself, and the markup makes that break so no width or face can
+   move it into the correction. The measure holds each half to one line where
+   the column has room for it.
 
    Its own space stands under it, on top of the column's gap, so the mark and
    the headline read as one opening and the prose beneath them as the answer to
@@ -577,7 +580,6 @@ kbd {
   color: var(--next-white);
   font-size: var(--text-sm);
   font-weight: 700;
-  letter-spacing: -0.01em;
 }
 
 .window__title .icon {
