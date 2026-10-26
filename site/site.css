@@ -181,9 +181,23 @@
   --line-tight: 1.15;
   --line-normal: 1.6;
 
-  /* Code is read at the size it is written at, so it does not follow the
-     reading scale. */
+  /* Code in a box is read at the size it is written at, so it does not follow
+     the reading scale. */
   --code-size: 15px;
+
+  /* Inter Tight's x-height in em, read from its file with fontTools. Code in a
+     line of prose is sized so its own x-height meets this one, whichever
+     monospaced face the browser picks, so it sits in the line as a word of
+     it. */
+  --text-x-height: 0.5459;
+
+  /* What code is colored by: the program, an option, a path or an address, and
+     the part somebody fills in. Each reads at 7.6:1 or more on every surface
+     of this page; the operators between them keep the prose's soft ink. */
+  --syntax-command: oklch(0.8 0.09 284);
+  --syntax-flag: oklch(0.82 0.09 200);
+  --syntax-path: oklch(0.84 0.1 145);
+  --syntax-placeholder: oklch(0.85 0.1 80);
 
   --font: "Inter Tight Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, "DejaVu Sans Mono", monospace;
@@ -281,7 +295,28 @@ a:hover {
 code,
 kbd {
   font-family: var(--mono);
-  font-size: var(--code-size);
+  font-size: 1em;
+  font-size-adjust: var(--text-x-height);
+}
+
+.syntax__command {
+  color: var(--syntax-command);
+}
+
+.syntax__flag {
+  color: var(--syntax-flag);
+}
+
+.syntax__path {
+  color: var(--syntax-path);
+}
+
+.syntax__placeholder {
+  color: var(--syntax-placeholder);
+}
+
+.syntax__operator {
+  color: var(--ink-soft);
 }
 
 :focus-visible {
@@ -759,7 +794,8 @@ kbd {
 }
 
 /* An address in a step is one word to the browser, and on a phone it is wider
-   than the column, so it breaks where it has to rather than widening the
+   than the column. The markup offers a break before and after the host name,
+   and only where those do not fit does it break anywhere rather than widen the
    window. */
 .step__text code {
   overflow-wrap: anywhere;
@@ -903,6 +939,7 @@ kbd {
   white-space: pre;
   font-family: var(--mono);
   font-size: var(--code-size);
+  font-size-adjust: none;
   line-height: calc(var(--step) * 4);
 }
 
