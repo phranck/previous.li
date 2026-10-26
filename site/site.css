@@ -143,11 +143,8 @@
   --card-min-width: 280px;
 
   /* An answer's surface is a card with less of a curve, because it opens
-     under a line of type rather than standing on its own. Its question begins
-     where that curve gives way to the straight edge, and so does its chevron
-     at the other end. */
+     under a line of type rather than standing on its own. */
   --answer-radius: 16px;
-  --answer-text-inset: calc(var(--answer-radius) / 2);
 
   /* A control is not a card and takes none of a card's arithmetic. */
   --control-radius: 12px;
@@ -818,7 +815,10 @@ kbd {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  padding: var(--space-1) var(--answer-text-inset);
+  /* In by the padding of the surface the answer opens on, so a question and
+     the text of its answer begin at one edge, and the chevron ends at the
+     other. */
+  padding: var(--space-1) var(--card-padding);
   border-radius: var(--answer-radius);
   list-style: none;
   cursor: pointer;
