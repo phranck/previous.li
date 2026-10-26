@@ -819,8 +819,17 @@ kbd {
   justify-content: space-between;
   gap: var(--space-3);
   padding: var(--space-1) var(--answer-text-inset);
+  border-radius: var(--answer-radius);
   list-style: none;
   cursor: pointer;
+}
+
+/* Under the pointer the row takes a shape, as an entry in the bar does, with
+   the corner of the surface its answer opens on. It shows that the whole row
+   opens the answer. No transition, for the reason the bar's entries have
+   none. */
+.answer__question:hover {
+  background: var(--nav-hover);
 }
 
 .answer__question::-webkit-details-marker {
