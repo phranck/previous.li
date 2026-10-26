@@ -171,10 +171,12 @@
   --text-2xl: 36px;
   --text-3xl: 56px;
 
-  /* The prose a reader reads through, in a card, in a step and in an answer.
-     It is the size of a section's lead, so the text under a heading reads at
-     one size wherever it stands. */
-  --text-prose: var(--text-lg);
+  /* The prose a reader reads through, in a card, in a step and in an answer,
+     at one size wherever it stands. The narrow block states a phone's. */
+  --text-prose: 19px;
+
+  /* A card's title, a step above the prose under it at every width. */
+  --text-card-title: var(--text-xl);
 
   --line-tight: 1.15;
   --line-normal: 1.6;
@@ -665,19 +667,23 @@ kbd {
   box-shadow: var(--shadow-card);
 }
 
-.card__icon {
+/* A card's glyph stands in front of its title, in the accent, the way the
+   kicker's glyph stands in front of a section's name. A title that wraps keeps
+   the glyph beside its first line. */
+.card__title {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: calc(var(--step) * 6);
-  height: calc(var(--step) * 6);
-  margin-bottom: var(--space-1);
-  /* An icon tile stands in a card rather than inside a padded surface of its
-     own, so its radius is a control's and not a card's inner one. */
-  border-radius: var(--control-radius);
-  background: var(--accent-wash);
+  align-items: flex-start;
+  gap: var(--space-1);
+  font-size: var(--text-card-title);
+}
+
+/* As wide as every glyph beside text on this page, and as tall as the title's
+   line, so the glyph centers on the middle of the first line. On this face at
+   --line-tight that middle is the cap midline. */
+.card__title .icon {
+  width: calc(1em * var(--icon-scale));
+  height: calc(1em * var(--line-tight));
   color: var(--accent);
-  font-size: 26px;
 }
 
 .card__text {
@@ -1201,6 +1207,9 @@ kbd {
     --text-3xl: 38px;
     --text-2xl: 28px;
     --text-xl: 21px;
+    /* The prose steps down to the body's size, as the headings above it step
+       down. */
+    --text-prose: var(--text-base);
   }
 
   .section {
