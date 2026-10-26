@@ -856,12 +856,21 @@ kbd {
 /* The answer lies on a surface of its own, a shade lighter than the section,
    with a card's padding. It stands inside the body rather than being the
    body, because site.js moves the body's height down to nothing as it closes,
-   and a padding or a margin of the body's own would hold that height open. */
+   and a padding or a margin of the body's own would hold that height open.
+
+   It stands a step below its question, so the question's hover shape and the
+   surface never touch. The body is a formatting context of its own, so that
+   step stays inside the height site.js moves rather than collapsing out of
+   it. */
+.answer__body {
+  display: flow-root;
+}
+
 .answer__content {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  margin-bottom: var(--space-1);
+  margin-block: var(--space-1);
   padding: var(--card-padding);
   border-radius: var(--answer-radius);
   background: var(--paper-raised);
