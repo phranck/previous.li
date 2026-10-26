@@ -51,7 +51,7 @@ PHOSPHOR = {
 }
 
 BRAND = {
-    "github": "the repository and LAYERED's account, whose mark is not an interface icon",
+    "github": "the repository and phranck's account, whose mark is not an interface icon",
     "mastodon": "LAYERED's Mastodon account",
     "youtube": "LAYERED's YouTube channel",
     "instagram": "LAYERED's Instagram account",
