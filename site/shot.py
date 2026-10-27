@@ -28,10 +28,12 @@ Three things make the page's picture more than a screen grab:
               window is resized until the page is 1120 wide and CORNER_ROOM
               taller than 832. A display that does not draw two device pixels
               to the point stops the run.
-  The source  The page is held at 1120 by 832 at the top of that window, and
-              only its body is taken, so the picture carries no window frame
-              and none of the rounded corners macOS gives a window's lower
-              edge. A screen grab carries both.
+  The source  The page is held at 1120 by 832 at the top of that window from
+              the moment it has loaded, with black below it, so the window
+              shows the picture while it runs. What Safari shows is taken and
+              cut to those 832, so the picture carries no window frame and
+              none of the rounded corners macOS gives a window's lower edge.
+              A screen grab carries both.
 
 `shoot` needs nothing beyond the standard library. The Chrome commands need
 websocket-client:
@@ -50,6 +52,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import zlib
 
 HERE = pathlib.Path(__file__).parent
 
@@ -89,28 +92,60 @@ ADMIN = "http://next.local:8810/"
 DESTINATION = HERE / "shots" / "workspace.png"
 
 #: Where each window of the page's picture stands, in the desk's own points,
-#: from the back to the front, so the last one is the active window. The
-#: names are the admin's own: `info` is About for the emulated machine, and
-#: `pi` is the window titled Info, which is about the Raspberry Pi.
+#: from the back to the front, so the last one is the key window. The names
+#: are the admin's own: `info` is About for the emulated machine, and `pi` is
+#: the window titled Info, which is about the Raspberry Pi. phranck's own desk
+#: of 27 October 2026 is the model, pushed together to fit the MegaPixel
+#: Display: the Config Editor and Activity Monitor down the right under the
+#: dock, Activity Monitor over the Config Editor, About and Info along the
+#: top, Preferences on the left, and the File Viewer in front of them as the
+#: key window.
 ARRANGEMENT = {
-    "info": {"x": 640, "y": 12},
-    "pi": {"x": 164, "y": 8},
-    "preferences": {"x": 497, "y": 488},
-    "installer": {"x": 637, "y": 232},
-    "files": {"x": 22, "y": 296, "w": 469, "h": 458},
+    "pi": {"x": 569, "y": 5},
+    "info": {"x": 162, "y": 5},
+    "preferences": {"x": 5, "y": 235},
+    "editor": {"x": 643, "y": 141},
+    # On the floor of the display, 359 points tall.
+    "activity": {"x": 643, "y": 473},
+    # 442 points is the narrowest that holds the machines three to a row, as
+    # phranck's desk shows them, and four more keep the third row in.
+    "files": {"x": 187, "y": 268, "w": 446, "h": 557},
 }
 
-#: Where the admin keeps the desk and how large it draws it, in the browser's
-#: localStorage. Both are the admin's own keys, in design/kit/desk.js and
-#: admin/interface/app/size.js of phranck/previously. `arrange` checks that
-#: the windows stand where it put them, so a key the admin has renamed stops
-#: it with a message rather than taking a picture of some other desk.
+#: JavaScript that raises the windows in the order ARRANGEMENT gives them, so
+#: the last is in front and is the key window.
+RAISED_IN_ORDER = (f"for (const name of {json.dumps(list(ARRANGEMENT))}) "
+                   "document.querySelector(`nx-window[name=\"${name}\"]`)?.raise();")
+
+#: The Preferences module the picture shows, by its `value` in the admin.
+MODULE = "notifications"
+
+#: The folder the File Viewer shows, by its path in the admin's tree, and the
+#: machine the Config Editor is opened on, by its name in that folder.
+PLACE = "/Machines/System"
+EDITED = "NeXTcube"
+
+#: Where the admin keeps the desk, how large it draws it, and which folder the
+#: File Viewer stands in, in the browser's localStorage. All three are the
+#: admin's own keys, in design/kit/desk.js, admin/interface/app/size.js and
+#: admin/interface/app/viewer.js of phranck/previously. The folder is written
+#: there rather than reached by double clicks, because opening one waits on an
+#: animation that a browser window behind others never finishes. `shoot_page`
+#: checks that the windows stand where it put them, so a key the admin has
+#: renamed stops it with a message rather than taking a picture of some other
+#: desk.
 DESK_KEY = "nextstep-workspace:v4"
 SIZE_KEY = "previously:size"
+PLACE_KEY = "previously:place"
 
 #: How long the admin takes after loading to fill its windows with what the
 #: Pi answers, in seconds.
 READINGS_SECONDS = 3
+
+#: How long Activity Monitor runs before the picture is taken, in seconds: as
+#: long as its load chart takes to fill, a column every five seconds for its
+#: 36 columns, so neither chart stands half empty.
+ACTIVITY_SECONDS = 180
 
 #: Device pixels a side for each of NeXTSTEP's own pixels in a single window.
 #: The film zooms into a window until its pixels show, and a whole number
@@ -259,8 +294,10 @@ HIDE_THE_WINDOWS = "nx-window, nx-ask { visibility: hidden !important; }"
 #: display, which is what keeps the window's rounded corners out of the
 #: picture. The admin's body is 100vh tall and its dock and floor are fixed to
 #: the window, so the body is given the display's height and made the box the
-#: fixed ones stand in.
+#: fixed ones stand in. What is left of the window below it is black, so the
+#: window shows the picture and nothing that looks like room in it.
 HOLD_THE_DISPLAY = (f"html, body {{ height: {HEIGHT}px !important; }}"
+                    " html { background: #000 !important; }"
                     " body { contain: layout paint; }")
 
 
@@ -457,11 +494,13 @@ class Safari:
         raise SystemExit(f"the page in Safari measures {width} by {height}, not {wanted[0]} by {wanted[1]}")
 
     def picture(self, destination):
-        """Takes the page's body as a PNG of the display's device pixels.
+        """Takes the page as a PNG of the display's device pixels.
 
-        The body, because HOLD_THE_DISPLAY holds it at the display's size
-        above the window's rounded corners, and the whole page would reach
-        down into them.
+        The whole of what the window shows, cut to the display's height at the
+        top, because HOLD_THE_DISPLAY holds the page there above the window's
+        rounded corners. Safari's picture of the body alone came back as tall
+        as the window after a full run on 27 October 2026, though the body
+        measured the display's height, so nothing here depends on it.
         """
         scale = self.evaluate("devicePixelRatio")
         if scale != SCALE:
@@ -471,14 +510,64 @@ class Safari:
                             "(document.body.getBoundingClientRect())")
         if box != [0, 0, WIDTH, HEIGHT]:
             raise SystemExit(f"the page's body stands at {box}, not at 0, 0, {WIDTH} by {HEIGHT}")
-        body = next(iter(self.command("POST", "element",
-                                      {"using": "css selector", "value": "body"}).values()))
-        png = base64.b64decode(self.command("GET", f"element/{body}/screenshot"))
+        png = base64.b64decode(self.command("GET", "screenshot"))
         size = struct.unpack(">II", png[16:24])
-        if size != (WIDTH * SCALE, HEIGHT * SCALE):
+        if size != (WIDTH * SCALE, (HEIGHT + CORNER_ROOM) * SCALE):
             raise SystemExit(f"Safari took {size[0]} by {size[1]} pixels, "
-                             f"not {WIDTH * SCALE} by {HEIGHT * SCALE}")
-        written(destination, png)
+                             f"not {WIDTH * SCALE} by {(HEIGHT + CORNER_ROOM) * SCALE}")
+        written(destination, top_rows(png, HEIGHT * SCALE))
+
+
+#: How many bytes a pixel takes in each PNG color type at eight bits a sample.
+PNG_CHANNELS = {0: 1, 2: 3, 4: 2, 6: 4}
+
+
+def top_rows(png, rows):
+    """A PNG cut to its top rows.
+
+    Each row of a PNG is filtered against the rows above it and never against
+    the rows below, so the top rows are kept as they are, with their filters,
+    and nothing is decoded or changes a pixel.
+
+    Args:
+        png: The PNG, eight bits a sample and not interlaced, as Safari writes.
+        rows: How many rows to keep from the top.
+
+    Returns:
+        The PNG with those rows, its other chunks before the pixels kept.
+    """
+    def chunk(kind, data):
+        return (struct.pack(">I", len(data)) + kind + data
+                + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF))
+
+    position, before, pixels, header = 8, [], b"", None
+    while position < len(png):
+        length, kind = struct.unpack(">I4s", png[position:position + 8])
+        data = png[position + 8:position + 8 + length]
+        position += 12 + length
+        if kind == b"IHDR":
+            header = data
+        elif kind == b"IDAT":
+            pixels += data
+        elif kind != b"IEND" and not pixels:
+            before.append(chunk(kind, data))
+    width, height, depth, color, _, _, interlace = struct.unpack(">IIBBBBB", header)
+    if depth != 8 or interlace or color not in PNG_CHANNELS or rows > height:
+        raise SystemExit("Safari's picture is not a PNG this can cut")
+    kept = zlib.decompress(pixels)[:rows * (1 + width * PNG_CHANNELS[color])]
+    return (png[:8] + chunk(b"IHDR", struct.pack(">II", width, rows) + header[8:])
+            + b"".join(before) + chunk(b"IDAT", zlib.compress(kept, 9)) + chunk(b"IEND", b""))
+
+
+def thing_named(name):
+    """JavaScript for the File Viewer's icon of that name, or null.
+
+    The last one of the name, because the shelf and the path at the top of
+    the viewer show things as well, and the machine to edit is the one in the
+    browser under them.
+    """
+    return (f"[...document.querySelectorAll('#file-viewer nx-thing')]"
+            f".filter((thing) => thing.textContent.trim() === {json.dumps(name)}).at(-1) ?? null")
 
 
 def shoot_page(url, destination):
@@ -487,8 +576,11 @@ def shoot_page(url, destination):
     The admin draws its desk from what the browser remembers, so the
     arrangement is written there and the page loaded again: every window in
     ARRANGEMENT open where it says, the desk at 100%, which is NeXTSTEP's own
-    size, and the last window in front. The Installer is shown on its Systems
-    tab, because the six systems are what the page talks about.
+    size, the File Viewer in PLACE, and the last window in front. Preferences
+    shows MODULE, and the Config Editor is opened on EDITED, which is what the
+    admin does with a machine carried into it. Activity Monitor then runs for
+    ACTIVITY_SECONDS, and its rows of lamps are shown at their reading before
+    the picture, because a browser window behind others stops animating.
 
     Args:
         url: Where the admin answers.
@@ -503,30 +595,47 @@ def shoot_page(url, destination):
         safari.evaluate(f"""(() => {{
           localStorage.setItem({json.dumps(SIZE_KEY)}, "1");
           localStorage.setItem({json.dumps(DESK_KEY)}, {json.dumps(json.dumps(desk))});
+          localStorage.setItem({json.dumps(PLACE_KEY)}, {json.dumps(json.dumps(PLACE))});
         }})()""")
         safari.command("POST", "refresh")
-        # The Installer asks the Pi for more than the other windows do, and
-        # draws its tabs once the answer is in.
-        safari.waited_for("document.getElementById('installer-tabs')?.children.length > 0",
-                          "the Installer never had an answer from the Pi")
+        safari.waited_for(f"Boolean({thing_named(EDITED)})",
+                          f"the File Viewer shows no machine named {EDITED} in {PLACE}")
+        # Held from here on rather than just before the picture, so whoever
+        # watches the window sees what the picture will be.
+        safari.evaluate(styled(HOLD_THE_DISPLAY))
         time.sleep(READINGS_SECONDS)
 
+        safari.evaluate(f"""document.querySelector(
+          'nx-window[name="preferences"] .module[value={json.dumps(MODULE)}]')?.click()""")
+        safari.evaluate(f"""document.querySelector('nx-window[name="editor"]').dispatchEvent(
+          new CustomEvent("nx-choose", {{
+            bubbles: true, detail: {{ value: {thing_named(EDITED)}.getAttribute("value") }} }}))""")
+        safari.waited_for("!document.querySelector('nx-window[name=\"editor\"]').hidden",
+                          f"the Config Editor did not open on {EDITED}")
+        # The editor comes to the front as it opens, over Activity Monitor and
+        # the File Viewer, so the order is set again at once rather than only
+        # before the picture.
+        time.sleep(PICTURES_SECONDS)
+        safari.evaluate(f"(() => {{ {RAISED_IN_ORDER} }})()")
+        time.sleep(ACTIVITY_SECONDS)
+
         astray = safari.evaluate(f"""(() => {{
-          const places = {json.dumps(ARRANGEMENT)};
-          [...document.getElementById("installer-tabs").children]
-            .find((tab) => tab.textContent.trim() === "Systems")?.click();
-          for (const name of Object.keys(places)) {{
-            document.querySelector(`nx-window[name="${{name}}"]`)?.raise();
+          for (const row of document.querySelectorAll('nx-window[name="activity"] nx-leds')) {{
+            row.shown = row.held() ?? 0;
+            row.draw();
           }}
+          const places = {json.dumps(ARRANGEMENT)};
+          {RAISED_IN_ORDER}
           return Object.entries(places).filter(([name, place]) => {{
             const target = document.querySelector(`nx-window[name="${{name}}"]`);
             return !target || target.hidden
-              || target.offsetLeft !== place.x || target.offsetTop !== place.y;
+              || target.offsetLeft !== place.x || target.offsetTop !== place.y
+              || (place.w && target.offsetWidth !== place.w)
+              || (place.h && target.offsetHeight !== place.h);
           }}).map(([name]) => name);
         }})()""")
         if astray:
             raise SystemExit(f"not where ARRANGEMENT puts them: {', '.join(astray)}")
-        safari.evaluate(styled(HOLD_THE_DISPLAY))
         time.sleep(PICTURES_SECONDS)
         safari.alone()
         safari.picture(destination)
