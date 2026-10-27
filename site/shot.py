@@ -99,12 +99,12 @@ DESTINATION = HERE / "shots" / "workspace.png"
 ARRANGEMENT = {
     "pi": {"x": 569, "y": 5},
     "info": {"x": 162, "y": 5},
-    "preferences": {"x": 5, "y": 267},
+    "preferences": {"x": 5, "y": 235},
     "editor": {"x": 643, "y": 141},
     "activity": {"x": 643, "y": 466},
     # 442 points is the narrowest that holds the machines three to a row, as
     # phranck's desk shows them, and four more keep the third row in.
-    "files": {"x": 187, "y": 300, "w": 446, "h": 525},
+    "files": {"x": 187, "y": 268, "w": 446, "h": 557},
 }
 
 #: The Preferences module the picture shows, by its `value` in the admin.
