@@ -89,16 +89,32 @@ ADMIN = "http://next.local:8810/"
 DESTINATION = HERE / "shots" / "workspace.png"
 
 #: Where each window of the page's picture stands, in the desk's own points,
-#: from the back to the front, so the last one is the active window. The
-#: names are the admin's own: `info` is About for the emulated machine, and
-#: `pi` is the window titled Info, which is about the Raspberry Pi.
+#: from the back to the front, so the last one is the key window. The names
+#: are the admin's own: `info` is About for the emulated machine, and `pi` is
+#: the window titled Info, which is about the Raspberry Pi. phranck's own desk
+#: of 27 October 2026 is the model, pushed together to fit the MegaPixel
+#: Display: the Config Editor and Activity Monitor down the right under the
+#: dock, About and Info along the top, Preferences on the left, and the File
+#: Viewer in front of them.
 ARRANGEMENT = {
-    "info": {"x": 640, "y": 12},
-    "pi": {"x": 164, "y": 8},
-    "preferences": {"x": 497, "y": 488},
-    "installer": {"x": 637, "y": 232},
-    "files": {"x": 22, "y": 296, "w": 469, "h": 458},
+    "pi": {"x": 569, "y": 5},
+    "info": {"x": 162, "y": 5},
+    "preferences": {"x": 5, "y": 267},
+    "editor": {"x": 643, "y": 141},
+    "activity": {"x": 643, "y": 466},
+    # 442 points is the narrowest that holds the machines three to a row, as
+    # phranck's desk shows them, and four more keep the third row in.
+    "files": {"x": 187, "y": 300, "w": 446, "h": 525},
 }
+
+#: The Preferences module the picture shows, by its `value` in the admin.
+MODULE = "notifications"
+
+#: Where the File Viewer stands, as the names of the folders double clicked
+#: from its top, and the machine the Config Editor is opened on, by its name in
+#: the last of them.
+FOLDERS = ("Machines", "System")
+EDITED = "NeXTcube"
 
 #: Where the admin keeps the desk and how large it draws it, in the browser's
 #: localStorage. Both are the admin's own keys, in design/kit/desk.js and
@@ -481,14 +497,26 @@ class Safari:
         written(destination, png)
 
 
+def thing_named(name):
+    """JavaScript for the File Viewer's icon of that name, or null.
+
+    The last one of the name, because the shelf and the path at the top of
+    the viewer show a folder as well, and the folder to open or the machine
+    to edit is the one in the browser under them.
+    """
+    return (f"[...document.querySelectorAll('#file-viewer nx-thing')]"
+            f".filter((thing) => thing.textContent.trim() === {json.dumps(name)}).at(-1) ?? null")
+
+
 def shoot_page(url, destination):
     """Lays the desk out the way the page's picture has it, and takes it.
 
     The admin draws its desk from what the browser remembers, so the
     arrangement is written there and the page loaded again: every window in
     ARRANGEMENT open where it says, the desk at 100%, which is NeXTSTEP's own
-    size, and the last window in front. The Installer is shown on its Systems
-    tab, because the six systems are what the page talks about.
+    size, and the last window in front. Preferences shows MODULE, the File
+    Viewer is taken into FOLDERS, and the Config Editor is opened on EDITED,
+    which is what the admin does with a machine carried into it.
 
     Args:
         url: Where the admin answers.
@@ -505,23 +533,35 @@ def shoot_page(url, destination):
           localStorage.setItem({json.dumps(DESK_KEY)}, {json.dumps(json.dumps(desk))});
         }})()""")
         safari.command("POST", "refresh")
-        # The Installer asks the Pi for more than the other windows do, and
-        # draws its tabs once the answer is in.
-        safari.waited_for("document.getElementById('installer-tabs')?.children.length > 0",
-                          "the Installer never had an answer from the Pi")
+        safari.waited_for("document.querySelectorAll('#file-viewer nx-thing').length > 0",
+                          "the File Viewer never had an answer from the Pi")
         time.sleep(READINGS_SECONDS)
+
+        safari.evaluate(f"""document.querySelector(
+          'nx-window[name="preferences"] .module[value={json.dumps(MODULE)}]')?.click()""")
+        for folder in FOLDERS:
+            safari.waited_for(f"Boolean({thing_named(folder)})",
+                              f"the File Viewer shows no folder named {folder}")
+            safari.evaluate(f"""{thing_named(folder)}
+              .dispatchEvent(new MouseEvent("dblclick", {{ bubbles: true }}))""")
+        safari.waited_for(f"Boolean({thing_named(EDITED)})",
+                          f"the File Viewer shows no machine named {EDITED}")
+        safari.evaluate(f"""document.querySelector('nx-window[name="editor"]').dispatchEvent(
+          new CustomEvent("nx-choose", {{
+            bubbles: true, detail: {{ value: {thing_named(EDITED)}.getAttribute("value") }} }}))""")
+        time.sleep(PICTURES_SECONDS)
 
         astray = safari.evaluate(f"""(() => {{
           const places = {json.dumps(ARRANGEMENT)};
-          [...document.getElementById("installer-tabs").children]
-            .find((tab) => tab.textContent.trim() === "Systems")?.click();
           for (const name of Object.keys(places)) {{
             document.querySelector(`nx-window[name="${{name}}"]`)?.raise();
           }}
           return Object.entries(places).filter(([name, place]) => {{
             const target = document.querySelector(`nx-window[name="${{name}}"]`);
             return !target || target.hidden
-              || target.offsetLeft !== place.x || target.offsetTop !== place.y;
+              || target.offsetLeft !== place.x || target.offsetTop !== place.y
+              || (place.w && target.offsetWidth !== place.w)
+              || (place.h && target.offsetHeight !== place.h);
           }}).map(([name]) => name);
         }})()""")
         if astray:
