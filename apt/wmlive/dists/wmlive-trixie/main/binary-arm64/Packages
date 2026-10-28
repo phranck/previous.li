@@ -656,23 +656,23 @@ Description: GNUstep web browser based on Netsurf
  This version uses the GNUstep toolkit.
 
 Package: palemoon
-Version: 35.0.2-0wmlive1
+Version: 35.0.3-0wmlive1
 Architecture: arm64
 Maintainer: Window Maker Live <wmlive@rumbero.org>
-Installed-Size: 112267
-Depends: libavcodec60 | libavcodec-extra60 | libavcodec61 | libavcodec-extra61, libasound2t64 (>= 1.0.16), libatk1.0-0t64 (>= 1.12.4), libc6 (>= 2.38), libcairo2 (>= 1.2.4), libdbus-1-3 (>= 1.10), libfontconfig1 (>= 2.12.6), libfreetype6 (>= 2.2.1), libgcc-s1 (>= 4.2), libgdk-pixbuf-2.0-0 (>= 2.22.0), libglib2.0-0t64 (>= 2.24.0), libgtk2.0-0t64 (>= 2.24.0), libpango-1.0-0 (>= 1.22.0), libpangocairo-1.0-0 (>= 1.14.0), libstdc++6 (>= 12), libx11-6, libx11-xcb1, libxcb-shm0, libxcb1, libxext6, libxrender1 (>= 1:0.9.12), libxt6t64
+Installed-Size: 112332
+Depends: libavcodec60 | libavcodec-extra60 | libavcodec61 | libavcodec-extra61, yad | yad-gtk2, libasound2t64 (>= 1.0.16), libatk1.0-0t64 (>= 1.12.4), libc6 (>= 2.38), libcairo2 (>= 1.2.4), libdbus-1-3 (>= 1.10), libfontconfig1 (>= 2.12.6), libfreetype6 (>= 2.2.1), libgcc-s1 (>= 4.2), libgdk-pixbuf-2.0-0 (>= 2.22.0), libglib2.0-0t64 (>= 2.24.0), libgtk2.0-0t64 (>= 2.24.0), libpango-1.0-0 (>= 1.22.0), libpangocairo-1.0-0 (>= 1.14.0), libstdc++6 (>= 12), libx11-6, libx11-xcb1, libxcb-shm0, libxcb1, libxext6, libxrender1 (>= 1:0.9.12), libxt6t64
 Conflicts: palemoon-nonsse2
 Replaces: palemoon-nonsse2
 Provides: gnome-www-browser, www-browser, x-www-browser
 Homepage: http://www.palemoon.org/
 Priority: optional
 Section: web
-Filename: pool/main/p/palemoon/palemoon_35.0.2-0wmlive1_arm64.deb
-Size: 37571876
-SHA512: 40dfdb23922f6f95973bd2259ddc1c5e695d214647bae604cf4b899d42e39c1b6405c5dd27ad998383e89add2225f28da66ea5cec90b72d013db2fcfd9a3af09
-SHA256: 1ddb9ffc4c62367e68f697779cdcd8dbfcf769b5788f80cef8acd67324c36982
-SHA1: ec793fa3539f8b1b5837644df6331a00ea298e96
-MD5sum: 48b591a49f705abbf4cd4f59bad2c8f6
+Filename: pool/main/p/palemoon/palemoon_35.0.3-0wmlive1_arm64.deb
+Size: 37619428
+SHA512: 6b1eca1ae89fe4d68465235ce657d8a4956cafac4a4d522d6336e49672a0850f9c1caaa0b67f4a6fed68a76cf09db28bc64f476a7d9b3a7d915e62d015e4f66c
+SHA256: 4096eed597019bd419bceac5db7b0dbe69c1f4314a61056f0e113c4898ccb574
+SHA1: 8d168918c2118fdb18135e63a2d06f2945f5b3e2
+MD5sum: 4bab5a571c0aca60043dac0bdabe5d68
 Description: Goanna-based, efficient and easy to use web browser (gtk2 build)
  Pale Moon offers you a browsing experience in a browser completely built from
  its own, independently developed source that has been forked off from
